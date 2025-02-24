@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\RegisterController;
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 
 // Show the login form
+Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 
 // Handle the login attempt
