@@ -1,23 +1,24 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\AuthenticatedSessionController; // Use the correct controller
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\InvoiceController;
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 
 // Show the login form
-Route::get('/', [LoginController::class, 'showLoginForm'])->name('login');
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('login'); // Use the correct controller and method
+Route::get('/login', [AuthenticatedSessionController::class, 'create'])->name('login'); // Use the correct controller and method
 
 // Handle the login attempt
-Route::post('/login', [LoginController::class, 'login']);
+Route::post('/login', [AuthenticatedSessionController::class, 'store']); // Use the correct controller and method
 
 // Logout route
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout'); // Use the correct controller and method
 
 // Protected routes for authenticated users
-// Route::middleware(['auth'])->group(function () {
+Route::middleware('auth')->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     });
@@ -25,4 +26,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
     Route::get('/profile', function () {
         return view('profile');
     });
-// });
+
+    Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
+        Route::get('/', [InvoiceController::class, 'index'])->name('index');
+    });
+});

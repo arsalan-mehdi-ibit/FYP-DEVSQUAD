@@ -26,12 +26,7 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.16/dist/tailwind.min.css" rel="stylesheet">
 
 
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.min.js"
-            integrity="sha512-eyHL1atYNycXNXZMDndxrDhNAegH2BDWt1TmkXJPoGf1WLlNYt08CSjkqF5lnCRmdm3IrkHid8s2jOUY4NIZVQ=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/parsley.js/2.9.2/parsley.js"
-            integrity="sha512-Fq/wHuMI7AraoOK+juE5oYILKvSPe6GC5ZWZnvpOO/ZPdtyA29n+a5kVLP4XaLyDy9D1IBPYzdFycO33Ijd0Pg=="
-            crossorigin="anonymous" referrerpolicy="no-referrer"></script> -->
+    
     <script src="https://unpkg.com/imask"></script>
     <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css') }}?v=0.01" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
@@ -40,13 +35,26 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet"/>
    
 </head>
-<body>
-<div id="app">
 
-        <main class="py-4">
-            @yield('content')  <!-- This is where the login form or any other page content will be displayed -->
+
+
+<body class="bg-gray-100">
+<div class="flex h-screen">
+@if(Auth::check())
+
+    @include('layouts.sidebar')
+@endif
+    <div class="flex-1 flex flex-col overflow-hidden" id = "app">
+        @if(Auth::check())
+            @include('layouts.header')
+        @endif
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-4">
+            @yield('content')
         </main>
+        @include('layouts.footer')
     </div>
+</div>
 
 
 <!--   Core JS Files   -->
@@ -64,6 +72,15 @@
 <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
 <script src="{{asset('assets/js/argon-dashboard.js')}}"></script>
 @stack('js')
+<script>
+    $(document).ready(function () {
+    $("#logout-icon").click(function (e) {
+        e.preventDefault(); // Prevent default action
+        $("#logout-form").submit(); // Submit the logout form
+    });
+});
+
+</script>
 </body>
 
 </html>

@@ -14,34 +14,48 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
-    {
-        return view('auth.login');
+    public function create()
+    {   
+        if(!Auth::check())
+        {
+            return view('auth.login');
+        }
+        else
+        {
+            return redirect()->route('invoice.index');
+        }
     }
 
     /**
      * Handle an incoming authentication request.
      */
-    public function store(LoginRequest $request): RedirectResponse
+    public function store(LoginRequest $request)
     {
-        $request->authenticate();
-
-        $request->session()->regenerate();
-
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Validate credentials
+        $credentials = $request->only('email', 'password');
+    
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate(); // Regenerate session to prevent session fixation attacks
+    
+            return redirect()->route('invoice.index'); // Redirect to intended route
+        }
+    
+        return back()->withErrors([
+            'email' => 'The provided credentials do not match our records.',
+        ])->onlyInput('email');
     }
+    
 
     /**
      * Destroy an authenticated session.
      */
     public function destroy(Request $request): RedirectResponse
     {
-        Auth::guard('web')->logout();
+        Auth::logout(); // Log out the user
 
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
-        return redirect('/');
+        $request->session()->invalidate(); // Invalidate the session
+        $request->session()->regenerateToken(); // Regenerate the CSRF token
+    
+        return redirect('/')->with('success', 'You have been logged out.');
     }
 }

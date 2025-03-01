@@ -19,22 +19,17 @@ class LoginController extends Controller
     // Handle login attempt
     public function login(Request $request)
     {
-        // Validate the login data
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required', 'string'],
-        ]);
+        $request->authenticate();
 
-        // Attempt to log the user in
-        // if (Auth::attempt($credentials)) {
-            // If successful, redirect to the dashboard or intended page
-            return redirect()->intended('/dashboard');
-        // }
-
-        // If login fails, return back with an error
-        throw ValidationException::withMessages([
-            'email' => ['The provided credentials are incorrect.'],
-        ]);
+        $request->session()->regenerate();
+    
+        if ($request->username == 'admin' && $request->password == 'admin') {
+            return redirect()->intended('/invoice');
+        } else {
+            return back()->withErrors([
+                'username' => 'The provided credentials do not match our records.',
+            ])->onlyInput('username');
+        }
     }
 
     // Handle logout
