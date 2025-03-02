@@ -28,7 +28,7 @@
 
     
     <script src="https://unpkg.com/imask"></script>
-    <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css') }}?v=0.01" rel="stylesheet"/>
+    <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css') }}?v=0.02" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
           rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/parsleyjs/src/parsley.css">
