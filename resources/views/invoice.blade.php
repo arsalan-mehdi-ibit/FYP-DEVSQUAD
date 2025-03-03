@@ -116,7 +116,7 @@
                 <td class="p-3">09 Jan, 2023</td>
                 <td class="p-3">$789</td>
                 <td class="p-3">Paypal</td>
-                <td class="p-3 text-red-600"> gactive</td>
+                <td class="p-3 text-red-600">Inactive</td>
                 <td class="p-3 flex space-x-2">
                     <button class="text-blue-500">🔍</button>
                     <button class="text-orange-500">✏️</button>
