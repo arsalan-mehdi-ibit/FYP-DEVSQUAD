@@ -1,5 +1,5 @@
 <aside class="w-56 bg-gray-900 text-white min-h-screen p-4"> 
-    <h2 class="text-2xl font-bold mb-6">TRACK POINT</h2>
+    <h2 class="text-2xl font-bold mb-6 white-color">TRACK POINT</h2>
     <ul>
         <li class="mb-4">
             <a href="#" class="flex items-center text-gray-300 hover:text-white">

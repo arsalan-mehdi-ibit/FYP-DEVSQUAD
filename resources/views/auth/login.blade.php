@@ -6,7 +6,7 @@
         <div class="col-md-6">
             <div class="card shadow-lg rounded-lg">
                 <div class="card-header text-center bg-primary text-white">
-                    <h4>Login to DEV SQUAD</h4>
+                    <h4 class = "white-color" >Login to DEV SQUAD</h4>
                 </div>
 
                 <div class="card-body">
