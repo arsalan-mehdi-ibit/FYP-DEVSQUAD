@@ -88,24 +88,6 @@
                 <td class="p-3 flex space-x-2">
                     <button class="text-blue-500">🔍</button>
                     <button class="text-orange-500">✏️</button>
-                    <button class="text-red-500">🗑️</button>
-                </td>
-            </tr>
-
-            <tr class="border-b hover:bg-gray-50">
-                <td class="p-3">#INV2542</td>
-                <td class="p-3 flex items-center">
-                    <img src="{{ asset('assets/user.png') }}" class=" h-10 rounded-full mr-2" alt="User"> Dua Shabir
-                </td>
-                <td class="p-3">09 Jan, 2023</td>
-                <td class="p-3">$789</td>
-                <td class="p-3">Paypal</td>
-                <td class="p-3 text-red-600">Inactive</td>
-                <td class="p-3 flex space-x-2">
-                    <button class="text-blue-500">🔍</button>
-                    <button class="text-orange-500">✏️</button>
-                    <button class="text-red-500">🗑️</button>
-                </td>
             </tr>
 
             <tr class="border-b hover:bg-gray-50">

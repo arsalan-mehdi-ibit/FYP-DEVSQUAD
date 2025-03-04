@@ -80,6 +80,19 @@
     });
 });
 
+$(document).ready(function() {
+        $('#menu-toggle').click(function(event) {
+            event.stopPropagation();
+            $('#sidebar').toggleClass('-translate-x-full');
+        });
+        
+        $(document).click(function(event) {
+            if (!$(event.target).closest('#sidebar, #menu-toggle').length) {
+                $('#sidebar').addClass('-translate-x-full');
+            }
+        });
+    });
+
 </script>
 </body>
 
