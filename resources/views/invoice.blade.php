@@ -28,7 +28,7 @@
             <i class="bi bi-check-circle text-green-500 text-xl"></i>
         </div>
         <div>
-            <h3 class="text-sm font-medium text-gray-700">Paid Invoice</h3>
+            <h3 class="text-sm font-medium text-gray-700">PRO Invoice</h3>
             <p class="text-lg font-bold text-gray-900">1310</p>
         </div>
     </div>
