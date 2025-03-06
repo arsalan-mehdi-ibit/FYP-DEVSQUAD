@@ -28,7 +28,7 @@
             <i class="bi bi-check-circle text-green-500 text-xl"></i>
         </div>
         <div>
-            <h3 class="text-sm font-medium text-gray-700">PRO Invoice</h3>
+            <h3 class="text-sm font-medium text-gray-700">Paid Invoice</h3>
             <p class="text-lg font-bold text-gray-900">1310</p>
         </div>
     </div>
@@ -92,39 +92,41 @@
                 </td>
             </tr>
 
-            <tr class="border-b hover:bg-gray-50">
-                <td class="p-3">#INV2542</td>
-                <td class="p-3 flex items-center">
-                    <img src="{{ asset('assets/user.png') }}" class=" h-10 rounded-full mr-2" alt="User"> Dua Shabir
-                </td>
-                <td class="p-3">09 Jan, 2023</td>
-                <td class="p-3">$789</td>
-                <td class="p-3">Paypal</td>
-                <td class="p-3 text-red-600">Inactive</td>
-                <td class="p-3 flex space-x-2">
-                    <button class="text-blue-500">🔍</button>
-                    <button class="text-orange-500">✏️</button>
-                    <button class="text-red-500">🗑️</button>
-                </td>
-            </tr>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
+                            <td class="p-2 sm:p-3 flex items-center">
+                                <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
+                                    alt="User">
+                                <span class="hidden sm:block text-xs sm:text-sm md:text-base">Arsalan Mehdi</span>
+                            </td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$452</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Mastercard</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base text-green-600">Completed</td>
+                            <td class="p-2 sm:p-3 flex space-x-2">
+                                <button class="text-orange-500">✏️</button>
+                            </td>
+                        </tr>
 
-            <tr class="border-b hover:bg-gray-50">
-                <td class="p-3">#INV2543</td>
-                <td class="p-3 flex items-center">
-                    <img src="{{ asset('assets/user.png') }}" class=" h-10 rounded-full mr-2" alt="User"> Hafsa Farman
-                </td>
-                <td class="p-3">09 Jan, 2023</td>
-                <td class="p-3">$789</td>
-                <td class="p-3">Paypal</td>
-                <td class="p-3 text-red-600">Inactive</td>
-                <td class="p-3 flex space-x-2">
-                    <button class="text-blue-500">🔍</button>
-                    <button class="text-orange-500">✏️</button>
-                    <button class="text-red-500">🗑️</button>
-                </td>
-            </tr>
-        </tbody>
-    </table>
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
+                            <td class="p-2 sm:p-3 flex items-center">
+                                <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
+                                    alt="User">
+                                <span class="hidden sm:block text-xs sm:text-sm md:text-base">Arsalan Mehdi</span>
+                            </td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$452</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Mastercard</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base text-green-600">Completed</td>
+                            <td class="p-2 sm:p-3 flex space-x-2">
+                                <button class="text-orange-500">✏️</button>
+                            </td>
+                        </tr>
 
-</div>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
 @endsection
