@@ -1,8 +1,10 @@
-<div class="relative">
-    <button id="menu-toggle" class="absolute top-4 left-4 text-secondary p-2 rounded-md">
+<div>
+    <button id="menu-toggle" class="flex text-center justify-content-center absolute top-7 left-1 text-secondary p-1 rounded-md lg:hidden">
         <i class="bi bi-list text-2xl"></i>
     </button>
-    <aside id="sidebar" class="w-72 bg-gray-900 text-white min-h-screen p-3 px-4 fixed top-0 left-0 transform -translate-x-full transition-transform duration-300 ease-in-out"> 
+
+    <!-- Sidebar -->
+    <aside id="sidebar" class="w-72 bg-gray-900 text-white min-h-screen p-3 px-4 fixed top-0 left-0 transform transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full z-50"> 
         <h2 class="text-3xl px-4 py-2 font-bold mb-6 text-yellow-200">TRACK POINT</h2>
         <ul class="pl-4">
             <li class="mb-4">
@@ -32,4 +34,7 @@
             </li>
         </ul>
     </aside>
+
+    <!-- Overlay for Mobile Screens -->
+    <div id="overlay" class="fixed inset-0 bg-gray-500 opacity-50 hidden lg:hidden"></div>
 </div>
