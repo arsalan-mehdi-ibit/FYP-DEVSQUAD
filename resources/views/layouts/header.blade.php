@@ -1,5 +1,5 @@
 <header class="bg-white shadow-md p-4 flex justify-between items-center">
-    <h2 class="text-xl font-bold text-gray-700 uppercase tracking-wide">WELCOME ARSALAN!</h2>
+    <h2 class="text-xl font-bold text-gray-700 uppercase tracking-wide">WELCOME Dua!</h2>
 
     <div class="flex items-center space-x-6">
         <div class="flex items-center space-x-4">
