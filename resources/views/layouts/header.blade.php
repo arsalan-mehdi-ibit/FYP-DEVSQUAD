@@ -4,15 +4,7 @@
 
         <!-- Welcome Message (Responsive Font) -->
         <h2 class="text-lg sm:text-base md:text-lg lg:text-xl mx-2 md:mx-4 px-2 md:px-3 font-bold text-gray-700 uppercase tracking-wide">
-            @php
-                
-                $titles = [
-                    'invoice.index' => 'Invoice List',
-                    'users.index' => 'Users List',
-                ];
-                $currentRoute = Route::currentRouteName();
-                $pageTitle = $titles[$currentRoute] ?? 'Dashboard';
-            @endphp
+           
             {{ $pageTitle }}
         </h2>
         
@@ -27,6 +19,9 @@
                     <i class="bi bi-bell cursor-pointer hover:text-gray-700 text-lg sm:text-base md:text-lg"></i>
                     <span class="absolute -top-1 -right-2 bg-red-500 text-white text-xs sm:text-sm px-1.5 rounded-full">3</span>
                 </div>
+                <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                    @csrf
+                </form>
                 <i class="bi bi-box-arrow-right cursor-pointer hover:text-gray-700 text-lg sm:text-base md:text-lg" id="logout-icon"></i>
 
                 <!-- Profile Image -->

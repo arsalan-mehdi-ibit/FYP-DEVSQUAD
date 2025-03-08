@@ -9,30 +9,31 @@
         <ul class="pl-4">
             <li class="mb-4">
                 <a href="#" class="flex items-center text-gray-300 hover:text-white">
-                    <i class="bi bi-house mr-2"></i> Dashboard
+                    <i class="bi bi-house-door mr-2"></i> Dashboard
                 </a>
             </li>
             <li class="mb-4">
-                <a href="users#" class="flex items-center text-gray-300 hover:text-white">
-                    <i class="bi bi-box mr-2"></i> Users
+                <a href="{{route('users.index')}}" class="flex items-center text-gray-300 hover:text-white">
+                    <i class="bi bi-people mr-2"></i> Users
                 </a>
             </li>
             <li class="mb-4">
-                <a href="#" class="flex items-center text-gray-300 hover:text-white">
-                    <i class="bi bi-box mr-2"></i> Projects
+                <a href="{{ route('Project.index') }}" class="flex items-center text-gray-300 hover:text-white">
+                    <i class="bi bi-folder2-open mr-2"></i> Projects
                 </a>
             </li>
             <li class="mb-4">
-                <a href="#" class="flex items-center text-gray-300 hover:text-white">
-                    <i class="bi bi-box mr-2"></i> Timesheets
+                <a href="{{ route('Timesheet.index') }}" class="flex items-center text-gray-300 hover:text-white">
+                    <i class="bi bi-clock-history mr-2"></i> Timesheets
                 </a>
             </li>
             <li class="mb-4">
-                <a href="invoice#" class="flex items-center text-gray-300 hover:text-white">
-                    <i class="bi bi-file-earmark-text mr-2"></i> Invoices
+                <a href="{{ route('invoice.index') }}" class="flex items-center text-gray-300 hover:text-white">
+                    <i class="bi bi-receipt mr-2"></i> Invoices
                 </a>
             </li>
         </ul>
+        
     </aside>
 
     <!-- Overlay for Mobile Screens -->

@@ -5,6 +5,8 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController; // Use the correct
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\TimesheetController;
+use App\Http\Controllers\ProjectController;
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 
@@ -34,6 +36,14 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'users.', 'prefix' => '/users'], function () {
         Route::get('/', [UsersController::class, 'index'])->name('index');
+    });
+
+    Route::group(['as' => 'Timesheet.', 'prefix' => '/Timesheet'], function () {
+        Route::get('/', [TimesheetController::class, 'index'])->name('index');
+    });
+
+    Route::group(['as' => 'Project.', 'prefix' => '/Project'], function () {
+        Route::get('/', [ProjectController::class, 'index'])->name('index');
     });
     
 });

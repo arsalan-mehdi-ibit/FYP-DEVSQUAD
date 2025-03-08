@@ -66,24 +66,24 @@
             
 
             <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
-                <table class="w-full min-w-full">
-                    <thead class="sticky top-0 bg-gray-100 z-10">
+                <table class="w-full min-w-full text-center">
+                    <thead class="sticky top-0 bg-gray-100 z-10 text-center">
                         <tr class="border-b">
-                            <th class="p-2 sm:p-3 text-left font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Customer Name</th>
-                            <th class="p-2 sm:p-3 text-left font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Email</th>
-                            <th class="p-2 sm:p-3 text-left font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Phone Number</th>
-                            <th class="p-2 sm:p-3 text-left font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Role</th>
-                            <th class="p-2 sm:p-3 text-left font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 flex items-center">
+                            <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
                                 <span class="text-xs sm:text-sm md:text-base ">Arsalan Mehdi</span>
                             </td>
@@ -91,7 +91,7 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
-                            <td class="p-2 sm:p-3 flex space-x-2">
+                            <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                     <i class="bi bi-pencil text-orange-500"></i>
                                 </button>
@@ -103,7 +103,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 flex items-center">
+                            <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
                                 <span class="text-xs sm:text-sm md:text-base ">Arsalan Mehdi</span>
                             </td>
@@ -112,7 +112,7 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
-                            <td class="p-2 sm:p-3 flex space-x-2">
+                            <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                     <i class="bi bi-pencil text-orange-500"></i>
                                 </button>
@@ -124,7 +124,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 flex items-center">
+                            <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
                                 <span class="text-xs sm:text-sm md:text-base ">Arsalan Mehdi</span>
                             </td>
@@ -132,7 +132,7 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
-                            <td class="p-2 sm:p-3 flex space-x-2">
+                            <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                     <i class="bi bi-pencil text-orange-500"></i>
                                 </button>
@@ -144,7 +144,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 flex items-center">
+                            <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
                                 <span class="text-xs sm:text-sm md:text-base ">Arsalan Mehdi</span>
                             </td>
@@ -152,7 +152,7 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
-                            <td class="p-2 sm:p-3 flex space-x-2">
+                            <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                     <i class="bi bi-pencil text-orange-500"></i>
                                 </button>
@@ -164,7 +164,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 flex items-center">
+                            <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
                                 <span class="text-xs sm:text-sm md:text-base ">Arsalan Mehdi</span>
                             </td>
@@ -172,7 +172,7 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
-                            <td class="p-2 sm:p-3 flex space-x-2">
+                            <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                     <i class="bi bi-pencil text-orange-500"></i>
                                 </button>
@@ -184,7 +184,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 flex items-center">
+                            <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
                                 <span class="text-xs sm:text-sm md:text-base ">Arsalan Mehdi</span>
                             </td>
@@ -192,7 +192,7 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
-                            <td class="p-2 sm:p-3 flex space-x-2">
+                            <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                     <i class="bi bi-pencil text-orange-500"></i>
                                 </button>

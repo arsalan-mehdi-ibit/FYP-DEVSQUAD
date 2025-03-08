@@ -9,10 +9,12 @@ class UsersController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index() 
     {
-        return view('users');
+        $pageTitle  = "Users LIst";
+        return view('users', compact('pageTitle'));
     }
+    
 
     /**
      * Show the form for creating a new resource.
