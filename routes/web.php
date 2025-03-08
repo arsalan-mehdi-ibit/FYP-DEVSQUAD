@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthenticatedSessionController; // Use the correct controller
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\InvoiceController;
+use App\Http\Controllers\UsersController;
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 
@@ -30,4 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
     });
+
+    Route::group(['as' => 'users.', 'prefix' => '/users'], function () {
+        Route::get('/', [UsersController::class, 'index'])->name('index');
+    });
+    
 });

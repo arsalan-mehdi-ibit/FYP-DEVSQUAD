@@ -4,8 +4,18 @@
 
         <!-- Welcome Message (Responsive Font) -->
         <h2 class="text-lg sm:text-base md:text-lg lg:text-xl mx-2 md:mx-4 px-2 md:px-3 font-bold text-gray-700 uppercase tracking-wide">
-           Invoice List
+            @php
+                
+                $titles = [
+                    'invoice.index' => 'Invoice List',
+                    'users.index' => 'Users List',
+                ];
+                $currentRoute = Route::currentRouteName();
+                $pageTitle = $titles[$currentRoute] ?? 'Dashboard';
+            @endphp
+            {{ $pageTitle }}
         </h2>
+        
 
         <!-- Right Section: Icons + Profile + Search -->
         <div class="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 flex-wrap md:flex-nowrap">

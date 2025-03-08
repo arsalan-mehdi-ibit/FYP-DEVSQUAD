@@ -13,7 +13,7 @@
                 </a>
             </li>
             <li class="mb-4">
-                <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                <a href="users#" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-box mr-2"></i> Users
                 </a>
             </li>
@@ -28,7 +28,7 @@
                 </a>
             </li>
             <li class="mb-4">
-                <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                <a href="invoice#" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-file-earmark-text mr-2"></i> Invoices
                 </a>
             </li>
