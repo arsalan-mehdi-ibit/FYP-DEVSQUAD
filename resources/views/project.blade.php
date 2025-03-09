@@ -117,7 +117,7 @@
                 </table>
             </div>
         </div>
-        <p class="text-center text-gray-500 mt-6">© 2025 Track Point. All rights reserved.</p>
+        
     </main>
 </div>
 @endsection
