@@ -1,238 +1,123 @@
 @extends('layouts.app')
 
 @section('content')
-    <div id="invoice" class="max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
+<div class="flex flex-col md:flex-row min-h-screen bg-gray-100">
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-black text-white shadow-md p-4">
+        <h2 class="text-xl font-bold mb-4 text-yellow-400">TRACK POINT</h2>
+        <nav>
+            <ul class="space-y-2">
+                <li><a href="#" class="block p-2 flex items-center"><i class="bi bi-house-door mr-2"></i> Dashboard</a></li>
+                <li><a href="#" class="block p-2 flex items-center"><i class="bi bi-people mr-2"></i> Users</a></li>
+                <li><a href="#" class="block p-2 flex items-center"><i class="bi bi-folder mr-2"></i> Projects</a></li>
+                <li><a href="#" class="block p-2 flex items-center"><i class="bi bi-clock mr-2"></i> Timesheets</a></li>
+                <li><a href="#" class="block p-2 flex items-center"><i class="bi bi-file-earmark-text mr-2"></i> Invoices</a></li>
+            </ul>
+        </nav>
+    </aside>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-            <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
-                <div class="flex items-center gap-2 sm:gap-2">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-people text-orange-500 text-xl sm:text-2xl"></i>
-                    </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">All Customers</h3>
-                </div>
-                <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+22.63k</p>
-                    <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑ 34.4%</span>
-                </div>
-            </div>
-        
-            <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-box-seam text-red-500 text-xl sm:text-2xl"></i>
-                    </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Orders</h3>
-                </div>
-                <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+4.5k</p>
-                    <span class="text-xs sm:text-sm text-red-600 bg-red-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↓ 8.1%</span>
+    <!-- Main Content -->
+    <main class="flex-1 p-4">
+        <h1 class="text-2xl font-bold mb-4">Projects</h1>
+
+        <!-- Summary Cards -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <div class="p-4 bg-white shadow rounded-lg flex items-center w-full">
+                <i class="bi bi-people text-orange-500 text-2xl mr-2"></i>
+                <div>
+                    <p class="text-gray-600">All Customers</p>
+                    <p class="text-xl font-bold">+22.63k</p>
+                    <span class="text-green-500 text-sm">↑ 34.4%</span>
                 </div>
             </div>
-        
-            <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-headset text-orange-500 text-xl sm:text-2xl"></i>
-                    </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Services Request</h3>
-                </div>
-                <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+1.03k</p>
-                    <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑ 12.6%</span>
+            <div class="p-4 bg-white shadow rounded-lg flex items-center w-full">
+                <i class="bi bi-box text-red-500 text-2xl mr-2"></i>
+                <div>
+                    <p class="text-gray-600">Orders</p>
+                    <p class="text-xl font-bold">+4.5k</p>
+                    <span class="text-red-500 text-sm">↓ 8.1%</span>
                 </div>
             </div>
-        
-            <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-receipt text-orange-500 text-xl sm:text-2xl"></i>
-                    </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Invoice & Payment</h3>
+            <div class="p-4 bg-white shadow rounded-lg flex items-center w-full">
+                <i class="bi bi-headset text-blue-500 text-2xl mr-2"></i>
+                <div>
+                    <p class="text-gray-600">Services Request</p>
+                    <p class="text-xl font-bold">+1.03k</p>
+                    <span class="text-green-500 text-sm">↑ 12.6%</span>
                 </div>
-                <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">$38,908.00</p>
-                    <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑ 45.9%</span>
+            </div>
+            <div class="p-4 bg-white shadow rounded-lg flex items-center w-full">
+                <i class="bi bi-credit-card text-purple-500 text-2xl mr-2"></i>
+                <div>
+                    <p class="text-gray-600">Invoice & Payment</p>
+                    <p class="text-xl font-bold">$38,908.00</p>
+                    <span class="text-green-500 text-sm">↑ 45.9%</span>
                 </div>
             </div>
         </div>
 
-
-        <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
-            <div class="mx-2 flex justify-between items-center mb-1 sm:mb-4">
-                <h2 class="text-lg sm:text-xl font-bold">Projects</h2>
-                <button class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
-                               hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
-                    <i class="bi bi-person-plus text-sm"></i> Add
+        <!-- Projects Table -->
+        <div class="bg-white shadow rounded-lg p-4 w-full">
+            <div class="flex flex-col md:flex-row justify-between items-center mb-4">
+                <h2 class="text-xl font-bold">Projects</h2>
+                <button class="bg-orange-500 text-white px-4 py-2 rounded flex items-center">
+                    <i class="bi bi-plus-lg mr-2"></i> Add
                 </button>
             </div>
-            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
-                <table class="w-full min-w-full text-center">
-                    <thead class="sticky top-0 bg-gray-100 z-10 text-center">
-                        <tr class="border-b">
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                SR</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Project Name</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Project Source</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Contractor</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Client</th>
-                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Contractor Rate</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Client Rate</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Start Date</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Expected End Date</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Action</th>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse text-left">
+                    <thead>
+                        <tr class="bg-gray-200 text-sm">
+                            <th class="p-3">SR</th>
+                            <th class="p-3">Project Name</th>
+                            <th class="p-3">Project Source</th>
+                            <th class="p-3">Contractor</th>
+                            <th class="p-3">Client</th>
+                            <th class="p-3">Contractor Rate</th>
+                            <th class="p-3">Client Rate</th>
+                            <th class="p-3">Start Date</th>
+                            <th class="p-3">Expected End Date</th>
+                            <th class="p-3">Action</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">1</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Timesheet</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">FYP</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Test contractor</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">costomer comp</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$50</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$75</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-03-01</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-06-01</td>
-                            <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-eye text-red-500"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                    <span class="bi bi-pencil text-black"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-trash text-red-500"></span>
-                                </button>
+                        <tr class="border-t">
+                            <td class="p-3">1</td>
+                            <td class="p-3">Timesheet</td>
+                            <td class="p-3">FYP</td>
+                            <td class="p-3">Test contractor</td>
+                            <td class="p-3">Customer Comp</td>
+                            <td class="p-3">$50</td>
+                            <td class="p-3">$75</td>
+                            <td class="p-3">2024-03-01</td>
+                            <td class="p-3">2024-06-01</td>
+                            <td class="p-3 flex space-x-2">
+                                <button class="text-blue-500"><i class="bi bi-eye"></i></button>
+                                <button class="text-yellow-500"><i class="bi bi-pencil"></i></button>
+                                <button class="text-red-500"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>
-
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Timesheet</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">FYP</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Test contractor</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">costomer comp</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$50</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$75</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-03-01</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-06-01</td>
-                              <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-eye text-red-500"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                    <span class="bi bi-pencil text-black"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-trash text-red-500"></span>
-                                </button>
+                        <tr class="border-t">
+                            <td class="p-3">2</td>
+                            <td class="p-3">timesheet</td>
+                            <td class="p-3">Startup</td>
+                            <td class="p-3">ABC Ltd</td>
+                            <td class="p-3">XYZ Client</td>
+                            <td class="p-3">$60</td>
+                            <td class="p-3">$90</td>
+                            <td class="p-3">2024-04-01</td>
+                            <td class="p-3">2024-08-01</td>
+                            <td class="p-3 flex space-x-2">
+                                <button class="text-blue-500"><i class="bi bi-eye"></i></button>
+                                <button class="text-yellow-500"><i class="bi bi-pencil"></i></button>
+                                <button class="text-red-500"><i class="bi bi-trash"></i></button>
                             </td>
                         </tr>
-
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">3</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Timesheet</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">FYP</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Test contractor</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">costomer comp</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$50</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$75</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-03-01</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-06-01</td>
-                              <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-eye text-red-500"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                    <span class="bi bi-pencil text-black"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-trash text-red-500"></span>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">4</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Timesheet</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">FYP</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Test contractor</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">costomer comp</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$50</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$75</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-03-01</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-06-01</td>
-                              <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-eye text-red-500"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                    <span class="bi bi-pencil text-black"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-trash text-red-500"></span>
-                                </button>
-                            </td>
-                        </tr>
-
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">5</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Timesheet</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">FYP</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Test contractor</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">costomer comp</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$50</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$75</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-03-01</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-06-01</td>
-                              <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-eye text-red-500"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                    <span class="bi bi-pencil text-black"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-trash text-red-500"></span>
-                                </button>
-                            </td>
-                        </tr>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">6</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Timesheet</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">FYP</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Test contractor</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">costomer comp</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$50</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">$75</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-03-01</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2024-06-01</td>
-                              <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-eye text-red-500"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                    <span class="bi bi-pencil text-black"></span>
-                                </button>
-                                <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                    <span class="bi bi-trash text-red-500"></span>
-                                </button>
-                            </td>
-                        </tr>
-
                     </tbody>
                 </table>
             </div>
         </div>
-    </div>
+        <p class="text-center text-gray-500 mt-6">© 2025 Track Point. All rights reserved.</p>
+    </main>
+</div>
 @endsection
