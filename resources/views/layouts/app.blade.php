@@ -122,9 +122,9 @@
                 }
             });
 
-            $(window).resize(function() {
-                adjustHeader();
-            });
+            // $(window).resize(function() {
+            //     adjustHeader();
+            // });
         });
     </script>
 </body>

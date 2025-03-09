@@ -18,12 +18,12 @@
                 </a>
             </li>
             <li class="mb-4">
-                <a href="{{ route('Project.index') }}" class="flex items-center text-gray-300 hover:text-white">
+                <a href="{{ route('project.index') }}" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-folder2-open mr-2"></i> Projects
                 </a>
             </li>
             <li class="mb-4">
-                <a href="{{ route('Timesheet.index') }}" class="flex items-center text-gray-300 hover:text-white">
+                <a href="{{ route('timesheet.index') }}" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-clock-history mr-2"></i> Timesheets
                 </a>
             </li>

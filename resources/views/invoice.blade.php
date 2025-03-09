@@ -6,7 +6,7 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             
             <div
-                class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
+                class="bg-white shadow-md rounded-2xl p-3  flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
                     <h3 class="text-sm font-semibold text-gray-600">Total Invoice</h3>
                     <p class="text-xl font-bold text-gray-800">2310</p>
@@ -59,6 +59,8 @@
                     <thead class="sticky top-0 bg-gray-100 z-10 text-center">
                         <tr class="border-b">
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                                SR</th>
+                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Invoice ID</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Billing Name</th>
@@ -74,6 +76,7 @@
                     </thead>
                     <tbody>
                         <tr class="border-b hover:bg-gray-50">
+                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">1</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -92,6 +95,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
+                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -110,6 +114,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
+                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">3</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -128,6 +133,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
+                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">4</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -146,6 +152,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
+                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">5</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -164,6 +171,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
+                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">6</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"

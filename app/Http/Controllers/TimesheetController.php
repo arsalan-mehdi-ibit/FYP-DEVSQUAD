@@ -12,7 +12,7 @@ class TimesheetController extends Controller
     public function index() 
     {
         $pageTitle  = "Timesheet";
-        return view('Timesheet', compact('pageTitle'));
+        return view('timesheet', compact('pageTitle'));
     }
 
     /**

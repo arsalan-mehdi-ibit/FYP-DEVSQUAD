@@ -38,11 +38,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [UsersController::class, 'index'])->name('index');
     });
 
-    Route::group(['as' => 'Timesheet.', 'prefix' => '/Timesheet'], function () {
+    Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
     });
 
-    Route::group(['as' => 'Project.', 'prefix' => '/Project'], function () {
+    Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
     });
     

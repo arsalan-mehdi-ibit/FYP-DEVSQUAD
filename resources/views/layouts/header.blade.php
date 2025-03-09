@@ -14,7 +14,7 @@
 
             <!-- Icons Section -->
             <div class="flex items-center gap-2 sm:gap-3 md:gap-4">
-                <i class="bi bi-moon cursor-pointer hover:text-gray-700 text-lg sm:text-base md:text-lg"></i>
+                {{-- <i class="bi bi-moon cursor-pointer hover:text-gray-700 text-lg sm:text-base md:text-lg"></i> --}}
                 <div class="relative">
                     <i class="bi bi-bell cursor-pointer hover:text-gray-700 text-lg sm:text-base md:text-lg"></i>
                     <span class="absolute -top-1 -right-2 bg-red-500 text-white text-xs sm:text-sm px-1.5 rounded-full">3</span>

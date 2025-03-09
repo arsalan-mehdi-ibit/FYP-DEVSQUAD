@@ -12,7 +12,7 @@ class ProjectController extends Controller
     public function index() 
     {
         $pageTitle  = "Projects";
-        return view('Project', compact('pageTitle'));
+        return view('project', compact('pageTitle'));
     }
 
     /**
