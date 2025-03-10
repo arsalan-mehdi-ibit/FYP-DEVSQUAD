@@ -40,7 +40,8 @@
                 </div>
 
                 <div class="text-end mb-3">
-                    <a href="#" class="text-decoration-none" style="color: #8892b0;">Forgot your password?</a>
+                    <a href="{{ route('password.request') }}" class="text-decoration-none" style="color: #8892b0;">Forgot your password?</a>
+
                 </div>
 
                 <!-- Submit Button -->
