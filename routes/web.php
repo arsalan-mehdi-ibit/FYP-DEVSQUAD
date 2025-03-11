@@ -7,8 +7,14 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
+
+Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->middleware('guest')->name('password.request');
+
+Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->middleware('guest')->name('password.email');
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
 
 // Show the login form
 Route::get('/', [AuthenticatedSessionController::class, 'create'])->name('login'); // Use the correct controller and method
