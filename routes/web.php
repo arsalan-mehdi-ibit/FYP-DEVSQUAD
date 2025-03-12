@@ -8,6 +8,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\TimesheetDetailController;
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->middleware('guest')->name('password.request');
 
@@ -53,3 +54,11 @@ Route::middleware('auth')->group(function () {
     });
     
 });
+
+
+
+
+
+Route::get('/timesheets', [TimesheetDetailController::class, 'index'])->name('timesheets.index');
+Route::get('/timesheets/{id}', [TimesheetDetailController::class, 'show'])->name('timesheets.detail');
+
