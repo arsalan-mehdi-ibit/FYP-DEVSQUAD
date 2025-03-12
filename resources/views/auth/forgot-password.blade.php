@@ -1,25 +1,56 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+@extends('layouts.app')
+
+@section('content')
+<div class="d-flex justify-content-center align-items-center h-full" style="background-color: white; overflow: hidden;">
+    <div class="shadow-lg rounded-3 p-4 text-center" style="width: 400px; background-color: white;">
+
+        <!-- Alert Icon -->
+        <div class="text-center mb-3">
+            <i class="bi bi-exclamation-circle-fill" style="font-size: 50px; color: #233554;"></i>
+        </div>
+
+        <!-- Title -->
+        <h3 style="color: #233554; font-weight: bold;">Forgot Password</h3>
+        <p style="color: #1a2a40; font-size: 14px; opacity: 0.8;">
+            Enter your email and we'll send you a link to reset your password.
+        </p>
+
+        <!-- Session Status -->
+        <x-auth-session-status class="mb-3" :status="session('status')" />
+
+        <!-- Forgot Password Form -->
+        <form method="POST" action="{{ route('password.email') }}">
+            @csrf
+
+            <!-- Email Input -->
+            <div class="mb-3 text-start">
+                <input type="email" class="form-control text-black border-0 shadow-sm" name="email" placeholder="Email..."
+                    required value="{{ old('email') }}"
+                    style="background-color:  #eef0f7; color: #233554; border-radius: 20px; padding: 10px;">
+            </div>
+
+            <!-- Error Message -->
+            @if ($errors->has('email'))
+                <p class="text-danger mb-3" style="font-size: 14px;">
+                    {{ $errors->first('email') }}
+                </p>
+            @endif
+
+            <!-- Submit Button -->
+            <div class="d-grid gap-2 mb-3">
+                <button type="submit" class="btn text-white"
+                    style="background-color: #1a2a40; border-radius: 20px; padding: 10px;">
+                    Submit
+                </button>
+            </div>
+        </form>
+
+        <!-- Back to Login -->
+        <div class="text-center">
+            <a href="{{ route('login') }}" class="text-decoration-none" style="color: #1a2a40; font-weight: bold;">←
+                Back to Login</a>
+        </div>
+
     </div>
-
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+</div>
+@endsection
