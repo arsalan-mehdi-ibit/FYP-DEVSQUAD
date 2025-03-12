@@ -9,8 +9,9 @@ class TimesheetDetailController extends Controller
     // Show all timesheets
     public function index()
     {
-        $timesheets = Timesheet::all(); // Fetch all timesheets
-        return view('timesheets.index', compact('timesheets'));
+        // $timesheets = Timesheet::all(); // Fetch all timesheets
+        // return view('timesheets.index', compact('timesheets'));
+        return view('timesheetdetail');
     }
 
     // Show details of a specific timesheet

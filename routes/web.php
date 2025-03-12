@@ -47,18 +47,18 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
+        Route::get('/details', [TimesheetDetailController::class, 'index'])->name('details.index');
+        Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
     });
 
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
     });
-    
+   
 });
 
 
 
 
 
-Route::get('/timesheets', [TimesheetDetailController::class, 'index'])->name('timesheets.index');
-Route::get('/timesheets/{id}', [TimesheetDetailController::class, 'show'])->name('timesheets.detail');
 
