@@ -3,7 +3,7 @@
 @section('content')
 <div class="container">
     <!-- Back Button -->
-    <a href="{{ route('timesheets.index') }}" class="text-dark d-flex align-items-center">
+    <a href="{{ route('timesheet.index') }}" class="text-dark d-flex align-items-center">
         <i class="fas fa-arrow-left"></i> &nbsp; Back
     </a>
 
@@ -46,27 +46,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                            <td>{{ \Carbon\Carbon::parse($timesheet->date)->format('M d, Y') }}</td>
-                            <td>{{ $timesheet->actual_hours }}</td>
-                            <td>{{ $timesheet->ot_hours }}</td>
-                            <td>{{ $timesheet->type }}</td>
-                            <td>
-                                <input type="checkbox" {{ $timesheet->billable ? 'checked' : '' }} disabled>
-                            </td>
-                            <td>{{ $timesheet->memo ?? 'N/A' }}</td>
-                            <td>
-                                <!-- Eye Icon Before Approve Button -->
-                                <a href="{{ route('timesheets.show', $timesheet->id) }}" class="text-primary">
-                                    <i class="fas fa-eye fa-lg"></i>
-                                </a>
-                            </td>
-                            <td>
-                                <!-- Approve Button -->
-                                <button class="btn btn-success btn-sm">Approve</button>
-                            </td>
-                        </tr>
+                    
                     </tbody>
                 </table>
             </div> <!-- End Table Wrapper -->
