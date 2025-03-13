@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class InvoiceController extends Controller
+class UsersController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index() 
     {
-        $pageTitle  = "Invoice LIst";
-        return view('invoice', compact('pageTitle'));
+        $pageTitle  = "Users LIst";
+        return view('users', compact('pageTitle'));
     }
+    
 
     /**
      * Show the form for creating a new resource.

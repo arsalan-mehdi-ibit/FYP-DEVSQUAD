@@ -4,15 +4,15 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class InvoiceController extends Controller
+class TimesheetController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index() 
     {
-        $pageTitle  = "Invoice LIst";
-        return view('invoice', compact('pageTitle'));
+        $pageTitle  = "Timesheet";
+        return view('timesheet', compact('pageTitle'));
     }
 
     /**

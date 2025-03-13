@@ -1,52 +1,62 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('register') }}">
-        @csrf
+@extends('layouts.app')
 
-        <!-- Name -->
-        <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
-            <x-input-error :messages="$errors->get('name')" class="mt-2" />
+@section('content')
+<div class="d-flex justify-content-center align-items-center h-full" style="background-color: rgba(255, 255, 255, 0.9); overflow: hidden;">
+    <div class="shadow-lg rounded-3 d-flex flex-column flex-md-row" id="registerContainer" style="width: 800px; height: 500px; background-color: white; overflow: hidden;">
+        
+        <!-- Left Section (Welcome) - Hidden on Mobile -->
+        <div class="d-none d-md-flex flex-column justify-content-center align-items-center text-white text-center" style="flex: 1; background: linear-gradient(135deg, #233554, #1a2a40); padding: 40px;">
+            <h3 style="font-weight: bold;color:white">Join Us!</h3>
+            <p style="opacity: 0.8;">Create an account to become a part of our community</p>
         </div>
 
-        <!-- Email Address -->
-        <div class="mt-4">
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <!-- Right Section (Register) - Always Visible -->
+        <div class="d-flex flex-column justify-content-center align-items-center" style="flex: 1; padding: 40px;">
+            <h3 style="color: #233554; font-weight: bold;">Sign Up</h3>
+            <p style="font-size: 14px; opacity: 0.8; color: #1a2a40;">Create your account to continue</p>
+            
+            <!-- Show validation errors -->
+            @if ($errors->any())
+                <div class="alert alert-danger text-start">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            
+            <form method="POST" action="{{ route('register') }}" style="width: 100%;">
+                @csrf
+                
+                <!-- Name -->
+                <div class="mb-3 text-start">
+                    <input type="text" class="form-control text-black border-0 shadow-sm" name="name" placeholder="Name..." required value="{{ old('name') }}" style="background-color:  #eef0f7; color: #ccd6f6; border-radius: 20px; padding: 10px;">
+                </div>
+
+                <!-- Email Address -->
+                <div class="mb-3 text-start">
+                    <input type="email" class="form-control text-black border-0 shadow-sm" name="email" placeholder="Email..." required value="{{ old('email') }}" style="background-color:  #eef0f7; color: #ccd6f6; border-radius: 20px; padding: 10px;">
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3 text-start">
+                    <input type="password" class="form-control text-black border-0 shadow-sm" name="password" placeholder="Password..." required style="background-color:  #eef0f7; color: #ccd6f6; border-radius: 20px; padding: 10px;">
+                </div>
+
+                <!-- Confirm Password -->
+                <div class="mb-3 text-start">
+                    <input type="password" class="form-control text-black border-0 shadow-sm" name="password_confirmation" placeholder="Confirm Password..." required style="background-color:  #eef0f7; color: #ccd6f6; border-radius: 20px; padding: 10px;">
+                </div>
+
+                <!-- Submit Button -->
+                <div class="d-grid gap-2 mb-3">
+                    <button type="submit" class="btn text-white" style="background-color: #1a2a40; border-radius: 20px; padding: 10px;">SIGN UP</button>
+                </div>
+            </form>
+
+            <p class="mb-0" style="color: #233554;">Already have an account? <a href="{{ route('login') }}" class="text-decoration-none" style="color: #1a2a40; font-weight: bold;">Log In</a></p>
         </div>
-
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
-
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                            type="password"
-                            name="password_confirmation" required autocomplete="new-password" />
-
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('login') }}">
-                {{ __('Already registered?') }}
-            </a>
-
-            <x-primary-button class="ms-4">
-                {{ __('Register') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+    </div>
+</div>
+@endsection
