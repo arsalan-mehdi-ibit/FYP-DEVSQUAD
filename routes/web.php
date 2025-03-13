@@ -9,6 +9,7 @@ use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
     ->name('password.reset'); // This route displays the form (GET request)
@@ -39,9 +40,7 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     });
 
-    Route::get('/profile', function () {
-        return view('profile');
-    });
+    Route::get('/profile', [ProfileController::class, 'index'])->name('index'); // Use the correct controller and method
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
