@@ -8,6 +8,13 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\Auth\NewPasswordController;
+
+Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
+    ->name('password.reset'); // This route displays the form (GET request)
+
+Route::post('/reset-password', [NewPasswordController::class, 'store'])
+    ->name('password.store'); // This route handles the form submission (POST request)
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->middleware('guest')->name('password.request');
 
