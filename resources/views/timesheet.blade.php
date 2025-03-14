@@ -76,6 +76,8 @@
                                 Total OT Hours </th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Approver</th>
+                                <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                                Detail</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Project</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
@@ -94,6 +96,14 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">8</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test client</td>
+                            <td class="p-2 sm:p-3 text-center">
+            <button class="text-gray-600 hover:text-gray-900 transition-all">
+                <!-- <i class="fas fa-eye"></i> -->
+                <a href="{{ route('timesheet.details.index') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+        <i class="fas fa-eye"></i>
+    </a>
+            </button>
+        </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test project</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test contractor</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">customer comp</td>
@@ -118,6 +128,14 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">8</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test client</td>
+                            <td class="p-2 sm:p-3 text-center">
+            <button class="text-gray-600 hover:text-gray-900 transition-all">
+                <!-- <i class="fas fa-eye"></i> -->
+                <a href="{{ route('timesheet.details.index') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+        <i class="fas fa-eye"></i>
+    </a>
+            </button>
+        </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test project</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test contractor</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">customer comp</td>
@@ -141,6 +159,14 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">8</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test client</td>
+                            <td class="p-2 sm:p-3 text-center">
+            <button class="text-gray-600 hover:text-gray-900 transition-all">
+                <!-- <i class="fas fa-eye"></i> -->
+                <a href="{{ route('timesheet.details.index') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+        <i class="fas fa-eye"></i>
+    </a>
+            </button>
+        </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test project</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test contractor</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">customer comp</td>
@@ -164,6 +190,14 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">8</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test client</td>
+                            <td class="p-2 sm:p-3 text-center">
+            <button class="text-gray-600 hover:text-gray-900 transition-all">
+                <!-- <i class="fas fa-eye"></i> -->
+                <a href="{{ route('timesheet.details.index') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+        <i class="fas fa-eye"></i>
+    </a>
+            </button>
+        </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test project</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test contractor</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">customer comp</td>
@@ -187,6 +221,14 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">8</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test client</td>
+                            <td class="p-2 sm:p-3 text-center">
+            <button class="text-gray-600 hover:text-gray-900 transition-all">
+                <!-- <i class="fas fa-eye"></i> -->
+                <a href="{{ route('timesheet.details.index') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+        <i class="fas fa-eye"></i>
+    </a>
+            </button>
+        </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test project</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test contractor</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">customer comp</td>
@@ -210,6 +252,21 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">8</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test client</td>
+                            <td class="p-2 sm:p-3 text-center">
+            <button class="text-gray-600 hover:text-gray-900 transition-all">
+                <!-- <a href="{{ url('timesheetdetail') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+                <i class="fas fa-eye"></i> -->
+                <!-- <a href="/timesheetdetail" class="text-gray-600 hover:text-gray-900 transition-all">
+    <i class="fas fa-eye"></i>
+</a> -->
+<!-- <a href="{{ url('/timesheetdetail') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+    <i class="fas fa-eye"></i>
+</a> -->
+<a href="{{ route('timesheet.details.index') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+        <i class="fas fa-eye"></i>
+    </a>
+            </button>
+        </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test project</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test contractor</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">customer comp</td>

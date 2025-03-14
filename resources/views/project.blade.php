@@ -35,7 +35,7 @@
                     <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
                         <i class="bi bi-headset text-orange-500 text-xl sm:text-2xl"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Services Request</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Clients</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+1.03k</p>
@@ -48,7 +48,7 @@
                     <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
                         <i class="bi bi-receipt text-orange-500 text-xl sm:text-2xl"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Invoice & Payment</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Contractors</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">$38,908.00</p>
