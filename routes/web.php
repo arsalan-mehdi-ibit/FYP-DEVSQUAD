@@ -40,7 +40,7 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'dashboard.', 'prefix' => '/dashboard'], function () {
-        Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+        Route::get('/', [DashboardController::class, 'index'])->name('index');
     });
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile'); // Use the correct controller and method
 

@@ -22,7 +22,7 @@ class AuthenticatedSessionController extends Controller
         }
         else
         {
-            return redirect()->route('invoice.index');
+            return redirect()->route('dashboard.index');
         }
     }
 
@@ -37,7 +37,7 @@ class AuthenticatedSessionController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Regenerate session to prevent session fixation attacks
     
-            return redirect()->route('invoice.index'); // Redirect to intended route
+            return redirect()->route('dashboard.index'); // Redirect to intended route
         }
     
         return back()->withErrors([
