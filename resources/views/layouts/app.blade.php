@@ -139,7 +139,7 @@
             });
 
             $(".dropdown-item").on("click", function() {
-                let selectedValue = $(this).text(); /
+                let selectedValue = $(this).text();
                 $("#selectedOption").text(selectedValue);
                 $("#dropdownMenu").addClass("hidden"); 
             });
