@@ -5,10 +5,10 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
             <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
                 <div class="flex items-center gap-2 sm:gap-2">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-people text-orange-500 text-xl sm:text-2xl"></i>
+                    <div class="p-3 sm:p-3 rounded-xl bg-blue-100 flex items-center justify-center">
+                        <i class="bi bi-filter text-blue-500"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">All Customers</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">This Month's</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+22.63k</p>
@@ -18,10 +18,10 @@
         
             <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-box-seam text-red-500 text-xl sm:text-2xl"></i>
+                    <div class="p-3 sm:p-3 rounded-xl bg-green-100 flex items-center justify-center">
+                        <i class="bi bi-check-circle text-green-500 text-xl sm:text-2xl"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Orders</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">APPROVED</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+4.5k</p>
@@ -32,9 +32,9 @@
             <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
                 <div class="flex items-center gap-2 sm:gap-3">
                     <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-headset text-orange-500 text-xl sm:text-2xl"></i>
+                        <i class="bi bi-x-circle text-red-500 text-xl sm:text-2xl"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Services Request</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">REJECTED</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+1.03k</p>
@@ -44,10 +44,10 @@
         
             <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
                 <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-receipt text-orange-500 text-xl sm:text-2xl"></i>
+                    <div class="p-3 sm:p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
+                        <i class="bi bi-receipt text-yellow-500 text-xl sm:text-2xl"></i>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Invoice & Payment</h3>
+                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">PENDING APPROVAL</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">$38,908.00</p>

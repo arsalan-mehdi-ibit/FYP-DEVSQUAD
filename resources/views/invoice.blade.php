@@ -11,8 +11,8 @@
                     <h3 class="text-sm font-semibold text-gray-600">Revenue This Month</h3>
                     <p class="text-xl font-bold text-gray-800">2310</p>
                 </div>
-                <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
-                    <i class="bi bi-receipt text-orange-500 text-2xl"></i>
+                <div class="p-3 rounded-xl bg-blue-100 flex items-center justify-center">
+                    <i class="bi bi-filter text-blue-500 text-2xl"></i>
                 </div>
             </div>
 
@@ -22,8 +22,8 @@
                     <h3 class="text-sm font-semibold text-gray-600">Total Invoices</h3>
                     <p class="text-xl font-bold text-gray-800">1000</p>
                 </div>
-                <div class="p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                    <i class="bi bi-x-circle text-red-500 text-2xl"></i>
+                <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
+                    <i class="bi bi-receipt text-yellow-500 text-2xl"></i>
                 </div>
             </div>
 
@@ -44,8 +44,8 @@
                     <h3 class="text-sm font-semibold text-gray-600">Pending Invoices</h3>
                     <p class="text-xl font-bold text-gray-800">1243</p>
                 </div>
-                <div class="p-3 rounded-xl bg-blue-100 flex items-center justify-center">
-                    <i class="bi bi-filter text-blue-500 text-2xl"></i>
+                <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
+                    <i class="bi bi-receipt text-yellow-500 text-2xl"></i>
                 </div>
             </div>
         </div>

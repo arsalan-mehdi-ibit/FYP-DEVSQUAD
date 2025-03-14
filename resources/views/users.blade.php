@@ -60,7 +60,7 @@
 
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
             <div class="mx-2 flex justify-between items-center mb-1 sm:mb-4">
-                <h2 class="text-lg sm:text-xl font-bold">All Customer List</h2>
+                <h2 class="text-lg sm:text-xl font-bold">All Users List</h2>
                 <button class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
                                hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
                     <i class="bi bi-person-plus text-sm"></i> Add
@@ -73,7 +73,7 @@
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 SR</th>
                             <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Customer Name</th>
+                                User Name</th>
                             <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Email</th>
                             <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
@@ -96,7 +96,7 @@
                             </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Admin</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">-</td>
                             <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
@@ -117,7 +117,7 @@
                             </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Admin</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">-</td>
                             <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
@@ -139,7 +139,7 @@
                             </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Admin</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">-</td>
                             <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
@@ -161,7 +161,7 @@
                             </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Admin</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">-</td>
                             <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
@@ -183,7 +183,7 @@
                             </td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Admin</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">-</td>
                             <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
@@ -206,7 +206,7 @@
 
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Chicken role</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Admin</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">-</td>
                             <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                 <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
