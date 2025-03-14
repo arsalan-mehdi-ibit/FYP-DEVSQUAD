@@ -50,6 +50,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/details', [TimesheetDetailController::class, 'index'])->name('details.index');
         Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
     });
+    
 
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
