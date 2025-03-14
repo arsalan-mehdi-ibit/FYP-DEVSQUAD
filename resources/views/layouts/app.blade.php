@@ -71,6 +71,8 @@
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assets/js/argon-dashboard.js') }}"></script>
     @stack('js')
+   
+
     <script>
         $(document).ready(function() {
             $("#logout-icon").click(function(e) {

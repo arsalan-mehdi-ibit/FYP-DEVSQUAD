@@ -2,13 +2,13 @@
 
 @section('content')
     <div id="invoice" class="max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
-        
+
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            
+
             <div
                 class="bg-white shadow-md rounded-2xl p-3  flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Total Invoice</h3>
+                    <h3 class="text-sm font-semibold text-gray-600">Revenue This Month</h3>
                     <p class="text-xl font-bold text-gray-800">2310</p>
                 </div>
                 <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
@@ -19,7 +19,7 @@
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Pending Invoice</h3>
+                    <h3 class="text-sm font-semibold text-gray-600">Total Invoices</h3>
                     <p class="text-xl font-bold text-gray-800">1000</p>
                 </div>
                 <div class="p-3 rounded-xl bg-red-100 flex items-center justify-center">
@@ -30,7 +30,7 @@
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Paid Invoice</h3>
+                    <h3 class="text-sm font-semibold text-gray-600">Active Invoices</h3>
                     <p class="text-xl font-bold text-gray-800">1310</p>
                 </div>
                 <div class="p-3 rounded-xl bg-green-100 flex items-center justify-center">
@@ -41,7 +41,7 @@
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Inactive Invoice</h3>
+                    <h3 class="text-sm font-semibold text-gray-600">Pending Invoices</h3>
                     <p class="text-xl font-bold text-gray-800">1243</p>
                 </div>
                 <div class="p-3 rounded-xl bg-blue-100 flex items-center justify-center">
@@ -76,7 +76,7 @@
                     </thead>
                     <tbody>
                         <tr class="border-b hover:bg-gray-50">
-                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">1</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">1</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -95,7 +95,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -114,7 +114,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">3</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">3</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -133,7 +133,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">4</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">4</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -152,7 +152,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">5</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">5</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"
@@ -171,7 +171,7 @@
                         </tr>
 
                         <tr class="border-b hover:bg-gray-50">
-                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">6</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">6</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">#INV2540</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}" class="h-8 sm:h-10 rounded-full mr-2"

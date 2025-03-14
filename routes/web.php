@@ -9,6 +9,14 @@ use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\TimesheetDetailController;
+use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\ProfileController;
+
+Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
+    ->name('password.reset'); // This route displays the form (GET request)
+
+Route::post('/reset-password', [NewPasswordController::class, 'store'])
+    ->name('password.store'); // This route handles the form submission (POST request)
 
 Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->middleware('guest')->name('password.request');
 
@@ -33,9 +41,7 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     });
 
-    Route::get('/profile', function () {
-        return view('profile');
-    });
+    Route::get('/profile', [ProfileController::class, 'index'])->name('index'); // Use the correct controller and method
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');

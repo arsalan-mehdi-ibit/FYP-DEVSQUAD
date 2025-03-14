@@ -13,6 +13,8 @@ class ProjectController extends Controller
     {
         $pageTitle  = "Projects";
         return view('project', compact('pageTitle'));
+        //  // return view('project', compact('pageTitle'));
+        //  return view('auth.reset');
     }
 
     /**
