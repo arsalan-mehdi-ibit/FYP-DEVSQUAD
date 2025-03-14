@@ -25,8 +25,10 @@
 
                 <!-- Profile Image -->
                 <div class="relative w-full md:w-12 h-10 md:h-12 rounded-full overflow-hidden border border-gray-300">
-                    <img src="{{ asset('assets/profile.jpeg') }}" class="w-full h-full object-cover" alt="User">
-                </div>
+                    <a href="{{ route('profile') }}">
+                        <img src="{{ asset('assets/profile.jpeg') }}" class="w-full h-full object-cover cursor-pointer" alt="User">
+                    </a>
+git                 </div>
             </div>
 
             <!-- Search Bar (Responsive Width) -->

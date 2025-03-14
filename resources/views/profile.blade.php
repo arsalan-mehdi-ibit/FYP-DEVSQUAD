@@ -32,7 +32,7 @@
                                     <label for="profile-pic-upload" class="upload-text">
                                         Upload Photo
                                     </label>
-                                    <input type="file" name="profile_pic" id="profile-pic-upload" accept="image/*"/>
+                                    <input type="file" name="profile_pic" id="profile-pic-upload" class = 'd-none' accept="image/*"/>
                                 </div>
                             </div>
                         </div>

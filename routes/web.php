@@ -42,10 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::group(['as' => 'dashboard.', 'prefix' => '/dashboard'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
     });
-    Route::get('/profile', function () {
-        return view('profile');
-    });
-    Route::get('/profile', [ProfileController::class, 'index'])->name('index'); // Use the correct controller and method
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile'); // Use the correct controller and method
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
