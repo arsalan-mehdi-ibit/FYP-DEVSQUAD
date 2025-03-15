@@ -1,10 +1,9 @@
 <div id="content" class="transition-all duration-300">
     <header id="main-header"
-        class="bg-none shadow-sm p-4 md:p-4 flex flex-nowrap md:flex-nowrap justify-between items-center transition-all duration-300 ease-in-out gap-2 md:gap-6">
+        class=" main-layout bg-none shadow-sm p-4 md:p-4 flex flex-nowrap md:flex-nowrap justify-between items-center transition-all duration-300 ease-in-out gap-2 md:gap-6">
 
         <!-- Welcome Message (Responsive Font) -->
         <h2 class="text-lg sm:text-base md:text-lg lg:text-xl mx-2 md:mx-4 px-2 md:px-3 font-bold text-gray-700 uppercase tracking-wide">
-           
             {{ $pageTitle }}
         </h2>
         

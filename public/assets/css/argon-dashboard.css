@@ -27547,12 +27547,12 @@ pre[class*="language-"] {
     color: #ffffff;
 }
 
-#main-header, #invoice, #footer {
-    margin-left: 17rem !important ;  /* Default position when sidebar is visible (on large screens) */
+.main-layout {
+    margin-left: 17rem !important;  /* Default position when sidebar is visible (on large screens) */
 }
 
 @media (max-width: 768px) {
-    #main-header, #invoice, #footer  {
+    .main-layout {
         margin-left: 0 !important; /* Header starts from the left on small screens */
     }
 }

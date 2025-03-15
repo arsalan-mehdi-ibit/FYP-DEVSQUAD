@@ -8,7 +8,7 @@
         <h2 class="text-3xl px-4 py-2 font-bold mb-6 text-yellow-200">TRACK POINT</h2>
         <ul class="pl-4">
             <li class="mb-4">
-                <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                <a href="{{route('dashboard.index')}}" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-house-door mr-2"></i> Dashboard
                 </a>
             </li>

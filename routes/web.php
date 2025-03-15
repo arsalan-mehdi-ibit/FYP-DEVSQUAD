@@ -7,6 +7,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\NewPasswordController;
 
@@ -35,10 +36,10 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 
 // Protected routes for authenticated users
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    });
 
+    Route::group(['as' => 'dashboard.', 'prefix' => '/dashboard'], function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('index');
+    });
     Route::get('/profile', function () {
         return view('profile');
     });
