@@ -5915,7 +5915,7 @@ fieldset:disabled .btn {
 .upload-container {
     background-color: rgb(239, 239, 239);
     border-radius: 6px;
-    padding: 10px;
+    padding: 6px;
     max-height: auto;
 }
 
@@ -27571,7 +27571,24 @@ text::placeholder{
     scrollbar-width: none !important ;
 }
 
+.upload-text {
+    display: block;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+}
 
+/* Optional: Add styles for hover effect */
+.upload-text:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}
+
+
+#profile-pic-upload {
+    display: none;
+}
 
 
 

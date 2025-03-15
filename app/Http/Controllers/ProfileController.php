@@ -16,7 +16,7 @@ class ProfileController extends Controller
      */
     public function index(Request $request)
     {
-        $pageTitle = 'Profile';
+        $pageTitle = 'Hi ARSALAN ';
         return view('profile' , compact('pageTitle'));
     }
     public function edit(Request $request): View
