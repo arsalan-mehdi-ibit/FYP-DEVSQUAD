@@ -31,7 +31,7 @@
                     <h3 class="text-lg font-semibold text-gray-700">Hours Worked For All Projects</h3>
 
                 </div>
-                <canvas id="chart" class=" h-64"></canvas>
+                <canvas id="hoursChart" class=" h-64"></canvas>
             </div>
         </div>
 
