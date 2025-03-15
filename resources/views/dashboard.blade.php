@@ -2,7 +2,7 @@
 
 @section('content')
     <div id="dashboard" class="main-layout max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <!-- Left Section: Stats and Chart -->
+       
         <div class="lg:col-span-2">
             <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
@@ -27,18 +27,25 @@
 
             <!-- Chart Section -->
             <div class="mt-4 bg-white p-2 rounded-lg shadow-md">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-3">
                     <h3 class="text-lg font-semibold text-gray-700">Hours Worked For All Projects</h3>
+                 
+                    <select class="px-3 py-1 border border-gray-100 rounded-md text-gray-700 text-sm">
+                        <option value="all">All</option>
+                        <option value="monthly">Monthly</option>
+                        <option value="weekly">Weekly</option>
+                        <option value="daily">Daily</option>
+                    </select>
 
                 </div>
-                <canvas id="hoursChart" class=" h-64"></canvas>
+                <canvas id="hoursChart" class=" h-40"></canvas>
             </div>
         </div>
 
-        <!-- Right Section: Recent Activity -->
-        <div class="bg-white shadow-md rounded-lg p-0 overflow-hidden lg:col-span-1">
-            <div class="flex justify-between items-center bg-gray-300 px-3 py-2 rounded-t-md mb-2">
-                <h3 class="text-sm font-medium text-gray-900 ">Recent Activity</h3>
+        <div class="bg-white shadow-md rounded-lg p-0 overflow-hidden lg:col-span-1 flex flex-col" style="height: 31rem">
+          
+            <div class="flex justify-between items-center bg-gray-300 px-3 py-2 rounded-t-md">
+                <h3 class="text-sm font-medium text-gray-900">Recent Activity</h3>
                 <div class="relative inline-block text-left">
                     <div class="flex items-center space-x-2 text-gray-500 cursor-pointer" id="dropdownButton">
                         <i class="fas fa-calendar-alt"></i>
@@ -46,7 +53,6 @@
                         <i class="fas fa-chevron-down"></i>
                     </div>
 
-                    <!-- Dropdown Menu -->
                     <div id="dropdownMenu"
                         class="hidden absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded-md shadow-lg">
                         <ul class="py-1 p-0 text-sm text-gray-700 m-0">
@@ -59,8 +65,8 @@
                 </div>
             </div>
 
-            <div class="space-y-4 overflow-y-auto max-h-80 divide-y divide-gray-200">
-                <div class="p-2  bg-gray-50 rounded-md">
+            <div class="space-y-4 overflow-y-auto  divide-y divide-gray-200">
+                <div class="p-2 bg-gray-50 rounded-md">
                     <div class="flex justify-between items-center text-xs text-gray-500 px-2">
                         <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">PROJECT</span>
                         <span>November 21, 2024</span>
@@ -70,13 +76,15 @@
                         Project 'Noelani Shaw' in company 'Poole Beasley Plc' updated by Tech Bugss.
                         Start Date: 2024-11-21, End Date: 2024-11-26.
                     </p>
-                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator: <span
-                            class="font-normal text-gray-500">Tech Bugss</span></p>
-                    <p class="text-xs text-black font-semibold px-2">Company: <span class="font-normal text-gray-500">Poole
-                            Beasley Plc</span></p>
+                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
+                        <span class="font-normal text-gray-500">Tech Bugss</span>
+                    </p>
+                    <p class="text-xs text-black font-semibold px-2">Company:
+                        <span class="font-normal text-gray-500">Poole Beasley Plc</span>
+                    </p>
                 </div>
 
-                <div class="p-2 bg-gray-50 rounded-md m-0">
+                <div class="p-2 bg-gray-50 rounded-md">
                     <div class="flex justify-between items-center text-xs text-gray-500 px-2">
                         <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">PROJECT</span>
                         <span>November 21, 2024</span>
@@ -86,13 +94,15 @@
                         Project 'Noelani Shaw' in company 'Poole Beasley Plc' updated by Tech Bugss.
                         Start Date: 2024-11-21, End Date: 2024-11-26.
                     </p>
-                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator: <span
-                            class="font-normal text-gray-500">Tech Bugss</span></p>
-                    <p class="text-xs text-black font-semibold px-2">Company: <span class="font-normal text-gray-500">Poole
-                            Beasley Plc</span></p>
+                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
+                        <span class="font-normal text-gray-500">Tech Bugss</span>
+                    </p>
+                    <p class="text-xs text-black font-semibold px-2">Company:
+                        <span class="font-normal text-gray-500">Poole Beasley Plc</span>
+                    </p>
                 </div>
 
-                <div class="p-2 bg-gray-50 rounded-md m-0">
+                <div class="p-2 bg-gray-50 rounded-md">
                     <div class="flex justify-between items-center text-xs text-gray-500 px-2">
                         <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">PROJECT</span>
                         <span>November 21, 2024</span>
@@ -102,16 +112,16 @@
                         Project 'Noelani Shaw' in company 'Poole Beasley Plc' updated by Tech Bugss.
                         Start Date: 2024-11-21, End Date: 2024-11-26.
                     </p>
-                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator: <span
-                            class="font-normal text-gray-500">Tech Bugss</span></p>
-                    <p class="text-xs text-black font-semibold px-2">Company: <span class="font-normal text-gray-500">Poole
-                            Beasley Plc</span></p>
+                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
+                        <span class="font-normal text-gray-500">Tech Bugss</span>
+                    </p>
+                    <p class="text-xs text-black font-semibold px-2">Company:
+                        <span class="font-normal text-gray-500">Poole Beasley Plc</span>
+                    </p>
                 </div>
             </div>
         </div>
     </div>
-
-
 
     <script>
         $(document).ready(function() {
@@ -152,24 +162,7 @@
                     }
                 }
             });
-
-            // Dropdown functionality
-            $("#dropdownButton").on("click", function(event) {
-                $("#dropdownMenu").toggleClass("hidden");
-                event.stopPropagation();
-            });
-
-            $(".dropdown-item").on("click", function() {
-                let selectedValue = $(this).text(); // Get the text of the selected option
-                $("#selectedOption").text(selectedValue);
-                $("#dropdownMenu").addClass("hidden"); // Hide dropdown after selection
-            });
-
-            $(document).on("click", function(event) {
-                if (!$(event.target).closest("#dropdownButton, #dropdownMenu").length) {
-                    $("#dropdownMenu").addClass("hidden");
-                }
-            });
         });
     </script>
+    
 @endsection
