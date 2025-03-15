@@ -9,7 +9,9 @@ use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
+use App\Http\Controllers\TimesheetDetailController;
 use App\Http\Controllers\Auth\NewPasswordController;
+use App\Http\Controllers\ProfileController;
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
     ->name('password.reset'); // This route displays the form (GET request)
@@ -43,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', function () {
         return view('profile');
     });
+    Route::get('/profile', [ProfileController::class, 'index'])->name('index'); // Use the correct controller and method
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
@@ -54,10 +57,19 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
+        Route::get('/details', [TimesheetDetailController::class, 'index'])->name('details.index');
+        Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
     });
+    
 
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
     });
-    
+   
 });
+
+
+
+
+
+

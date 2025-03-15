@@ -8,7 +8,7 @@
             <div
                 class="bg-white shadow-md rounded-2xl p-3  flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Total Invoice</h3>
+                    <h3 class="text-sm font-semibold text-gray-600">Revenue This Month</h3>
                     <p class="text-xl font-bold text-gray-800">2310</p>
                 </div>
                 <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
@@ -19,7 +19,7 @@
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Pending Invoice</h3>
+                    <h3 class="text-sm font-semibold text-gray-600">Total Invoices</h3>
                     <p class="text-xl font-bold text-gray-800">1000</p>
                 </div>
                 <div class="p-3 rounded-xl bg-red-100 flex items-center justify-center">
@@ -30,7 +30,7 @@
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Paid Invoice</h3>
+                    <h3 class="text-sm font-semibold text-gray-600">Active Invoices</h3>
                     <p class="text-xl font-bold text-gray-800">1310</p>
                 </div>
                 <div class="p-3 rounded-xl bg-green-100 flex items-center justify-center">
@@ -41,7 +41,7 @@
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Inactive Invoice</h3>
+                    <h3 class="text-sm font-semibold text-gray-600">Pending Invoices</h3>
                     <p class="text-xl font-bold text-gray-800">1243</p>
                 </div>
                 <div class="p-3 rounded-xl bg-blue-100 flex items-center justify-center">
