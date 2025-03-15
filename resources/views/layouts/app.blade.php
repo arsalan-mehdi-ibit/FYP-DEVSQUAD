@@ -67,7 +67,7 @@
     <script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> 
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 
 
@@ -76,7 +76,7 @@
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assets/js/argon-dashboard.js') }}"></script>
     @stack('js')
-   
+
 
     <script>
         $(document).ready(function() {
@@ -132,8 +132,8 @@
             // $(window).resize(function() {
             //     adjustHeader();
             // });
-             // Dropdown functionality
-             $("#dropdownButton").on("click", function(event) {
+            // Dropdown functionality
+            $("#dropdownButton").on("click", function(event) {
                 $("#dropdownMenu").toggleClass("hidden");
                 event.stopPropagation();
             });
@@ -141,7 +141,7 @@
             $(".dropdown-item").on("click", function() {
                 let selectedValue = $(this).text();
                 $("#selectedOption").text(selectedValue);
-                $("#dropdownMenu").addClass("hidden"); 
+                $("#dropdownMenu").addClass("hidden");
             });
 
             $(document).on("click", function(event) {
@@ -149,6 +149,106 @@
                     $("#dropdownMenu").addClass("hidden");
                 }
             });
+
+            //accordian icon change
+            $('.accordion-button').click(function() {
+                let icon = $(this).find('i');
+
+                setTimeout(() => {
+                    if ($(this).hasClass('collapsed')) {
+                        icon.removeClass('bi-chevron-down').addClass('bi-chevron-right');
+                    } else {
+                        icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
+                    }
+                }, 100);
+            });
+            // prevent reloading mage on clicking upload file button
+            $("#uploadBtn").click(function(event) {
+                event.preventDefault(); // Prevent form submission
+            });
+
+            // file uploading
+
+            let filesArray = [];
+
+            // Open file dialog when clicking on the upload box
+            $("#upload-box").on("click", function() {
+                $("#file-input").trigger("click");
+            });
+
+            // Handle file selection
+            $("#file-input").on("change", function(event) {
+                let files = event.target.files;
+
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
+
+                    if (file) {
+                        filesArray.push(file);
+
+                        let fileHtml = `
+                <div class="inline-flex text-sm items-center bg-gray-100 px-2 py-1 border rounded-md mr-2 mb-2">
+                    <span class="text-gray-800">${file.name}</span>
+                    <button type="button" class="ml-2 text-red-500 remove-file" data-index="${filesArray.length - 1}">&times;</button>
+                </div>
+            `;
+
+                        $("#uploaded-files").append(fileHtml);
+                    }
+                }
+            });
+
+
+            // Remove file from the uploaded list
+            $(document).on("click", ".remove-file", function() {
+                let index = $(this).data("index");
+                filesArray.splice(index, 1);
+                $(this).parent().remove();
+            });
+
+            // Handle form submission
+            $("#submit-files").on("click", function() {
+                let fileName = $("#fileNameInput").val().trim();
+
+                if (fileName === "") {
+                    $("#file-name-error").removeClass("hidden");
+                    return;
+                }
+
+                $("#file-name-error").addClass("hidden");
+
+                // Append files to the table
+                let tableBody = $("#file-table-body");
+                filesArray.forEach((file, index) => {
+                    let rowHtml = `
+                <tr class="border-b">
+                    <td class="p-2">${index + 1}</td>
+                    <td class="p-2">${file.name}</td>
+                    <td class="p-2 text-right">
+                        <button class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
+                    </td>
+                </tr>
+            `;
+
+                    tableBody.append(rowHtml);
+                });
+
+                // Clear modal fields
+                $("#uploaded-files").html("");
+                $("#file-input").val("");
+                $("#fileNameInput").val("");
+                filesArray = [];
+
+                // Close modal
+                $("#uploadModal").modal("hide");
+            });
+
+            // Remove file from table
+            $(document).on("click", ".remove-row", function() {
+                $(this).closest("tr").remove();
+            });
+
+
         });
     </script>
 </body>

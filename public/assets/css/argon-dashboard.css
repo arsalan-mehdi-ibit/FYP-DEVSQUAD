@@ -27585,8 +27585,39 @@ text::placeholder{
     color: #0056b3;
 }
 
+.custom-checkbox {
+    width: 26px;
+    height: 26px;
+    appearance: none;
+    background-color: white; /* Initially White */
+    border: 2px solid #120034; /* Purple Border */
+    border-radius: 4px; /* Rounded edges */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.custom-checkbox:checked {
+    background-color: #120034; /* Purple background */
+    border-color: #120034;
+}
+
+.custom-checkbox:checked::before {
+    content: "✔";
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+}
 
 
+@media (max-width: 640px) {
+    .responsive-padding {
+      padding: 12px !important; /* Adjust as needed */
+    }
+  }
+  
 
 
 

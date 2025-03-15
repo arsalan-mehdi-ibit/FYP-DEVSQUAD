@@ -50,7 +50,10 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'users.', 'prefix' => '/users'], function () {
         Route::get('/', [UsersController::class, 'index'])->name('index');
+        Route::get('/add', [UsersController::class, 'add'])->name('add');
+        Route::post('/store', [UsersController::class, 'store'])->name('store');
     });
+    
 
     Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
