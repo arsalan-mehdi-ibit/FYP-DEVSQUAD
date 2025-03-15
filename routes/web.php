@@ -41,7 +41,11 @@ Route::middleware('auth')->group(function () {
         return view('dashboard');
     });
 
-    Route::get('/profile', [ProfileController::class, 'index'])->name('index'); // Use the correct controller and method
+    Route::get('/profile', function () {
+        return view('profile');
+    });
+    
+    Route::get('/profile', [ProfileController::class, 'index'])->name('index');
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
