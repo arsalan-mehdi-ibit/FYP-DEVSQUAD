@@ -17,6 +17,14 @@ class ProjectController extends Controller
         //  return view('auth.reset');
     }
 
+    public function add()
+    {
+        $pageTitle = "Projects"; // Set the page title
+        return view('cruds.add_project', compact('pageTitle'));
+    }
+
+
+
     /**
      * Show the form for creating a new resource.
      */
@@ -30,7 +38,17 @@ class ProjectController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+    
+        Project::create([
+            'title' => $request->title,
+            'description' => $request->description,
+        ]);
+    
+        return redirect()->route('projects.index')->with('success', 'Project added successfully!');
     }
 
     /**

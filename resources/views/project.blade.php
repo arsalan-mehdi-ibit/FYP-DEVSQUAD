@@ -61,10 +61,11 @@
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
             <div class="mx-2 flex justify-between items-center mb-1 sm:mb-4">
                 <h2 class="text-lg sm:text-xl font-bold">Projects</h2>
-                <button class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
-                               hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
+                <a href="{{ route('project.add') }}"
+                    class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
+          hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
                     <i class="bi bi-person-plus text-sm"></i> Add
-                </button>
+                </a>
             </div>
             <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
                 <table class="w-full min-w-full text-center">

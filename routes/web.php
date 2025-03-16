@@ -64,6 +64,8 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
+        Route::get('/add', [ProjectController::class, 'add'])->name('add');
+        Route::post('/store', [ProjectController::class, 'store'])->name('store');
     });
    
 });

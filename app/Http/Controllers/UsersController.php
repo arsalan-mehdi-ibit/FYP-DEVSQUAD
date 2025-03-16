@@ -17,7 +17,7 @@ class UsersController extends Controller
     
     public function add()
 {
-    $pageTitle = "Add User"; // Set the page title
+    $pageTitle = "Users"; // Set the page title
     return view('cruds.add_user', compact('pageTitle'));
 }
 
