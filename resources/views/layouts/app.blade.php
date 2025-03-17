@@ -330,7 +330,19 @@
                 }
             });
 
+            // password toggle
+            $(document).on("click", ".toggle-password", function() {
+                let passwordField = $(this).siblings(".password-field");
+                let icon = $(this).find("i");
 
+                if (passwordField.attr("type") === "password") {
+                    passwordField.attr("type", "text");
+                    icon.removeClass("bi-eye-slash").addClass("bi-eye");
+                } else {
+                    passwordField.attr("type", "password");
+                    icon.removeClass("bi-eye").addClass("bi-eye-slash");
+                }
+            });
 
         });
     </script>

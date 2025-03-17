@@ -33,7 +33,16 @@
                 </a>
             </li>
         </ul>
-        
+
+        <!-- Logout Button -->
+        <div class="absolute bottom-5 w-full px-0">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="flex items-center w-full px-3 py-0 text-white rounded-md">
+                    <i class="bi bi-box-arrow-right mr-2"></i> Logout
+                </button>
+            </form>
+        </div>
     </aside>
 
     <!-- Overlay for Mobile Screens -->

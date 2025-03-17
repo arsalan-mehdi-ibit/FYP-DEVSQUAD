@@ -40,14 +40,34 @@
                 </div>
 
                 <!-- Password -->
-                <div class="mb-3 text-start">
-                    <input type="password" class="form-control text-black border-0 shadow-sm" name="password" placeholder="Password..." required style="background-color:  #eef0f7; color: #ccd6f6; border-radius: 20px; padding: 10px;">
+                <div class="mb-3 text-start relative">
+                    <div class="relative">
+                        <input type="password" class="form-control border-0 text-black shadow-sm pr-10 password-field" 
+                            name="password" placeholder="Password..." required 
+                            style="background-color: #eef0f7; color: #ccd6f6; border-radius: 20px; padding: 10px; width: 100%;">
+                        
+                        <!-- Eye Icon -->
+                        <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer">
+                            <i class="bi bi-eye-slash text-gray-500"></i>
+                        </span>
+                    </div>
                 </div>
+                
 
                 <!-- Confirm Password -->
-                <div class="mb-3 text-start">
-                    <input type="password" class="form-control text-black border-0 shadow-sm" name="password_confirmation" placeholder="Confirm Password..." required style="background-color:  #eef0f7; color: #ccd6f6; border-radius: 20px; padding: 10px;">
+                <div class="mb-3 text-start relative">
+                    <div class="relative">
+                        <input type="password" class="form-control text-black border-0 shadow-sm pr-10 password-field" 
+                            name="password_confirmation" placeholder="Confirm Password..." required 
+                            style="background-color: #eef0f7; color: #ccd6f6; border-radius: 20px; padding: 10px; width: 100%;">
+                        
+                        <!-- Eye Icon -->
+                        <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer">
+                            <i class="bi bi-eye-slash text-gray-500"></i>
+                        </span>
+                    </div>
                 </div>
+                
 
                 <!-- Submit Button -->
                 <div class="d-grid gap-2 mb-3">
