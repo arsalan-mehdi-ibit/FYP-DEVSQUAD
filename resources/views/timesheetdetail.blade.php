@@ -34,8 +34,10 @@
                 <!-- Timesheet Details Tab -->
                 <div class="tab-pane fade show active" id="details">
                     <div class="table-responsive">
-                        <table class="table table-striped text-center align-middle text-sm ">
-                            <thead class="table-dark text-sm">
+                        <!-- <table class="table table-striped text-center align-middle text-sm "> -->
+                        <table class="table text-center align-middle text-sm">
+
+                            <thead class="table-grey text-sm">
                                 <tr>
                                     <th>SR</th>
                                     <th>Date</th>
@@ -45,11 +47,11 @@
                                     <th>Billable</th>
                                     <th>Memo</th>
                                     <!-- <th>Actions</th> -->
-                                    <th>Approve</th>
+                                    <!-- <th>Approve</th> -->
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr>
+                                <tr >
                                     <td>1</td>
                                     <td>2025-03-12</td>
                                     <td>8</td>
@@ -63,9 +65,9 @@
             <button class="btn btn-sm btn-danger px-3">Delete</button>
         </div>
                                         </td> -->
-                                    <td>
+                                    <!-- <td>
                                         <input type="checkbox" checked>
-                                    </td>
+                                    </td> -->
                                 </tr>
                                 <tr>
                                     <td>2</td>
@@ -81,9 +83,9 @@
             <button class="btn btn-sm btn-danger px-3">Delete</button>
         </div>
                                         </td> -->
-                                    <td>
+                                    <!-- <td>
                                         <input type="checkbox">
-                                    </td>
+                                    </td> -->
                                 </tr>
                                 <tr>
                                     <td>3</td>
@@ -99,9 +101,9 @@
             <button class="btn btn-sm btn-danger px-3">Delete</button>
         </div>
                                         </td> -->
-                                    <td>
+                                    <!-- <td>
                                         <input type="checkbox">
-                                    </td>
+                                    </td> -->
                                 </tr>
                             </tbody>
                         </table>
@@ -190,5 +192,26 @@
             white-space: nowrap;
             /* Prevents text wrapping */
         }
+       
+/* Table header styling */
+.table thead {
+    background-color: #f8f9fa !important; /* Light grey header */
+    color: #333 !important; /* Dark text for readability */
+}
+
+/* Ensure all rows have white background and grey text */
+.table tbody tr {
+    background-color: #ffffff !important; /* White background */
+    color: #6c757d !important; /* Grey text color */
+}
+
+/* Hover effect: Light grey background */
+.table tbody tr:hover {
+    background-color: #f1f1f1 !important; /* Light grey on hover */
+    transition: background-color 0.3s ease-in-out; /* Smooth transition */
+}
+
+
+     
     </style>
 @endsection
