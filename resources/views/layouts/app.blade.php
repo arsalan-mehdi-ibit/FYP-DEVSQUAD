@@ -306,6 +306,32 @@
                 $("#addContractorBtn").addClass("hidden");
             });
 
+            // notification dropdown
+            function updateNotificationCount() {
+                let count = $(".notification-item").length;
+                if (count > 0) {
+                    $("#notificationCount").text(count).removeClass("hidden");
+                } else {
+                    $("#notificationCount").addClass("hidden");
+                }
+            }
+
+            // Update the count when the page loads
+            updateNotificationCount();
+
+            $("#notificationBell").click(function(event) {
+                event.stopPropagation();
+                $("#notificationDropdown").toggle(); // Use .toggle() instead of toggleClass("hidden")
+            });
+
+            $(document).click(function(event) {
+                if (!$(event.target).closest("#notificationDropdown, #notificationBell").length) {
+                    $("#notificationDropdown").hide(); // Use .hide() instead of addClass("hidden")
+                }
+            });
+
+
+
         });
     </script>
 </body>

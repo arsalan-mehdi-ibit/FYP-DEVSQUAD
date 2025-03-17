@@ -27548,7 +27548,7 @@ pre[class*="language-"] {
 }
 
 .main-layout {
-    margin-left: 17rem !important;  /* Default position when sidebar is visible (on large screens) */
+    margin-left: 17rem !important; /* Default position when sidebar is visible (on large screens) */
 }
 
 @media (max-width: 768px) {
@@ -27556,14 +27556,12 @@ pre[class*="language-"] {
         margin-left: 0 !important; /* Header starts from the left on small screens */
     }
 }
-text::placeholder{
+text::placeholder {
     margin-left: 4rem;
 }
 
-
-
 .scrollbar-hide::-webkit-scrollbar {
-    display: none!important ;
+    display: none !important ;
 }
 
 .scrollbar-hide {
@@ -27611,13 +27609,58 @@ text::placeholder{
     font-weight: bold;
 }
 
-
 @media (max-width: 640px) {
     .responsive-padding {
-      padding: 12px !important; /* Adjust as needed */
+        padding: 12px !important; /* Adjust as needed */
     }
-  }
-  
+}
 
+/* Scrollbar Styling */
+.notification-scroll::-webkit-scrollbar {
+    width: 6px;
+}
 
+.notification-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+}
+
+.notification-scroll::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.notification-item {
+    transition: background 0.3s ease-in-out;
+}
+
+.notification-item:hover {
+    background: #f3f4f6; /* Light gray background */
+    border-left: 4px solid #3b82f6; /* Blue left border */
+    padding-left: 6px;
+}
+ /* Responsive and Centered Dropdown */
+ #notificationDropdown {
+    width: 90%;
+    max-width: 400px;
+    min-width: 280px;
+    right: 50%;
+    transform: translateX(50%);
+}
+
+@media (max-width: 768px) {
+    #notificationDropdown {
+        width: 80%;
+        right: 30%;
+        transform: translateX(30%);
+    }
+}
+.notification-scroll {
+    max-height: 300px;
+    overflow-y: auto;
+}
 
