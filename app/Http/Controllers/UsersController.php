@@ -15,21 +15,26 @@ class UsersController extends Controller
         return view('users', compact('pageTitle'));
     }
     
+    public function add()
+{
+    $pageTitle = "Users"; // Set the page title
+    return view('cruds.add_user', compact('pageTitle'));
+}
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email',
+        ]);
+    
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+        ]);
+    
+        return redirect()->route('users.index')->with('success', 'User added successfully!');
     }
 
     /**

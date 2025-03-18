@@ -7,6 +7,7 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\TimesheetController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\TimesheetDetailController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -37,15 +38,11 @@ Route::post('/logout', [AuthenticatedSessionController::class, 'destroy'])->name
 
 // Protected routes for authenticated users
 Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    });
 
-    Route::get('/profile', function () {
-        return view('profile');
+    Route::group(['as' => 'dashboard.', 'prefix' => '/dashboard'], function () {
+        Route::get('/', [DashboardController::class, 'index'])->name('index');
     });
-    
-    Route::get('/profile', [ProfileController::class, 'index'])->name('index');
+    Route::get('/profile', [ProfileController::class, 'index'])->name('profile'); // Use the correct controller and method
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
@@ -53,7 +50,10 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'users.', 'prefix' => '/users'], function () {
         Route::get('/', [UsersController::class, 'index'])->name('index');
+        Route::get('/add', [UsersController::class, 'add'])->name('add');
+        Route::post('/store', [UsersController::class, 'store'])->name('store');
     });
+    
 
     Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
@@ -64,6 +64,8 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
+        Route::get('/add', [ProjectController::class, 'add'])->name('add');
+        Route::post('/store', [ProjectController::class, 'store'])->name('store');
     });
    
 });

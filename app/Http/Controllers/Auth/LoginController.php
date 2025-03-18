@@ -24,7 +24,7 @@ class LoginController extends Controller
         $request->session()->regenerate();
     
         if ($request->username == 'admin' && $request->password == 'admin') {
-            return redirect()->intended('/invoice');
+            return redirect()->intended('/dashboard');
         } else {
             return back()->withErrors([
                 'username' => 'The provided credentials do not match our records.',

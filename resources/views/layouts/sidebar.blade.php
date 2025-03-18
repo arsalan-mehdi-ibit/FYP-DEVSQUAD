@@ -8,7 +8,7 @@
         <h2 class="text-3xl px-4 py-2 font-bold mb-6 text-yellow-200">TRACK POINT</h2>
         <ul class="pl-4">
             <li class="mb-4">
-                <a href="#" class="flex items-center text-gray-300 hover:text-white">
+                <a href="{{route('dashboard.index')}}" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-house-door mr-2"></i> Dashboard
                 </a>
             </li>
@@ -33,7 +33,16 @@
                 </a>
             </li>
         </ul>
-        
+
+        <!-- Logout Button -->
+        <div class="absolute bottom-5 w-full px-0">
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="flex items-center w-full px-3 py-0 text-white rounded-md">
+                    <i class="bi bi-box-arrow-right mr-2"></i> Logout
+                </button>
+            </form>
+        </div>
     </aside>
 
     <!-- Overlay for Mobile Screens -->

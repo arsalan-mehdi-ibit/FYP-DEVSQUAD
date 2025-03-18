@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="container-fluid lg:ml-72 ml-0 transition-all duration-300">
-    <div class="row">
-        <div class="col-lg-10 col-md-12 px-3 px-md-4">
+    <div class="main-layout max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
+
+        <div class="col-lg-12 col-md-10 px-2 px-md-4">
 
             <!-- Back Button -->
             <a href="{{ route('timesheet.index') }}" class="text-dark d-flex align-items-center mb-2">
@@ -12,8 +12,8 @@
 
             <!-- Notes Section -->
             <div class="mt-3">
-            <label for="notes" class="form-label fw-bold small-text">Notes</label>
-            <textarea id="notes" class="form-control bg-light border-1 w-100 small-text" rows="3"></textarea>
+                <label for="notes" class="form-label fw-bold small-text">Notes</label>
+                <textarea id="notes" class="form-control bg-light border-1 w-full small-text" rows="3"></textarea>
             </div>
 
             <!-- Timesheets Title -->
@@ -33,9 +33,9 @@
             <div class="tab-content mt-3">
                 <!-- Timesheet Details Tab -->
                 <div class="tab-pane fade show active" id="details">
-                    <div class="table-responsive"> 
-                        <table class="table table-striped text-center align-middle custom-table">
-                            <thead class="table-dark">
+                    <div class="table-responsive">
+                        <table class="table table-striped text-center align-middle text-sm ">
+                            <thead class="table-dark text-sm">
                                 <tr>
                                     <th>SR</th>
                                     <th>Date</th>
@@ -58,11 +58,11 @@
                                     <td>Yes</td>
                                     <td>Worked on project updates</td>
                                     <!-- <td>
-                                    <div class="d-flex gap-2 justify-content-center align-items-center">
-        <button class="btn btn-sm btn-primary px-3">Edit</button>
-        <button class="btn btn-sm btn-danger px-3">Delete</button>
-    </div>
-                                    </td> -->
+                                        <div class="d-flex gap-2 justify-content-center align-items-center">
+            <button class="btn btn-sm btn-primary px-3">Edit</button>
+            <button class="btn btn-sm btn-danger px-3">Delete</button>
+        </div>
+                                        </td> -->
                                     <td>
                                         <input type="checkbox" checked>
                                     </td>
@@ -76,11 +76,11 @@
                                     <td>No</td>
                                     <td>Client meeting</td>
                                     <!-- <td>
-                                    <div class="d-flex gap-2 justify-content-center align-items-center">
-        <button class="btn btn-sm btn-primary px-3">Edit</button>
-        <button class="btn btn-sm btn-danger px-3">Delete</button>
-    </div>
-                                    </td> -->
+                                        <div class="d-flex gap-2 justify-content-center align-items-center">
+            <button class="btn btn-sm btn-primary px-3">Edit</button>
+            <button class="btn btn-sm btn-danger px-3">Delete</button>
+        </div>
+                                        </td> -->
                                     <td>
                                         <input type="checkbox">
                                     </td>
@@ -94,11 +94,11 @@
                                     <td>Yes</td>
                                     <td>Bug fixes and testing</td>
                                     <!-- <td>
-                                    <div class="d-flex gap-2 justify-content-center align-items-center">
-        <button class="btn btn-sm btn-primary px-3">Edit</button>
-        <button class="btn btn-sm btn-danger px-3">Delete</button>
-    </div>
-                                    </td> -->
+                                        <div class="d-flex gap-2 justify-content-center align-items-center">
+            <button class="btn btn-sm btn-primary px-3">Edit</button>
+            <button class="btn btn-sm btn-danger px-3">Delete</button>
+        </div>
+                                        </td> -->
                                     <td>
                                         <input type="checkbox">
                                     </td>
@@ -114,72 +114,81 @@
                 </div>
             </div>
         </div>
+
     </div>
-</div>
 
-<!-- Responsive Styling -->
-<style>
-    /* General Fixes */
-    body {
-        overflow-x: hidden;
-    }
+    <!-- Responsive Styling -->
+    <style>
+        /* General Fixes */
+        /* body {
+            overflow-x: hidden;
+        } */
 
-    /* Sidebar Adjustments */
-    @media (min-width: 1024px) { /* Adjust for Large Screens */
-        .container-fluid {
-            margin-left: 18rem; /* 72px sidebar width */
+        /* Sidebar Adjustments */
+        /* @media (min-width: 1024px) {
+
+            /* Adjust for Large Screens */
+            /* .container-fluid {
+                margin-left: 18rem; */
+                /* 72px sidebar width */
+            /* }
+         */
+
+        /* @media (max-width: 1023px) {
+
+            /* Hide Sidebar on Small Screens */
+            /* .container-fluid {
+                margin-left: 0;
+            } */
+        /* } */
+
+        /* Table Styling */
+        /* .custom-table {
+            min-width: 800px;
+            font-size: 14px;
+        } */
+
+        /* @media (max-width: 992px) {
+            .custom-table {
+                font-size: 13px;
+            }
+        } */
+
+        @media (max-width: 768px) {
+            .table-responsive {
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+
+            th,
+            td {
+                padding: 8px;
+                font-size: 12px;
+            }
         }
-    }
 
-    @media (max-width: 1023px) { /* Hide Sidebar on Small Screens */
-        .container-fluid {
-            margin-left: 0;
+        /* Tabs Adjustments */
+        @media (max-width: 576px) {
+            .nav-tabs .nav-item {
+                flex-grow: 1;
+                text-align: center;
+            }
         }
-    }
 
-    /* Table Styling */
-    .custom-table {
-        min-width: 800px;
-        font-size: 14px;
-    }
-
-    @media (max-width: 992px) {
-        .custom-table {
-            font-size: 13px;
+        /* Font Sizes Adjusted */
+        .page-title {
+            font-size: 22px;
         }
-    }
 
-    @media (max-width: 768px) {
-        .table-responsive {
-            overflow-x: auto;
+        .small-text {
+            font-size: 14px;
+        }
+
+        td .btn {
+            min-width: 70px;
+            /* Ensures buttons don't shrink */
             white-space: nowrap;
+            /* Prevents text wrapping */
         }
-        th, td {
-            padding: 8px;
-            font-size: 12px;
-        }
-    }
-
-    /* Tabs Adjustments */
-    @media (max-width: 576px) {
-        .nav-tabs .nav-item {
-            flex-grow: 1;
-            text-align: center;
-        }
-    }
-
-    /* Font Sizes Adjusted */
-    .page-title {
-        font-size: 22px;
-    }
-
-    .small-text {
-        font-size: 14px;
-    }
-    td .btn {
-    min-width: 70px; /* Ensures buttons don't shrink */
-    white-space: nowrap; /* Prevents text wrapping */
-}
-</style>
-
+    </style>
 @endsection

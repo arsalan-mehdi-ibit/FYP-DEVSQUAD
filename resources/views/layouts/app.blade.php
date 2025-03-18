@@ -28,7 +28,7 @@
 
 
     <script src="https://unpkg.com/imask"></script>
-    <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css') }}?v=0.04" rel="stylesheet" />
+    <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css') }}?v=0.07" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/parsleyjs/src/parsley.css">
@@ -66,12 +66,17 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script src="{{ asset('assets/js/plugins/chartjs.min.js') }}"></script>
 
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+
+
     <!-- Github buttons -->
     <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{ asset('assets/js/argon-dashboard.js') }}"></script>
     @stack('js')
-   
+
 
     <script>
         $(document).ready(function() {
@@ -127,6 +132,218 @@
             // $(window).resize(function() {
             //     adjustHeader();
             // });
+            // Dropdown functionality
+            $("#dropdownButton").on("click", function(event) {
+                $("#dropdownMenu").toggleClass("hidden");
+                event.stopPropagation();
+            });
+
+            $(".dropdown-item").on("click", function() {
+                let selectedValue = $(this).text();
+                $("#selectedOption").text(selectedValue);
+                $("#dropdownMenu").addClass("hidden");
+            });
+
+            $(document).on("click", function(event) {
+                if (!$(event.target).closest("#dropdownButton, #dropdownMenu").length) {
+                    $("#dropdownMenu").addClass("hidden");
+                }
+            });
+
+            //accordian icon change
+            $('.accordion-button').click(function() {
+                let icon = $(this).find('i');
+
+                setTimeout(() => {
+                    if ($(this).hasClass('collapsed')) {
+                        icon.removeClass('bi-chevron-down').addClass('bi-chevron-right');
+                    } else {
+                        icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
+                    }
+                }, 100);
+            });
+            // prevent reloading mage on clicking upload file button
+            $("#uploadBtn").click(function(event) {
+                event.preventDefault(); // Prevent form submission
+            });
+
+            let filesArray = [];
+
+            // Open file dialog when clicking on the upload box
+            $("#upload-box").on("click", function() {
+                $("#file-input").trigger("click");
+            });
+
+            // Handle file selection
+            $("#file-input").on("change", function(event) {
+                let files = Array.from(event.target.files);
+
+                if (files.length > 0) {
+                    filesArray = [...filesArray, ...files]; // Append new files to the array
+                    updateFileDisplay();
+                }
+            });
+
+            // Function to update the displayed file names and input value
+            function updateFileDisplay() {
+                $("#uploaded-files").html(""); // Clear the file list display
+                let fileNames = [];
+
+                filesArray.forEach((file, index) => {
+                    fileNames.push(file.name); // Store file names for input field
+
+                    let fileHtml = `
+            <div class="inline-flex text-sm items-center bg-gray-100 px-2 py-1 border rounded-md mr-2 mb-2 file-item" data-index="${index}">
+                <span class="text-gray-800">${file.name}</span>
+                <button type="button" class="ml-2 text-red-500 remove-file" data-index="${index}">&times;</button>
+            </div>
+        `;
+                    $("#uploaded-files").append(fileHtml);
+                });
+
+                $("#fileNameInput").val(fileNames.join(", ")); // Update input field with file names
+            }
+
+            // Remove file from the uploaded list (when clicking the "X" button)
+            $(document).on("click", ".remove-file", function() {
+                let index = $(this).data("index");
+
+                filesArray.splice(index, 1); // Remove file from array
+                updateFileDisplay(); // Refresh display after removing
+            });
+
+            // Detect manual input change in filename field
+            $("#fileNameInput").on("input", function() {
+                let enteredNames = $(this).val().split(", ").filter(name => name.trim() !==
+                    ""); // Get names entered by user
+
+                // Filter filesArray to keep only those whose names are still in the input field
+                filesArray = filesArray.filter(file => enteredNames.includes(file.name));
+
+                updateFileDisplay(); // Refresh UI
+            });
+
+            // Handle form submission
+            $("#submit-files").on("click", function() {
+                let fileName = $("#fileNameInput").val().trim();
+
+                if (fileName === "") {
+                    $("#file-name-error").removeClass("hidden");
+                    return;
+                }
+
+                $("#file-name-error").addClass("hidden");
+
+                // Append files to the table
+                let tableBody = $("#file-table-body");
+                filesArray.forEach((file, index) => {
+                    let rowHtml = `
+            <tr class="border-b">
+                <td class="p-2">${index + 1}</td>
+                <td class="p-2">${file.name}</td>
+                <td class="p-2 text-right">
+                    <button class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
+                </td>
+            </tr>
+        `;
+
+                    tableBody.append(rowHtml);
+                });
+
+                // Clear modal fields
+                $("#uploaded-files").html("");
+                $("#file-input").val("");
+                $("#fileNameInput").val("");
+                filesArray = [];
+
+                // Close modal
+                $("#uploadModal").modal("hide");
+            });
+
+            // Remove file from table
+            $(document).on("click", ".remove-row", function() {
+                $(this).closest("tr").remove();
+            });
+
+
+            // add contractor details dynamically
+            $("#addContractorBtn").click(function() {
+                let rowCount = $("#contractor-table-body tr").length + 1;
+
+                let newRow = `
+            <tr class="border-b">
+                <td class="p-2 text-left">${rowCount}</td>
+                <td class="p-2">
+                    <select class="w-56 px-2 py-1 border rounded-md bg-gray-100">
+                        <option>Select Contractor</option>
+                        <option>Amery Craft</option>
+                        <option>Brenda Marshall</option>
+                    </select>
+                </td>
+                <td class="p-2 flex">
+                    <select class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
+                        <option>USD</option>
+                        <option>CAD</option>
+                    </select>
+                    <input type="text" class="w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100" placeholder="Contractor Rate">
+                </td>
+                <td class="p-2 text-right">
+                    <button class="removeRow text-md bg-red-500 text-white px-3 py-0 rounded">X</button>
+                </td>
+            </tr>`;
+
+                $("#contractor-table-body").append(newRow);
+            });
+
+            $(document).on("click", ".removeRow", function() {
+                $(this).closest("tr").remove();
+            });
+
+            // add button only appear when accordian is open
+            $("#collapseTwo").on('show.bs.collapse', function() {
+                $("#addContractorBtn").removeClass("hidden");
+            }).on('hide.bs.collapse', function() {
+                $("#addContractorBtn").addClass("hidden");
+            });
+
+            // notification dropdown
+            function updateNotificationCount() {
+                let count = $(".notification-item").length;
+                if (count > 0) {
+                    $("#notificationCount").text(count).removeClass("hidden");
+                } else {
+                    $("#notificationCount").addClass("hidden");
+                }
+            }
+
+            // Update the count when the page loads
+            updateNotificationCount();
+
+            $("#notificationBell").click(function(event) {
+                event.stopPropagation();
+                $("#notificationDropdown").toggle(); // Use .toggle() instead of toggleClass("hidden")
+            });
+
+            $(document).click(function(event) {
+                if (!$(event.target).closest("#notificationDropdown, #notificationBell").length) {
+                    $("#notificationDropdown").hide(); // Use .hide() instead of addClass("hidden")
+                }
+            });
+
+            // password toggle
+            $(document).on("click", ".toggle-password", function() {
+                let passwordField = $(this).siblings(".password-field");
+                let icon = $(this).find("i");
+
+                if (passwordField.attr("type") === "password") {
+                    passwordField.attr("type", "text");
+                    icon.removeClass("bi-eye-slash").addClass("bi-eye");
+                } else {
+                    passwordField.attr("type", "password");
+                    icon.removeClass("bi-eye").addClass("bi-eye-slash");
+                }
+            });
+
         });
     </script>
 </body>
