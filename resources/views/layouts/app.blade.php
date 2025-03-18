@@ -150,18 +150,18 @@
                 }
             });
 
-            //accordian icon change
-            $('.accordion-button').click(function() {
-                let icon = $(this).find('i');
+            // //accordian icon change
+            // $('.accordion-button').click(function() {
+            //     let icon = $(this).find('i');
 
-                setTimeout(() => {
-                    if ($(this).hasClass('collapsed')) {
-                        icon.removeClass('bi-chevron-down').addClass('bi-chevron-right');
-                    } else {
-                        icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
-                    }
-                }, 100);
-            });
+            //     setTimeout(() => {
+            //         if ($(this).hasClass('collapsed')) {
+            //             icon.removeClass('bi-chevron-down').addClass('bi-chevron-right');
+            //         } else {
+            //             icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
+            //         }
+            //     }, 100);
+            // });
             // prevent reloading mage on clicking upload file button
             $("#uploadBtn").click(function(event) {
                 event.preventDefault(); // Prevent form submission

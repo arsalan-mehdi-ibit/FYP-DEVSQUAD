@@ -15,29 +15,11 @@
                 @csrf
 
                 <div class="accordion" id="userAccordion">
-                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                    <script>
-                        $(document).ready(function () {
-                            // Open the User Details accordion by default
-                            $('#collapseOne').addClass('show');
-                            $('#headingOne button i').removeClass('bi-chevron-right').addClass('bi-chevron-down');
-                            
-                            // Toggle icon on accordion click
-                            $('.accordion-button').click(function () {
-                                var icon = $(this).find('i');
-                                $('.accordion-button i').removeClass('bi-chevron-down').addClass('bi-chevron-right');
-                                if (!$(this).hasClass('collapsed')) {
-                                    icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
-                                }
-                            });
-                        });
-                    </script>
-                    
                     <!-- User Details -->
                 <div class="accordion-item border-none rounded-lg mb-3">
                         <h2 class="accordion-header" id="headingOne">
                             <button
-                                class="accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
+                                class="basic_details accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
                                 type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
                                 <i class="bi bi-chevron-right transition-transform duration-200 mr-2"></i>
                                 User Details
@@ -210,4 +192,10 @@
     </div>
 
     @include('components.file-upload-modal')
+    @include('components.file-upload-modal')
+    <script>
+    $(document).ready(function () {
+       $('.basic_details').click();
+    });
+</script>
 @endsection

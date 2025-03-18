@@ -69,42 +69,28 @@
                                 <div class="col-md-6 mb-3 position-relative">
                                     <label for="password">Password (Optional)</label>
                                     <div class="input-group">
-                                        <input type="password" class="form-control form-control-lg" id="password" name="password"
+                                        <input type="password" class="form-control form-control-lg password-field" id="password" name="password"
                                             data-parsley-equalto="#confirm_password" placeholder=" ">
-                                        <span class="input-group-text" onclick="togglePassword('password', 'togglePasswordIcon')">
-                                            <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
-                                        </span>
+                                            <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer">
+                                                <i class="bi bi-eye-slash text-gray-500"></i>
+                                            </span>
                                     </div>
                                 </div>
                             
                                 <div class="col-md-6 mb-3 position-relative">
                                     <label for="confirm_password">Confirm Password</label>
                                     <div class="input-group">
-                                        <input type="password" class="form-control form-control-lg" id="confirm_password" name="password_confirmation"
+                                        <input type="password" class="form-control form-control-lg password-field" id="confirm_password" name="password_confirmation"
                                             data-parsley-equalto="#password" placeholder=" ">
-                                        <span class="input-group-text" onclick="togglePassword('confirm_password', 'toggleConfirmPasswordIcon')">
-                                            <i class="bi bi-eye-slash" id="toggleConfirmPasswordIcon"></i>
-                                        </span>
+                                     <!-- Eye Icon -->
+                                    <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer">
+                                        <i class="bi bi-eye-slash text-gray-500"></i>
+                                    </span>
                                     </div>
                                 </div>
                             </div>
                             
-                            <script>
-                                function togglePassword(fieldId, iconId) {
-                                    let field = document.getElementById(fieldId);
-                                    let icon = document.getElementById(iconId);
-                                    if (field.type === "password") {
-                                        field.type = "text";
-                                        icon.classList.remove("bi-eye-slash");
-                                        icon.classList.add("bi-eye");
-                                    } else {
-                                        field.type = "password";
-                                        icon.classList.remove("bi-eye");
-                                        icon.classList.add("bi-eye-slash");
-                                    }
-                                }
-                            </script>
-                            
+                           
                             <div class="d-flex justify-content-center mt-5">
                                 <button type="button" class=" border-radius-2xl btn btn-primary" id="save-profile"
                                         style="width: 300px;">Save
