@@ -15,6 +15,24 @@
                 @csrf
 
                 <div class="accordion" id="ProjectAccordion">
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Open the Basic Details accordion by default
+        $('#collapseOne').addClass('show');
+        $('#headingOne button i').removeClass('bi-chevron-right').addClass('bi-chevron-down');
+        
+        // Toggle icon on accordion click
+        $('.accordion-button').click(function () {
+            var icon = $(this).find('i');
+            $('.accordion-button i').removeClass('bi-chevron-down').addClass('bi-chevron-right');
+            if (!$(this).hasClass('collapsed')) {
+                icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
+            }
+        });
+    });
+</script>
+
                     <!-- Basic Details -->
                     <div class="accordion-item border-none rounded-lg mb-3">
                         <h2 class="accordion-header" id="headingOne">
@@ -38,30 +56,6 @@
                                             onblur="this.style.backgroundColor='#F3F4F6'"
                                             class="w-full px-2 py-1 text-sm border rounded-md " required>
                                     </div>
-
-                                    <!-- Vertical -->
-                                    <div>
-                                        <label class="block text-black text-sm text-center font-medium">Vertical</label>
-                                        <select class="w-full px-2 py-1 text-sm border rounded-md "
-                                            style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'">
-                                            <option>Select Vertical</option>
-                                            <option>Apparel Fashion Assecssories</option>
-                                            <option>Food & Beverages</option>
-                                            <option>General Business</option>
-                                            <option>Government Services</option>
-                                            <option>Health & Medical</option>
-                                            <option>Manufacturer</option>
-                                            <option>Not For Profit</option>
-                                            <option>Other</option>
-                                            <option>Retail</option>
-                                            <option>Services</option>
-                                            <option>Software</option>
-                                            <option>Wholesale</option>
-                                        </select>
-                                    </div>
-
                                     <!-- Type -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Type*</label>
@@ -147,6 +141,9 @@
                                             onblur="this.style.backgroundColor='#F3F4F6'">
                                             <option>Select Status</option>
                                             <option>Not Started</option>
+                                            <option>Active</option>
+                                            <option>On hold</option>
+                                            <option>Completed</option>
                                         </select>
                                     </div>
 

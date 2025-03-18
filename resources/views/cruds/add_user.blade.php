@@ -15,8 +15,26 @@
                 @csrf
 
                 <div class="accordion" id="userAccordion">
+                    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+                    <script>
+                        $(document).ready(function () {
+                            // Open the User Details accordion by default
+                            $('#collapseOne').addClass('show');
+                            $('#headingOne button i').removeClass('bi-chevron-right').addClass('bi-chevron-down');
+                            
+                            // Toggle icon on accordion click
+                            $('.accordion-button').click(function () {
+                                var icon = $(this).find('i');
+                                $('.accordion-button i').removeClass('bi-chevron-down').addClass('bi-chevron-right');
+                                if (!$(this).hasClass('collapsed')) {
+                                    icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
+                                }
+                            });
+                        });
+                    </script>
+                    
                     <!-- User Details -->
-                    <div class="accordion-item border-none rounded-lg mb-3">
+                <div class="accordion-item border-none rounded-lg mb-3">
                         <h2 class="accordion-header" id="headingOne">
                             <button
                                 class="accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
@@ -69,20 +87,6 @@
                                             <option>Consultant</option>
                                             <option>Contractor</option>
                                             <option>Timesheet Admin</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-black text-sm text-center font-medium">Company*</label>
-                                        <select class="w-full px-2 py-1 text-sm border rounded-md "
-                                            style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'" required>
-                                            <option>Select Company</option>
-                                            <option>Gaines Levy Traders</option>
-                                            <option>Partner Comp</option>
-                                            <option>Pratt Hahn Trading</option>
-                                            <option>sdfdaf</option>
                                         </select>
                                     </div>
 
@@ -141,17 +145,14 @@
 
                                     <div class="flex flex-col items-center space-y-1">
                                         <label class="text-indigo-900 text-sm font-medium text-center">Active</label>
-                                        <input type="checkbox" class="custom-checkbox">
+                                        <input type="checkbox" class="custom-checkbox" checked>
                                     </div>
-
+                                    
                                     <!-- Send Approval/Rejection Email -->
-                                    <div class="flex flex-col items-center ">
-                                        <label
-                                            class="text-indigo-900 font-medium text-center"style="font-size:11px !important;">Send
-                                            Approval/Rejection Email</label>
-                                        <input type="checkbox" class="custom-checkbox">
+                                    <div class="flex flex-col items-center">
+                                        <label class="text-indigo-900 font-medium text-center" style="font-size:11px !important;">Send Approval/Rejection Email</label>
+                                        <input type="checkbox" class="custom-checkbox" checked>
                                     </div>
-                                </div>
                             </div>
                         </div>
                     </div>

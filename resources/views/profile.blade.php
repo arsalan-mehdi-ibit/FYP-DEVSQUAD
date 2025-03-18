@@ -66,22 +66,45 @@
                                 </div>
                             </div>
                             <div class="row">
-                            <div class="col-md-6 mb-3 position-relative">
-                                <label for="password">Password (Optional)</label>
-                                <input type="password" class="form-control form-control-lg" id="password" name="password"
-                                    data-parsley-equalto="#confirm_password"
-                                    placeholder=" ">
-                               
+                                <div class="col-md-6 mb-3 position-relative">
+                                    <label for="password">Password (Optional)</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control form-control-lg" id="password" name="password"
+                                            data-parsley-equalto="#confirm_password" placeholder=" ">
+                                        <span class="input-group-text" onclick="togglePassword('password', 'togglePasswordIcon')">
+                                            <i class="bi bi-eye-slash" id="togglePasswordIcon"></i>
+                                        </span>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-md-6 mb-3 position-relative">
+                                    <label for="confirm_password">Confirm Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control form-control-lg" id="confirm_password" name="password_confirmation"
+                                            data-parsley-equalto="#password" placeholder=" ">
+                                        <span class="input-group-text" onclick="togglePassword('confirm_password', 'toggleConfirmPasswordIcon')">
+                                            <i class="bi bi-eye-slash" id="toggleConfirmPasswordIcon"></i>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="col-md-6 mb-3 position-relative">
-                                <label for="confirm_password">Confirm Password</label>
-                                <input type="password" class="form-control form-control-lg" id="confirm_password" name="password_confirmation"
-                                    data-parsley-equalto="#password"
-                                    placeholder=" ">
-                               
-                            </div>
-                            </div>
+                            
+                            <script>
+                                function togglePassword(fieldId, iconId) {
+                                    let field = document.getElementById(fieldId);
+                                    let icon = document.getElementById(iconId);
+                                    if (field.type === "password") {
+                                        field.type = "text";
+                                        icon.classList.remove("bi-eye-slash");
+                                        icon.classList.add("bi-eye");
+                                    } else {
+                                        field.type = "password";
+                                        icon.classList.remove("bi-eye");
+                                        icon.classList.add("bi-eye-slash");
+                                    }
+                                }
+                            </script>
+                            
                             <div class="d-flex justify-content-center mt-5">
                                 <button type="button" class=" border-radius-2xl btn btn-primary" id="save-profile"
                                         style="width: 300px;">Save
