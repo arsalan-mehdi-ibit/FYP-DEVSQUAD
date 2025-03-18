@@ -357,6 +357,101 @@
                 }
             });
 
+
+
+
+
+            // Toggle Nested Table
+            $(".accordion-toggle").on("click", function() {
+                let target = $(this).data("target");
+                $(target).toggleClass("hidden");
+
+                // Rotate Icon
+                $(this).find(".toggle-icon").toggleClass("rotate");
+            });
+
+            // Add Task
+            $(document).on("click", ".add-task", function() {
+                let taskBody = $(this).closest(".p-3").find(".task-body");
+                let nextSr = taskBody.find("tr").length + 1;
+
+                let newRow = `
+            <tr>
+                <td>${nextSr}</td>
+                <td><input type="text" class="form-control p-1 task-title" placeholder="Title"></td>
+                <td><input type="text" class="form-control p-1 task-desc" placeholder="Task description"></td>
+                <td><input type="number" class="form-control p-1 task-hours" placeholder="Hours"></td>
+                <td class="text-center">
+                    <button class="save-task bg-blue-900 text-white px-3 py-1 rounded-full">Save</button>
+                     <button class="edit-task hidden px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
+                    <span class="bi bi-pencil text-black"></span> </button>
+                    <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
+                                    <span class="bi bi-trash text-red-500"></span>
+                                </button>
+
+                   
+                </td>
+            </tr>
+        `;
+
+                taskBody.append(newRow);
+            });
+
+            // Save Task
+            $(document).on("click", ".save-task", function() {
+                let row = $(this).closest("tr");
+                let title = row.find(".task-title").val();
+                let desc = row.find(".task-desc").val();
+                let hours = row.find(".task-hours").val();
+
+                row.html(`
+            <td>${row.index() + 1}</td>
+            <td>${title}</td>
+            <td>${desc}</td>
+            <td>${hours}</td>
+            <td class="text-center">
+                <button class="edit-task px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
+                    <span class="bi bi-pencil text-black"></span> </button>
+                <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs ">
+                                    <span class="bi bi-trash text-red-500"></span>
+                                </button>
+            </td>
+        `);
+            });
+
+            // Edit Task
+            $(document).on("click", ".edit-task", function() {
+                let row = $(this).closest("tr");
+                let title = row.find("td:nth-child(2)").text();
+                let desc = row.find("td:nth-child(3)").text();
+                let hours = row.find("td:nth-child(4)").text();
+
+                row.html(`
+            <td>${row.index() + 1}</td>
+            <td><input type="text" class="form-control task-title" value="${title}"></td>
+            <td><input type="text" class="form-control task-desc" value="${desc}"></td>
+            <td><input type="number" class="form-control task-hours" value="${hours}"></td>
+            <td class="text-center">
+                <button class="save-task bg-blue-900 text-white px-3 py-1 rounded-full">Save</button>
+                <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs ">
+                                    <span class="bi bi-trash text-red-500"></span>
+                                </button>
+            </td>
+        `);
+            });
+            // remove
+            $(document).on("click", ".remove-task", function() {
+                let row = $(this).closest("tr");
+                let taskBody = row.closest(".task-body");
+
+                row.remove();
+
+                // Recalculate SR numbers
+                taskBody.find("tr").each(function(index) {
+                    $(this).find("td:first").text(index + 1);
+                });
+
+            });
         });
     </script>
 </body>

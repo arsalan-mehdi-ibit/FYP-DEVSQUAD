@@ -27675,3 +27675,39 @@ text::placeholder {
     border-left: none;
 }
 
+
+ /* Responsive Table */
+ @media (max-width: 768px) {
+    .table-responsive {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    th, td {
+        padding: 8px;
+        font-size: 12px;
+    }
+}
+
+/* Table Styling */
+.table thead {
+    background-color: #e5e7eb; /* Light Gray */
+}
+
+
+
+.table tbody tr {
+    background-color: white !important ;
+    transition: background 0.3s;
+}
+
+.table tbody tr:hover {
+    background-color: #f3f4f6; /* Light Gray */
+}
+
+/* Toggle Icon Rotation */
+.toggle-icon.rotate {
+    transform: rotate(90deg);
+    transition: transform 0.2s;
+}
+
