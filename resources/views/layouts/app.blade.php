@@ -308,26 +308,39 @@
 
             // notification dropdown
             function updateNotificationCount() {
-                let count = $(".notification-item").length;
-                if (count > 0) {
-                    $("#notificationCount").text(count).removeClass("hidden");
+                let unreadCount = $(".notification-item[data-new='true']").length;
+                if (unreadCount > 0) {
+                    $("#notificationCount").text(unreadCount).removeClass("hidden");
                 } else {
                     $("#notificationCount").addClass("hidden");
                 }
             }
 
-            // Update the count when the page loads
+            // Update count on page load
             updateNotificationCount();
 
+            // Toggle dropdown on bell click
             $("#notificationBell").click(function(event) {
                 event.stopPropagation();
-                $("#notificationDropdown").toggle(); // Use .toggle() instead of toggleClass("hidden")
+                $("#notificationDropdown").toggle();
             });
 
+            // Hide dropdown when clicking outside
             $(document).click(function(event) {
                 if (!$(event.target).closest("#notificationDropdown, #notificationBell").length) {
-                    $("#notificationDropdown").hide(); // Use .hide() instead of addClass("hidden")
+                    $("#notificationDropdown").hide();
                 }
+            });
+
+            // Mark notifications as read when clicked
+            $(".notification-item").click(function() {
+                $(this).removeClass("new-notification").attr("data-new", "false");
+                updateNotificationCount();
+            });
+
+            $("#markAllRead").click(function() {
+                $(".notification-item").removeClass("new-notification").attr("data-new", "false");
+                updateNotificationCount();
             });
 
             // password toggle

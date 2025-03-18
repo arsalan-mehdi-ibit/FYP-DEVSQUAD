@@ -27664,3 +27664,14 @@ text::placeholder {
     overflow-y: auto;
 }
 
+.new-notification {
+    background-color: #d1e7ff; /* Light blue background */
+    border-left: 4px solid #007bff; /* Blue border */
+}
+
+/* When clicked, remove highlight */
+.notification-item.read {
+    background-color: transparent;
+    border-left: none;
+}
+
