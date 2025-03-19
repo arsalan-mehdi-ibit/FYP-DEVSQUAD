@@ -27690,14 +27690,15 @@ text::placeholder {
 }
 
 /* Table Styling */
-.table thead {
-    background-color: #e5e7eb; /* Light Gray */
-}
+/* .table thead {
+    background-color: gray ; /* Light Gray */
+/* }  */
 
 
 
 .table tbody tr {
     background-color: white !important ;
+    color: black;
     transition: background 0.3s;
 }
 
@@ -27711,3 +27712,37 @@ text::placeholder {
     transition: transform 0.2s;
 }
 
+/* .nested-table thead {
+    background-color: #374151 !important; /* Tailwind bg-gray-700 */
+    /* color: white !important; */
+/* } */ 
+/* .nested-table thead {
+    display: table-header-group !important;
+} */
+
+/* Ensure parent and nested table headers are dark gray */
+/* .table thead,
+.nested-table thead {
+    background-color: #374151 !important; /* Tailwind bg-gray-700 */
+    /* color: white !important; */
+/* }  */
+
+/* Ensure all table body rows are white with dark gray text */
+/* .table tbody tr,
+.nested-table tbody tr {
+    background-color: white !important;
+    color: #1f2937 !important; /* Tailwind text-gray-800 */
+/* }  */
+
+.table > thead, 
+.nested-table thead, 
+.nested-table thead tr {
+    background-color: #374151 !important; /* Tailwind bg-gray-700 */
+    color: white !important;
+}
+/* .table tbody tr{
+    background-color: white !important;
+} */
+ /* .table tbody tr{
+    background-color: white !important;
+ } */

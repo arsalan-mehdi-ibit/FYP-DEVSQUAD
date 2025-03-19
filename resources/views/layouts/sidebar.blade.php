@@ -1,4 +1,4 @@
-<div>
+<div class="z-100">
     <button id="menu-toggle" class="flex text-center justify-content-center absolute top-7 left-1 text-secondary p-1 rounded-md lg:hidden">
         <i class="bi bi-list text-2xl"></i>
     </button>
