@@ -48,7 +48,7 @@ class ProjectController extends Controller
             'description' => $request->description,
         ]);
     
-        return redirect()->route('projects.index')->with('success', 'Project added successfully!');
+        return redirect()->route('projects.index')->with('success', 'ed successfully!');
     }
 
     /**
