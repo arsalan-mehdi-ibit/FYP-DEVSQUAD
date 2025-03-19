@@ -343,6 +343,12 @@
                 updateNotificationCount();
             });
 
+            // Close notification when sidebar opens
+            $("#menu-toggle").click(function() {
+                $("#notificationDropdown").hide();
+            });
+
+
             // password toggle
             $(document).on("click", ".toggle-password", function() {
                 let passwordField = $(this).siblings(".password-field");

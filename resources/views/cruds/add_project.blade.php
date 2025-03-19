@@ -142,12 +142,6 @@
                                         <input type="date" class="w-full px-2 py-1 text-sm border rounded-md bg-white">
                                     </div>
 
-                                    <!-- Notes -->
-                                    <div>
-                                        <label class="block text-black text-sm text-center font-medium">Notes</label>
-                                        <textarea class="w-full px-2 py-1 text-sm border rounded-md bg-white"></textarea>
-                                    </div>
-
                                     <!-- Referral Source -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Referral Source
@@ -179,6 +173,11 @@
                                         </select>
                                     </div>
 
+                                    <!-- Notes -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">Notes</label>
+                                        <textarea class="w-full px-2 py-1 text-sm border rounded-md bg-white"></textarea>
+                                    </div>
 
                                 </div>
                             </div>
@@ -288,8 +287,8 @@
 
     @include('components.file-upload-modal')
     <script>
-    $(document).ready(function () {
-       $('.basic_details').click();
-    });
-</script>
+        $(document).ready(function() {
+            $('.basic_details').click();
+        });
+    </script>
 @endsection
