@@ -357,10 +357,6 @@
                 }
             });
 
-
-
-
-
             // Toggle Nested Table
             $(".accordion-toggle").on("click", function() {
                 let target = $(this).data("target");
@@ -428,9 +424,9 @@
 
                 row.html(`
             <td>${row.index() + 1}</td>
-            <td><input type="text" class="form-control task-title" value="${title}"></td>
-            <td><input type="text" class="form-control task-desc" value="${desc}"></td>
-            <td><input type="number" class="form-control task-hours" value="${hours}"></td>
+            <td><input type="text" class="form-control p-1 task-title" value="${title}"></td>
+            <td><input type="text" class="form-control p-1 task-desc" value="${desc}"></td>
+            <td><input type="number" class="form-control p-1 task-hours" value="${hours}"></td>
             <td class="text-center">
                 <button class="save-task bg-blue-900 text-white px-3 py-1 rounded-full">Save</button>
                 <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs ">
