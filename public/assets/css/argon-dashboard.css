@@ -27734,12 +27734,19 @@ text::placeholder {
     color: #1f2937 !important; /* Tailwind text-gray-800 */
 /* }  */
 
-.table > thead, 
-.nested-table thead, 
-.nested-table thead tr {
-    background-color: #374151 !important; /* Tailwind bg-gray-700 */
+.table > thead
+ {
+    background-color: #374151 !important; 
     color: white !important;
 }
+
+.nested-table thead, 
+.nested-table thead tr{
+    background-color: #4B5563 !important; 
+    color: white !important;
+}
+
+
 /* .table tbody tr{
     background-color: white !important;
 } */

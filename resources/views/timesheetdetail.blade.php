@@ -36,7 +36,8 @@
                     </tr>
                     <tr class="nested-table hidden" id="taskTable1">
                         <td colspan="7">
-                            <div class="p-3 border rounded  bg-gray-50">
+                            <div class="p-2 border rounded  bg-gray-50">
+                                <h4 class="text-sm ml-1 font-semibold mb-1 text-left">Task List for 3rd March 2025</h4>
                                 <table class="table border border-gray-300 w-full m-1"> 
                                     <thead class="bg-gray-700 text-white ">
                                         <tr class="nested-table opacity-100" id="taskTable1">

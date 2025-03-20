@@ -1,13 +1,15 @@
 <div id="content" class="transition-all duration-300">
-    <header id="main-header"
-        class=" main-layout bg-none shadow-sm p-4 md:p-4 flex flex-nowrap md:flex-nowrap justify-between items-center transition-all duration-300 ease-in-out gap-2 md:gap-6">
+    <header id="main-header" class="main-layout bg-none shadow-sm p-3 p-sm-3 flex items-center justify-between gap-4">
 
-        <!-- Welcome Message (Responsive Font) -->
-        <h2
-            class="text-lg sm:text-base md:text-lg lg:text-xl mx-2 md:mx-4 px-2 md:px-3 font-bold text-gray-700 uppercase tracking-wide">
-            {{ $pageTitle }}
-        </h2>
-
+        <!-- Left Section: Sidebar Toggle & Title -->
+        <div class="flex items-center text-center gap-1">
+            <button id="menu-toggle" class="lg:hidden text-gray-700">
+                <i class="bi bi-list text-2xl"></i>
+            </button>
+            <h2 class="text-lg md:text-xl mx-2 my-0 font-bold text-gray-700 uppercase">
+                {{ $pageTitle }}
+            </h2>
+        </div>
 
         <!-- Right Section: Icons + Profile + Search -->
         <div class="flex items-center gap-2 sm:gap-3 md:gap-4 lg:gap-6 flex-wrap md:flex-nowrap">
