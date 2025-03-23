@@ -73,26 +73,6 @@
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Country</label>
-                                        <select class="w-full px-2 py-1 text-sm border rounded-md "
-                                            style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'">
-                                            <option>Select Country</option>
-                                            <option>Canada</option>
-                                            <option>US</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">City</label>
-                                        <input type="text" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md ">
-                                    </div>
-
-                                    <div>
                                         <label class="block text-black text-sm  text-center  font-medium">Address</label>
                                         <input type="text" style="background-color: #F3F4F6;"
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
@@ -118,7 +98,7 @@
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Title</label>
+                                        <label class="block text-black text-sm  text-center  font-medium">Source</label>
                                         <input type="text" style="background-color: #F3F4F6;"
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
                                             onblur="this.style.backgroundColor='#F3F4F6'"

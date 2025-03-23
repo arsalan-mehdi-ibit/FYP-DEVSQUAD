@@ -104,7 +104,7 @@
                                     <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                         <img src="{{ asset('assets/profile.jpeg') }}"
                                             class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
-                                        <span class="text-xs sm:text-sm md:text-base">{{ $user->name }}</span>
+                                        <span class="text-xs sm:text-sm md:text-base">{{ $user->firstname }}</span>
                                     </td>
                         
                                     <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $user->email }}</td>
