@@ -19,7 +19,7 @@ return new class extends Migration {
             $table->text('address')->nullable()->after('phone');
             $table->boolean('is_active')->default(1)->after('address');
             $table->boolean('send_emails')->default(1)->after('is_active');
-        });
+        });                   
 
        
         Schema::create('projects', function (Blueprint $table) {
