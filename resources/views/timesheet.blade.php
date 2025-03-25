@@ -89,20 +89,23 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @foreach ($timesheets as $timesheet)
                         <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">1</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Sep 01,2024-Sep 01,2024</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Approved</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">8</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test client</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test project</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">test contractor</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">customer comp</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $loop->iteration }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
+                                {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - 
+                                {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}
+                            </td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ ucfirst($timesheet->status) }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->id }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_hours }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->client->firstname ?? 'N/A' }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->project->name ?? 'N/A' }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->contractor->firstname ?? 'N/A' }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->project->status ?? 'N/A' }}</td>
                             <td class="p-2 sm:p-3 text-center">
                                 <button class="text-gray-600 hover:text-gray-900 transition-all">
-                                    <!-- <i class="fas fa-eye"></i> -->
-                                    <a href="{{ route('timesheet.details.index') }}" class="text-gray-600 hover:text-gray-900 transition-all">
+                                    <a href="{{ route('timesheet.details.index', $timesheet->id) }}" class="text-gray-600 hover:text-gray-900 transition-all">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </button>
@@ -117,9 +120,9 @@
                                     </button>
                                 </div>
                             </td>
-                            
-                            
                         </tr>
+                        @endforeach
+{{--                         
 
                         <tr class="border-b hover:bg-gray-50">
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
@@ -243,7 +246,7 @@
                                 </div>
                             </td>
                             
-                        </tr>
+                        </tr> --}}
 
                     </tbody>
                 </table>
