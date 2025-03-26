@@ -9,6 +9,18 @@
 
         <h2 class="text-2xl font-bold text-gray-800">Add New User</h2>
 
+        <!-- Display Validation Errors -->
+        @if ($errors->any())
+            <div class="bg-red-100 text-red-700 p-4 mb-4 rounded">
+                <strong>Whoops! Something went wrong.</strong>
+                <ul class="list-disc pl-5">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <!-- Form Card -->
         <div class="bg-white shadow-xl rounded-xl p-2 mt-4">
             <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
@@ -16,7 +28,7 @@
 
                 <div class="accordion" id="userAccordion">
                     <!-- User Details -->
-                <div class="accordion-item border-none rounded-lg mb-3">
+                    <div class="accordion-item border-none rounded-lg mb-3">
                         <h2 class="accordion-header" id="headingOne">
                             <button
                                 class="basic_details accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
@@ -27,94 +39,83 @@
                         </h2>
                         <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#userAccordion">
                             <div class="accordion-body p-5 sm:p-3 responsive-padding m-3 bg-white shadow-xl rounded-lg">
-
-
                                 <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">First Name*</label>
-                                        <input type="text" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor:'#FFFFFF'"
-                                            onblur="this.style.backgroundColor:'#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md " required>
-
+                                        <input type="text" name="firstname" value="{{ old('firstname') }}" required
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Middle
-                                            Name</label>
-                                        <input type="text" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md ">
+                                        <label class="block text-black text-sm text-center font-medium">Middle Name</label>
+                                        <input type="text" name="middlename" value="{{ old('middlename') }}"
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Last Name*</label>
-                                        <input type="text" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md " required>
+                                        <label class="block text-black text-sm text-center font-medium">Last Name*</label>
+                                        <input type="text" name="lastname" value="{{ old('lastname') }}" required
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Role*</label>
-                                        <select class="w-full px-2 py-1 text-sm border rounded-md "
-                                            style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'" required>
-                                            <option>Select Role</option>
-                                            <option>Admin</option>
-                                            <option>Client</option>
-                                            <option>Consultant</option>
-                                            <option>Contractor</option>
-                                            <option>Timesheet Admin</option>
+                                        <select name="role" required
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
+                                            <option value="">Select Role</option>
+                                            <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin
+                                            </option>
+                                            <option value="Client" {{ old('role') == 'Client' ? 'selected' : '' }}>Client
+                                            </option>
+                                            <option value="Consultant" {{ old('role') == 'Consultant' ? 'selected' : '' }}>
+                                                Consultant</option>
+                                            <option value="Contractor" {{ old('role') == 'Contractor' ? 'selected' : '' }}>
+                                                Contractor</option>
+                                            <option value="Timesheet Admin"
+                                                {{ old('role') == 'Timesheet Admin' ? 'selected' : '' }}>Timesheet Admin
+                                            </option>
                                         </select>
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Address</label>
-                                        <input type="text" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md ">
+                                        <label class="block text-black text-sm text-center font-medium">Address</label>
+                                        <input type="text" name="address" value="{{ old('address') }}"
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Email*</label>
-                                        <input type="email" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md " required>
+                                        <label class="block text-black text-sm text-center font-medium">Email*</label>
+                                        <input type="email" name="email" value="{{ old('email') }}" required
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Phone*</label>
-                                        <input type="text" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md "
-                                            placeholder="+X (XXX) XXX-XXXX" required>
+                                        <label class="block text-black text-sm text-center font-medium">Phone*</label>
+                                        <input type="text" name="phone" value="{{ old('phone') }}" required
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white"
+                                            placeholder="+X (XXX) XXX-XXXX">
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Source</label>
-                                        <input type="text" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md ">
+                                        <label class="block text-black text-sm text-center font-medium">Source</label>
+                                        <input type="text" name="source" value="{{ old('source') }}"
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div class="flex flex-col items-center space-y-1">
-                                        <label class="text-indigo-900 text-sm font-medium text-center">Active</label>
+                                        <label class="text-black text-sm font-medium text-center">Active</label>
                                         <input type="checkbox" class="custom-checkbox" checked>
                                     </div>
-                                    
+
                                     <!-- Send Approval/Rejection Email -->
                                     <div class="flex flex-col items-center">
-                                        <label class="text-indigo-900 font-medium text-center" style="font-size:11px !important;">Send Approval/Rejection Email</label>
+                                        <label class="text-black font-medium text-center"
+                                            style="font-size:11px !important;">Send Approval/Rejection Email</label>
                                         <input type="checkbox" class="custom-checkbox" checked>
                                     </div>
+
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -147,7 +148,7 @@
                                 </div>
                                 <div class="flex justify-end mt-4 mr-2">
                                     <button id="uploadBtn" type="button"
-                                        class=" text-white px-4 py-2 text-sm rounded-full shadow-md hover:bg-indigo-700 bg-gradient-to-r from-yellow-400 to-red-400   hover:from-yellow-300 hover:to-red-300"
+                                        class="text-white px-4 py-2 text-sm rounded-full shadow-md bg-gradient-to-r from-yellow-400 to-red-400 hover:from-yellow-300 hover:to-red-300"
                                         data-bs-toggle="modal" data-bs-target="#uploadModal">
                                         File Upload
                                     </button>
@@ -157,13 +158,10 @@
                     </div>
                 </div>
 
-                <div class="border-b border-black my-2"></div>
-
                 <!-- Submit Button -->
                 <div class="flex justify-end my-4 mx-1">
                     <button type="submit"
-                        class="bg-gradient-to-r from-yellow-400 to-red-400 
-          hover:from-yellow-300 hover:to-red-300 text-white px-4 py-2 rounded-full text-sm font-medium   transition-all shadow-md">
+                        class="bg-gradient-to-r from-yellow-400 to-red-400 hover:from-yellow-300 hover:to-red-300 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">
                         Create User
                     </button>
                 </div>
@@ -172,10 +170,9 @@
     </div>
 
     @include('components.file-upload-modal')
-    @include('components.file-upload-modal')
     <script>
-    $(document).ready(function () {
-       $('.basic_details').click();
-    });
-</script>
+        $(document).ready(function() {
+            $('.basic_details').click();
+        });
+    </script>
 @endsection

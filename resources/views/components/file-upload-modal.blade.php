@@ -1,5 +1,5 @@
 <!-- File Upload Modal -->
-<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true" style="backdrop-filter: blur(3px)">
     <div class="modal-dialog">
         <div class="modal-content p-4">
             <h2 class="text-lg font-semibold mb-4">Upload File</h2>
