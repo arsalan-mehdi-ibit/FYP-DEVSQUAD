@@ -15,11 +15,12 @@
                 @csrf
 
                 <div class="accordion" id="ProjectAccordion">
+
                     <!-- Basic Details -->
                     <div class="accordion-item border-none rounded-lg mb-3">
                         <h2 class="accordion-header" id="headingOne">
                             <button
-                                class="accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
+                                class="basic_details accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
                                 type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
                                 <i class="bi bi-chevron-right transition-transform duration-200 mr-2"></i>
                                 Basic Details
@@ -38,30 +39,6 @@
                                             onblur="this.style.backgroundColor='#F3F4F6'"
                                             class="w-full px-2 py-1 text-sm border rounded-md " required>
                                     </div>
-
-                                    <!-- Vertical -->
-                                    <div>
-                                        <label class="block text-black text-sm text-center font-medium">Vertical</label>
-                                        <select class="w-full px-2 py-1 text-sm border rounded-md "
-                                            style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'">
-                                            <option>Select Vertical</option>
-                                            <option>Apparel Fashion Assecssories</option>
-                                            <option>Food & Beverages</option>
-                                            <option>General Business</option>
-                                            <option>Government Services</option>
-                                            <option>Health & Medical</option>
-                                            <option>Manufacturer</option>
-                                            <option>Not For Profit</option>
-                                            <option>Other</option>
-                                            <option>Retail</option>
-                                            <option>Services</option>
-                                            <option>Software</option>
-                                            <option>Wholesale</option>
-                                        </select>
-                                    </div>
-
                                     <!-- Type -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Type*</label>
@@ -147,6 +124,9 @@
                                             onblur="this.style.backgroundColor='#F3F4F6'">
                                             <option>Select Status</option>
                                             <option>Not Started</option>
+                                            <option>Active</option>
+                                            <option>On hold</option>
+                                            <option>Completed</option>
                                         </select>
                                     </div>
 
@@ -160,12 +140,6 @@
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">End Date</label>
                                         <input type="date" class="w-full px-2 py-1 text-sm border rounded-md bg-white">
-                                    </div>
-
-                                    <!-- Notes -->
-                                    <div>
-                                        <label class="block text-black text-sm text-center font-medium">Notes</label>
-                                        <textarea class="w-full px-2 py-1 text-sm border rounded-md bg-white"></textarea>
                                     </div>
 
                                     <!-- Referral Source -->
@@ -199,6 +173,11 @@
                                         </select>
                                     </div>
 
+                                    <!-- Notes -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">Notes</label>
+                                        <textarea class="w-full px-2 py-1 text-sm border rounded-md bg-white"></textarea>
+                                    </div>
 
                                 </div>
                             </div>
@@ -298,7 +277,7 @@
                 <div class="flex justify-end my-4 mx-1">
                     <button type="submit"
                         class="bg-gradient-to-r from-yellow-400 to-red-400 
-          hover:from-yellow-300 hover:to-red-300 text-white px-4 py-2 rounded-full text-sm font-medium   transition-all shadow-md">
+                        hover:from-yellow-300 hover:to-red-300 text-white px-4 py-2 rounded-full text-sm font-medium   transition-all shadow-md">
                         Create Project
                     </button>
                 </div>
@@ -307,4 +286,9 @@
     </div>
 
     @include('components.file-upload-modal')
+    <script>
+        $(document).ready(function() {
+            $('.basic_details').click();
+        });
+    </script>
 @endsection

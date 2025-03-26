@@ -66,22 +66,31 @@
                                 </div>
                             </div>
                             <div class="row">
-                            <div class="col-md-6 mb-3 position-relative">
-                                <label for="password">Password (Optional)</label>
-                                <input type="password" class="form-control form-control-lg" id="password" name="password"
-                                    data-parsley-equalto="#confirm_password"
-                                    placeholder=" ">
-                               
+                                <div class="col-md-6 mb-3 position-relative">
+                                    <label for="password">Password (Optional)</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control form-control-lg password-field" id="password" name="password"
+                                            data-parsley-equalto="#confirm_password" placeholder=" ">
+                                            <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer">
+                                                <i class="bi bi-eye-slash text-gray-500"></i>
+                                            </span>
+                                    </div>
+                                </div>
+                            
+                                <div class="col-md-6 mb-3 position-relative">
+                                    <label for="confirm_password">Confirm Password</label>
+                                    <div class="input-group">
+                                        <input type="password" class="form-control form-control-lg password-field" id="confirm_password" name="password_confirmation"
+                                            data-parsley-equalto="#password" placeholder=" ">
+                                     <!-- Eye Icon -->
+                                    <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer">
+                                        <i class="bi bi-eye-slash text-gray-500"></i>
+                                    </span>
+                                    </div>
+                                </div>
                             </div>
-
-                            <div class="col-md-6 mb-3 position-relative">
-                                <label for="confirm_password">Confirm Password</label>
-                                <input type="password" class="form-control form-control-lg" id="confirm_password" name="password_confirmation"
-                                    data-parsley-equalto="#password"
-                                    placeholder=" ">
-                               
-                            </div>
-                            </div>
+                            
+                           
                             <div class="d-flex justify-content-center mt-5">
                                 <button type="button" class=" border-radius-2xl btn btn-primary" id="save-profile"
                                         style="width: 300px;">Save

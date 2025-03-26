@@ -96,28 +96,36 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr class="border-b hover:bg-gray-50">
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">1</td>
-                            <td class="p-2 sm:p-3 flex justify-center align-items-center">
-                                <img src="{{ asset('assets/profile.jpeg') }}"
-                                    class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
-                                <span class="text-xs sm:text-sm md:text-base ">Arsalan Mehdi</span>
-                            </td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Aman@gmail.com</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">03244678925</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">Admin</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">-</td>
-                            <td class="p-2 sm:p-3 flex justify-center space-x-2">
-                                <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
-                                    <i class="bi bi-pencil text-orange-500"></i>
-                                </button>
-                                <button class="p-2 rounded-xl bg-red-100 hover:bg-red-200 transition-all">
-                                    <i class="bi bi-trash text-red-500"></i>
-                                </button>
-                            </td>
-                        </tr>
+                        <tbody>
+                            @foreach ($users as $user)
+                                <tr class="border-b hover:bg-gray-50">
+                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $loop->iteration }}</td>
+                        
+                                    <td class="p-2 sm:p-3 flex justify-center align-items-center">
+                                        <img src="{{ asset('assets/profile.jpeg') }}"
+                                            class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
+                                        <span class="text-xs sm:text-sm md:text-base">{{ $user->firstname }}</span>
+                                    </td>
+                        
+                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $user->email }}</td>
+                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $user->phone ?? '-' }}</td>
+                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ ucfirst($user->role) }}</td>
+                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $user->company_name ?? '-' }}</td>
+                        
+                                    <td class="p-2 sm:p-3 flex justify-center space-x-2">
+                                        <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
+                                            <i class="bi bi-pencil text-orange-500"></i>
+                                        </button>
+                                        <button class="p-2 rounded-xl bg-red-100 hover:bg-red-200 transition-all">
+                                            <i class="bi bi-trash text-red-500"></i>
+                                        </button>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                        
 
-                        <tr class="border-b hover:bg-gray-50">
+                        {{-- <tr class="border-b hover:bg-gray-50">
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">2</td>
                             <td class="p-2 sm:p-3 flex justify-center align-items-center">
                                 <img src="{{ asset('assets/profile.jpeg') }}"
@@ -225,7 +233,8 @@
                                     <i class="bi bi-trash text-red-500"></i>
                                 </button>
                             </td>
-                        </tr>
+                        </tr> --}}
+
                     </tbody>
                 </table>
             </div>

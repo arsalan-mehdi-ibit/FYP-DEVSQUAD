@@ -28,7 +28,7 @@
 
 
     <script src="https://unpkg.com/imask"></script>
-    <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css') }}?v=0.07" rel="stylesheet" />
+    <link id="pagestyle" href="{{ asset('assets/css/argon-dashboard.css') }}?v=0.02" rel="stylesheet" />
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.9.1/font/bootstrap-icons.min.css"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/parsleyjs/src/parsley.css">
@@ -150,18 +150,18 @@
                 }
             });
 
-            //accordian icon change
-            $('.accordion-button').click(function() {
-                let icon = $(this).find('i');
+            // //accordian icon change
+            // $('.accordion-button').click(function() {
+            //     let icon = $(this).find('i');
 
-                setTimeout(() => {
-                    if ($(this).hasClass('collapsed')) {
-                        icon.removeClass('bi-chevron-down').addClass('bi-chevron-right');
-                    } else {
-                        icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
-                    }
-                }, 100);
-            });
+            //     setTimeout(() => {
+            //         if ($(this).hasClass('collapsed')) {
+            //             icon.removeClass('bi-chevron-down').addClass('bi-chevron-right');
+            //         } else {
+            //             icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
+            //         }
+            //     }, 100);
+            // });
             // prevent reloading mage on clicking upload file button
             $("#uploadBtn").click(function(event) {
                 event.preventDefault(); // Prevent form submission
@@ -308,27 +308,46 @@
 
             // notification dropdown
             function updateNotificationCount() {
-                let count = $(".notification-item").length;
-                if (count > 0) {
-                    $("#notificationCount").text(count).removeClass("hidden");
+                let unreadCount = $(".notification-item[data-new='true']").length;
+                if (unreadCount > 0) {
+                    $("#notificationCount").text(unreadCount).removeClass("hidden");
                 } else {
                     $("#notificationCount").addClass("hidden");
                 }
             }
 
-            // Update the count when the page loads
+            // Update count on page load
             updateNotificationCount();
 
+            // Toggle dropdown on bell click
             $("#notificationBell").click(function(event) {
                 event.stopPropagation();
-                $("#notificationDropdown").toggle(); // Use .toggle() instead of toggleClass("hidden")
+                $("#notificationDropdown").toggle();
             });
 
+            // Hide dropdown when clicking outside
             $(document).click(function(event) {
                 if (!$(event.target).closest("#notificationDropdown, #notificationBell").length) {
-                    $("#notificationDropdown").hide(); // Use .hide() instead of addClass("hidden")
+                    $("#notificationDropdown").hide();
                 }
             });
+
+            // Mark notifications as read when clicked
+            $(".notification-item").click(function() {
+                $(this).removeClass("new-notification").attr("data-new", "false");
+                updateNotificationCount();
+            });
+
+            $("#markAllRead").click(function() {
+                $(".notification-item").removeClass("new-notification").attr("data-new", "false");
+                updateNotificationCount();
+            });
+
+            // Close notification when sidebar opens
+            $("#menu-toggle").click(function() {
+                $("#notificationDropdown").hide();
+            });
+
 
             // password toggle
             $(document).on("click", ".toggle-password", function() {
@@ -344,6 +363,97 @@
                 }
             });
 
+            // Toggle Nested Table
+            $(".accordion-toggle").on("click", function() {
+                let target = $(this).data("target");
+                $(target).toggleClass("hidden");
+
+                // Rotate Icon
+                $(this).find(".toggle-icon").toggleClass("rotate");
+            });
+
+            // Add Task
+            $(document).on("click", ".add-task", function() {
+                let taskBody = $(this).closest(".p-3").find(".task-body");
+                let nextSr = taskBody.find("tr").length + 1;
+
+                let newRow = `
+            <tr>
+                <td>${nextSr}</td>
+                <td><input type="text" class="form-control p-1 task-title" placeholder="Title"></td>
+                <td><input type="text" class="form-control p-1 task-desc" placeholder="Task description"></td>
+                <td><input type="number" class="form-control p-1 task-hours" placeholder="Hours"></td>
+                <td class="text-center">
+                    <button class="save-task bg-blue-900 text-white px-3 py-1 rounded-full">Save</button>
+                     <button class="edit-task hidden px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
+                    <span class="bi bi-pencil text-black"></span> </button>
+                    <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
+                                    <span class="bi bi-trash text-red-500"></span>
+                                </button>
+
+                   
+                </td>
+            </tr>
+        `;
+
+                taskBody.append(newRow);
+            });
+
+            // Save Task
+            $(document).on("click", ".save-task", function() {
+                let row = $(this).closest("tr");
+                let title = row.find(".task-title").val();
+                let desc = row.find(".task-desc").val();
+                let hours = row.find(".task-hours").val();
+
+                row.html(`
+            <td>${row.index() + 1}</td>
+            <td>${title}</td>
+            <td>${desc}</td>
+            <td>${hours}</td>
+            <td class="text-center">
+                <button class="edit-task px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
+                    <span class="bi bi-pencil text-black"></span> </button>
+                <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs ">
+                                    <span class="bi bi-trash text-red-500"></span>
+                                </button>
+            </td>
+        `);
+            });
+
+            // Edit Task
+            $(document).on("click", ".edit-task", function() {
+                let row = $(this).closest("tr");
+                let title = row.find("td:nth-child(2)").text();
+                let desc = row.find("td:nth-child(3)").text();
+                let hours = row.find("td:nth-child(4)").text();
+
+                row.html(`
+            <td>${row.index() + 1}</td>
+            <td><input type="text" class="form-control p-1 task-title" value="${title}"></td>
+            <td><input type="text" class="form-control p-1 task-desc" value="${desc}"></td>
+            <td><input type="number" class="form-control p-1 task-hours" value="${hours}"></td>
+            <td class="text-center">
+                <button class="save-task bg-blue-900 text-white px-3 py-1 rounded-full">Save</button>
+                <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs ">
+                                    <span class="bi bi-trash text-red-500"></span>
+                                </button>
+            </td>
+        `);
+            });
+            // remove
+            $(document).on("click", ".remove-task", function() {
+                let row = $(this).closest("tr");
+                let taskBody = row.closest(".task-body");
+
+                row.remove();
+
+                // Recalculate SR numbers
+                taskBody.find("tr").each(function(index) {
+                    $(this).find("td:first").text(index + 1);
+                });
+
+            });
         });
     </script>
 </body>

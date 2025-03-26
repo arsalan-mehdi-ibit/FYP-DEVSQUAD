@@ -3,16 +3,18 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\payments;
 
 class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index() 
+    public function index()
     {
-        $pageTitle  = "Invoice LIst";
-        return view('invoice', compact('pageTitle'));
+        $pageTitle = "Invoice LIst";
+        $invoices = payments::all();
+        return view('invoice', compact('pageTitle', 'invoices'));
     }
 
     /**

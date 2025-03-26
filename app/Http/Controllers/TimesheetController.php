@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Timesheet;
 
 class TimesheetController extends Controller
 {
@@ -12,7 +13,8 @@ class TimesheetController extends Controller
     public function index() 
     {
         $pageTitle  = "Timesheet";
-        return view('timesheet', compact('pageTitle'));
+        $timesheets = timesheet::all();
+        return view('timesheet', compact('pageTitle', 'timesheets'));
     }
 
     /**

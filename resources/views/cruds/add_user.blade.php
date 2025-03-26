@@ -16,10 +16,10 @@
 
                 <div class="accordion" id="userAccordion">
                     <!-- User Details -->
-                    <div class="accordion-item border-none rounded-lg mb-3">
+                <div class="accordion-item border-none rounded-lg mb-3">
                         <h2 class="accordion-header" id="headingOne">
                             <button
-                                class="accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
+                                class="basic_details accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
                                 type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
                                 <i class="bi bi-chevron-right transition-transform duration-200 mr-2"></i>
                                 User Details
@@ -73,40 +73,6 @@
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm text-center font-medium">Company*</label>
-                                        <select class="w-full px-2 py-1 text-sm border rounded-md "
-                                            style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'" required>
-                                            <option>Select Company</option>
-                                            <option>Gaines Levy Traders</option>
-                                            <option>Partner Comp</option>
-                                            <option>Pratt Hahn Trading</option>
-                                            <option>sdfdaf</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Country</label>
-                                        <select class="w-full px-2 py-1 text-sm border rounded-md "
-                                            style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'">
-                                            <option>Select Country</option>
-                                            <option>Canada</option>
-                                            <option>US</option>
-                                        </select>
-                                    </div>
-
-                                    <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">City</label>
-                                        <input type="text" style="background-color: #F3F4F6;"
-                                            onfocus="this.style.backgroundColor='#FFFFFF'"
-                                            onblur="this.style.backgroundColor='#F3F4F6'"
-                                            class="w-full px-2 py-1 text-sm border rounded-md ">
-                                    </div>
-
-                                    <div>
                                         <label class="block text-black text-sm  text-center  font-medium">Address</label>
                                         <input type="text" style="background-color: #F3F4F6;"
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
@@ -132,7 +98,7 @@
                                     </div>
 
                                     <div>
-                                        <label class="block text-black text-sm  text-center  font-medium">Title</label>
+                                        <label class="block text-black text-sm  text-center  font-medium">Source</label>
                                         <input type="text" style="background-color: #F3F4F6;"
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
                                             onblur="this.style.backgroundColor='#F3F4F6'"
@@ -141,17 +107,14 @@
 
                                     <div class="flex flex-col items-center space-y-1">
                                         <label class="text-indigo-900 text-sm font-medium text-center">Active</label>
-                                        <input type="checkbox" class="custom-checkbox">
+                                        <input type="checkbox" class="custom-checkbox" checked>
                                     </div>
-
+                                    
                                     <!-- Send Approval/Rejection Email -->
-                                    <div class="flex flex-col items-center ">
-                                        <label
-                                            class="text-indigo-900 font-medium text-center"style="font-size:11px !important;">Send
-                                            Approval/Rejection Email</label>
-                                        <input type="checkbox" class="custom-checkbox">
+                                    <div class="flex flex-col items-center">
+                                        <label class="text-indigo-900 font-medium text-center" style="font-size:11px !important;">Send Approval/Rejection Email</label>
+                                        <input type="checkbox" class="custom-checkbox" checked>
                                     </div>
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -209,4 +172,10 @@
     </div>
 
     @include('components.file-upload-modal')
+    @include('components.file-upload-modal')
+    <script>
+    $(document).ready(function () {
+       $('.basic_details').click();
+    });
+</script>
 @endsection

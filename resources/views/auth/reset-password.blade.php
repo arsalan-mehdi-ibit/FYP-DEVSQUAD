@@ -30,7 +30,7 @@
             <!-- New Password -->
             <div class="mb-3 text-start position-relative">
                 <div class="relative">
-                    <input type="password" class="form-control border-0 shadow-sm pr-10 password-field" 
+                    <input id = 'password' type="password" class="form-control border-0 shadow-sm pr-10 password-field" 
                         name="password" placeholder="New Password..." required
                         style="background-color: #eef0f7; color: #233554; border-radius: 20px; padding: 10px; width: 100%;">
                     
@@ -47,7 +47,7 @@
             <!-- Confirm Password -->
             <div class="mb-3 text-start position-relative">
                 <div class="relative">
-                    <input type="password" class="form-control border-0 shadow-sm pr-10 password-field" 
+                    <input id = 'password_confirmation' type="password" class="form-control border-0 shadow-sm pr-10 password-field" 
                         name="password_confirmation" placeholder="Re-enter Password..." required
                         style="background-color: #eef0f7; color: #233554; border-radius: 20px; padding: 10px; width: 100%;">
                     

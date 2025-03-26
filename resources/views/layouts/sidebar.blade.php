@@ -1,10 +1,10 @@
 <div>
-    <button id="menu-toggle" class="flex text-center justify-content-center absolute top-7 left-1 text-secondary p-1 rounded-md lg:hidden">
+    {{-- <button id="menu-toggle" class="flex text-center justify-center absolute top-9 left-0.5 text-secondary p-1 rounded-md lg:hidden">
         <i class="bi bi-list text-2xl"></i>
-    </button>
+    </button> --}}
 
     <!-- Sidebar -->
-    <aside id="sidebar" class="w-72 bg-gray-900 text-white min-h-screen p-3 px-4 fixed top-0 left-0 transform transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full z-50"> 
+    <aside id="sidebar" class="w-72 bg-gray-900 text-white min-h-screen p-3 px-4 fixed top-0 left-0 transform transition-transform duration-300 ease-in-out lg:translate-x-0 -translate-x-full z-50" style="z-index: 60 !important"> 
         <h2 class="text-3xl px-4 py-2 font-bold mb-6 text-yellow-200">TRACK POINT</h2>
         <ul class="pl-4">
             <li class="mb-4">

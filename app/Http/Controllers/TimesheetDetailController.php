@@ -9,7 +9,7 @@ class TimesheetDetailController extends Controller
     // Show all timesheets
     public function index()
     {
-        $pageTitle = 'TIME SHEETS DETAIL';
+        $pageTitle = 'Timesheet Details';
         return view('timesheetdetail' , compact('pageTitle'));
     }
 
