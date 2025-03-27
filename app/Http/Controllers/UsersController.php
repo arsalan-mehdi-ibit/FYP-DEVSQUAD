@@ -55,9 +55,10 @@ class UsersController extends Controller
         catch (\Exception $e) {
             // Log the error for debugging
             \Log::error('User creation failed: ' . $e->getMessage());
+            return redirect()->back()->withInput()->withErrors(['error' => 'Something went wrong'  . (env('APP_DEBUG', false) ? $e->getMessage() : '')]);
 
             // Redirect back with an error message
-            return redirect()->back()->with('error', 'Something went wrong! Please try again.');
+            // return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
 
