@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\MediaController;
 use Illuminate\Http\Request;
 use App\Models\User;
 
@@ -26,6 +27,7 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
+        // dd($request);
         try {
             $validated = $request->validate([
                 'firstname' => 'required|string|max:255',
@@ -47,7 +49,8 @@ class UsersController extends Controller
             $validated['send_emails'] = $request->has('send_emails') ? 1 : 0;
 
             // Create the user
-            User::create($validated);
+           $user =  User::create($validated);
+           MediaController::uploadFile($request , $user->id);
 
             // Redirect with success message
             return redirect()->route('users.index')->with('user_invitation_sent', true);

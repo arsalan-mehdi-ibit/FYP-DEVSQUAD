@@ -193,11 +193,11 @@
                     fileNames.push(file.name); // Store file names for input field
 
                     let fileHtml = `
-            <div class="inline-flex text-sm items-center bg-gray-100 px-2 py-1 border rounded-md mr-2 mb-2 file-item" data-index="${index}">
-                <span class="text-gray-800">${file.name}</span>
-                <button type="button" class="ml-2 text-red-500 remove-file" data-index="${index}">&times;</button>
-            </div>
-        `;
+                <div class="inline-flex text-sm items-center bg-gray-100 px-2 py-1 border rounded-md mr-2 mb-2 file-item" data-index="${index}">
+                    <span class="text-gray-800">${file.name}</span>
+                    <button type="button" class="ml-2 text-red-500 remove-file" data-index="${index}">&times;</button>
+                </div>
+                    `;
                     $("#uploaded-files").append(fileHtml);
                 });
 
@@ -225,6 +225,7 @@
 
             // Handle form submission
             $("#submit-files").on("click", function() {
+                let fileList = new DataTransfer();
                 let fileName = $("#fileNameInput").val().trim();
 
                 if (fileName === "") {
@@ -237,24 +238,28 @@
                 // Append files to the table
                 let tableBody = $("#file-table-body");
                 filesArray.forEach((file, index) => {
+                       // Append files to the DataTransfer object
+                    fileList.items.add(file);
+
                     let rowHtml = `
-            <tr class="border-b">
-                <td class="p-2">${index + 1}</td>
-                <td class="p-2">${file.name}</td>
-                <td class="p-2 text-right">
-                    <button class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
-                </td>
-            </tr>
-        `;
+                    <tr class="border-b">
+                        <td class="p-2">${index + 1}</td>
+                        <td class="p-2">${file.name}</td>
+                        <td class="p-2 text-right">
+                            <button class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
+                        </td>
+                    </tr>
+                `;
 
                     tableBody.append(rowHtml);
                 });
-
+                    // Append files to the DataTransfer object
+                    $("#file-input")[0].files = fileList.files;
                 // Clear modal fields
                 $("#uploaded-files").html("");
-                $("#file-input").val("");
+                // $("#file-input").val("");
                 $("#fileNameInput").val("");
-                filesArray = [];
+                // filesArray = [];
 
                 // Close modal
                 $("#uploadModal").modal("hide");

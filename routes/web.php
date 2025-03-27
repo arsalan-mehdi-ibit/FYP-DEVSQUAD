@@ -73,7 +73,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::middleware(['web'])->group(function () {
-        Route::post('/upload-file', [MediaController::class, 'uploadFile'])->name('upload.file');
+        // Route::post('/upload-file', [MediaController::class, 'uploadFile'])->name('upload.file');
         Route::delete('/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
     });
 

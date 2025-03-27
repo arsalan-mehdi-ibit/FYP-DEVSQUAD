@@ -151,7 +151,6 @@
 
                                 <!-- Hidden inputs for file storage -->
                                 <input type="hidden" name="file_for" value="user">
-                                <input type="hidden" name="file_paths" id="file_paths">
 
                                 <!-- Upload Button -->
                                 <div class="flex justify-end mt-4 mr-2">
@@ -174,11 +173,11 @@
                         Create User
                     </button>
                 </div>
+                @include('components.file-upload-modal')
             </form>
         </div>
     </div>
 
-    @include('components.file-upload-modal')
     <script>
         $(document).ready(function() {
             $('.basic_details').click();
