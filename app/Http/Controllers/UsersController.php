@@ -3,41 +3,49 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\User; 
+use App\Models\User;
 
 class UsersController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index() 
+    public function index()
     {
-        $pageTitle  = "Users LIst";
-        $users = User::all(); 
-        return view('users', compact('pageTitle','users'));
+        $pageTitle = "Users LIst";
+        $users = User::all();
+        return view('users', compact('pageTitle', 'users'));
     }
-    
+
     public function add()
-{
-    $pageTitle = "Users"; // Set the page title
-    return view('cruds.add_user', compact('pageTitle'));
-}
+    {
+        $pageTitle = "Users"; // Set the page title
+        return view('cruds.add_user', compact('pageTitle'));
+    }
 
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
+        $validated = $request->validate([
+            'firstname' => 'required|string|max:255',
+            'middlename' => 'nullable|string|max:255',
+            'lastname' => 'required|string|max:255',
+            'role' => 'required|string',
+            'address' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email',
+            'phone' => 'required|string|max:20',
+            'source' => 'nullable|string|max:255',
+            'active' => 'boolean',
         ]);
     
-        User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-        ]);
+        // Create the user
+        User::create($validated);
     
-        return redirect()->route('users.index')->with('success', 'User added successfully!');
+        // Redirect to users' index with a session message
+        return redirect()->route('users.index')->with('user_invitation_sent', true);
+
     }
+    
 
     /**
      * Display the specified resource.
