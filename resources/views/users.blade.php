@@ -79,28 +79,28 @@
                 <table class="w-full min-w-full text-center">
                     <thead class="sticky top-0 bg-gray-100 z-10 text-center">
                         <tr class="border-b">
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3  font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
                                 SR</th>
-                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
                                 User Name</th>
-                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
                                 Email</th>
-                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
                                 Phone Number</th>
-                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
                                 Role</th>
-                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
                                 Source</th>
-                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                            <th class="p-2 sm:p-3 font-semibold  text-gray-700 text-xs sm:text-sm md:text-base">
                                 Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach ($users as $user)
                             <tr class="border-b hover:bg-gray-50">
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $loop->iteration }}</td>
+                                <td class="p-2 sm:p-3 text-left text-xs sm:text-sm md:text-base">{{ $loop->iteration }}</td>
 
-                                <td class="p-2 sm:p-3 flex justify-center align-items-center">
+                                <td class="p-2 sm:p-3 flex justify-left align-items-center">
                                     <img src="{{ asset('assets/profile.jpeg') }}"
                                         class="h-8 sm:h-10 rounded-full mr-2 hidden sm:block" alt="User">
                                     <span class="text-xs sm:text-sm md:text-base">
@@ -108,11 +108,13 @@
                                     </span>
                                 </td>
 
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $user->email }}</td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $user->phone ?? '-' }}</td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ ucfirst($user->role) }}</td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $user->source ?? '-' }}</td>
-
+                                <td class="p-2 sm:p-3 text-xs text-left sm:text-sm md:text-base">{{ $user->email }}</td>
+                                <td class="p-2 sm:p-3 text-xs text-left sm:text-sm md:text-base">{{ $user->phone ?? '-' }}
+                                </td>
+                                <td class="p-2 sm:p-3 text-xs text-left sm:text-sm md:text-base">{{ ucfirst($user->role) }}
+                                </td>
+                                <td class="p-2 sm:p-3 text-xs text-left sm:text-sm md:text-base">{{ $user->source ?? '-' }}
+                                </td>
                                 <td class="p-2 sm:p-3 flex justify-center space-x-2">
                                     <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                         <i class="bi bi-pencil text-orange-500"></i>
@@ -130,11 +132,9 @@
     </div>
 
     @if (session('user_invitation_sent'))
-       
         <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var myModal = new bootstrap.Modal(document.getElementById('userInvitationModal'));
-                myModal.show();
+            $(document).ready(function() {
+                $('#userInvitationModal').modal('show');
             });
         </script>
 
