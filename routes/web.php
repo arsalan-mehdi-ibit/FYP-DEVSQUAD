@@ -12,6 +12,9 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\TimesheetDetailController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\MediaController;
+
+
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
     ->name('password.reset'); // This route displays the form (GET request)
@@ -53,21 +56,27 @@ Route::middleware('auth')->group(function () {
         Route::get('/add', [UsersController::class, 'add'])->name('add');
         Route::post('/store', [UsersController::class, 'store'])->name('store');
     });
-    
+
 
     Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
         Route::get('/details', [TimesheetDetailController::class, 'index'])->name('details.index');
         Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
     });
-    
+
 
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
         Route::get('/add', [ProjectController::class, 'add'])->name('add');
         Route::post('/store', [ProjectController::class, 'store'])->name('store');
     });
-   
+
+
+    Route::middleware(['web'])->group(function () {
+        Route::post('/upload-file', [MediaController::class, 'uploadFile'])->name('upload.file');
+        Route::delete('/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
+    });
+
 });
 
 
