@@ -76,56 +76,83 @@
                 </a>
             </div>
             <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
-               
 
-    <table class="w-full border-collapse border border-gray-200">
-    <thead>
-        <tr class="border-b bg-gray-100">
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">SR</th>
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">Project Name</th>
-            
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">Client Name</th>
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">Start Date</th>
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">End Date</th>
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">Status</th>
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">Client Rate</th>
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">Created At</th>
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">Updated At</th>
-            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($projects as $project)
-            <tr class="border-b hover:bg-gray-50">
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ $loop->iteration }}</td>
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ $project->name }}</td>
-               
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ $project->client ? $project->client->firstname : 'N/A' }}</td>
 
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ $project->start_date }}</td>
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ $project->end_date }}</td>
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ ucfirst($project->status) }}</td>
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ $project->client_rate }}</td>
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ $project->created_at }}</td>
-                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base whitespace-nowrap">{{ $project->updated_at }}</td>
-                <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                    <button class="px-2 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 transition-all text-xs">
-                        <span class="bi bi-eye text-blue-500"></span>
-                    </button>
-                    <button class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                        <span class="bi bi-pencil text-black"></span>
-                    </button>
-                    <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                        <span class="bi bi-trash text-red-500"></span>
-                    </button>
-                </td>
-            </tr>
-        @endforeach
-    </tbody>
-</table>
-                   
-                  
-           </div>
+                <table class="w-full border-collapse border border-gray-200">
+                    <thead>
+                        <tr class="border-b bg-gray-100">
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                SR</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                Project Name</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                Client Name</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                Start Date</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                End Date</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                Status</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                Client Rate</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                Created At</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                Updated At</th>
+                            <th
+                                class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
+                                Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($projects as $project)
+                            <tr class="border-b hover:bg-gray-50">
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ $loop->iteration }}</td>
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ $project->name }}</td>
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ isset($project->client) ? trim("{$project->client->firstname} {$project->client->middlename} {$project->client->lastname}") : 'N/A' }}
+                                </td>
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ $project->start_date }}</td>
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ $project->end_date }}</td>
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ ucfirst($project->status) }}</td>
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ $project->client_rate }}</td>
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ $project->created_at }}</td>
+                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                    {{ $project->updated_at }}</td>
+                                <td class="p-2 sm:p-2 flex justify-center space-x-1">
+                                    <button
+                                        class="px-2 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 transition-all text-xs">
+                                        <span class="bi bi-eye text-blue-500"></span>
+                                    </button>
+                                    <button
+                                        class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
+                                        <span class="bi bi-pencil text-black"></span>
+                                    </button>
+                                    <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
+                                        <span class="bi bi-trash text-red-500"></span>
+                                    </button>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 @endsection

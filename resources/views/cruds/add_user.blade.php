@@ -105,16 +105,18 @@
 
                                     <div class="flex flex-col items-center space-y-1">
                                         <label class="text-black text-sm font-medium text-center">Active</label>
-                                        <input type="checkbox" class="custom-checkbox" checked>
+                                        <input type="checkbox" name="is_active" class="custom-checkbox" value="1"
+                                            checked>
                                     </div>
 
-                                    <!-- Send Approval/Rejection Email -->
                                     <div class="flex flex-col items-center">
                                         <label class="text-black font-medium text-center"
-                                            style="font-size:11px !important;">Send Approval/Rejection Email</label>
-                                        <input type="checkbox" class="custom-checkbox" checked>
+                                            style="font-size:11px !important;">
+                                            Send Approval/Rejection Email
+                                        </label>
+                                        <input type="checkbox" name="send_emails" class="custom-checkbox" value="1"
+                                            checked>
                                     </div>
-
                                 </div>
                             </div>
                         </div>
@@ -142,10 +144,15 @@
                                             </tr>
                                         </thead>
                                         <tbody id="file-table-body">
-                                            <!-- Uploaded files will be added here -->
+                                            <!-- Uploaded files will be added here dynamically -->
                                         </tbody>
                                     </table>
                                 </div>
+
+                                <!-- Hidden inputs for file storage -->
+                                <input type="hidden" name="file_for" value="user">
+
+                                <!-- Upload Button -->
                                 <div class="flex justify-end mt-4 mr-2">
                                     <button id="uploadBtn" type="button"
                                         class="text-white px-4 py-2 text-sm rounded-full shadow-md bg-gradient-to-r from-yellow-400 to-red-400 hover:from-yellow-300 hover:to-red-300"
@@ -156,6 +163,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- Submit Button -->
@@ -165,11 +173,11 @@
                         Create User
                     </button>
                 </div>
+                @include('components.file-upload-modal')
             </form>
         </div>
     </div>
 
-    @include('components.file-upload-modal')
     <script>
         $(document).ready(function() {
             $('.basic_details').click();

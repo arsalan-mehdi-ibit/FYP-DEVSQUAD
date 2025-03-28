@@ -13,7 +13,7 @@
             <div id="uploaded-files" class="mb-2"></div>
 
             <!-- File Upload Box -->
-            <input type="file" class="hidden" id="file-input" multiple>
+            <input type="file" name="attachments[]" class="hidden" id="file-input" multiple>
             <div id="upload-box"
                 class="border-2 border-indigo-900 border-dashed rounded-lg p-5 flex flex-col items-center justify-center text-indigo-900 cursor-pointer hover:bg-gray-100">
                 <i class="bi bi-upload text-xl"></i>
@@ -24,7 +24,7 @@
             <div class="flex justify-end space-x-2 mt-4">
                 <button type="button" class="bg-gray-400 text-white px-4 py-2 text-sm rounded-full shadow-md"
                     data-bs-dismiss="modal">Cancel</button>
-                <button id="submit-files"
+                <button id="submit-files" type = "button"
                     class="bg-gradient-to-r from-yellow-400 to-red-400 
       hover:from-yellow-300 hover:to-red-300 text-white px-4 py-2 text-sm rounded-full shadow-md">Submit</button>
             </div>
