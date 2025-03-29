@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\MediaController;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailSender;
 
 class UsersController extends Controller
 {
@@ -49,16 +52,30 @@ class UsersController extends Controller
             $validated['send_emails'] = $request->has('send_emails') ? 1 : 0;
 
             // Create the user
-           $user =  User::create($validated);
-           MediaController::uploadFile($request , $user->id);
+            $user = User::create($validated);
+            MediaController::uploadFile($request, $user->id);
+
+            // Get the admin's name (assuming the admin is authenticated)
+            $admin = Auth::user();
+            $adminName = $admin ? "{$admin->firstname} {$admin->lastname}" : 'Admin';
+
+            // Send Email if send_emails checkbox is checked
+            if ($validated['send_emails']) {
+                $emailData = [
+                    'user_name' => $user->firstname . ' ' . $user->lastname, // Ensure this is included
+                    'message' => 'Welcome to TrackPoint!',
+                    'admin_name' => auth()->user()->firstname . ' ' . auth()->user()->lastname // Who created the user
+                ];
+
+                Mail::to($user->email)->send(new EmailSender($user->email, 'Welcome to TrackPoint', $emailData, 'emails.welcome_email'));
+            }
 
             // Redirect with success message
             return redirect()->route('users.index')->with('user_invitation_sent', true);
-        } 
-        catch (\Exception $e) {
+        } catch (\Exception $e) {
             // Log the error for debugging
             \Log::error('User creation failed: ' . $e->getMessage());
-            return redirect()->back()->withInput()->withErrors(['error' => 'Something went wrong'  . (env('APP_DEBUG', false) ? $e->getMessage() : '')]);
+            return redirect()->back()->withInput()->withErrors(['error' => 'Something went wrong' . (env('APP_DEBUG', false) ? $e->getMessage() : '')]);
 
             // Redirect back with an error message
             // return redirect()->back()->with('error', 'Something went wrong! Please try again.');
