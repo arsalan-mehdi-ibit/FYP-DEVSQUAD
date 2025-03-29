@@ -13,7 +13,10 @@ use App\Http\Controllers\TimesheetDetailController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
+use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\MailController;
 
+Route::get('/send-test-email', [MailController::class, 'sendTestEmail']);
 
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
