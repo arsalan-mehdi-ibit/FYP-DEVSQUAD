@@ -18,31 +18,45 @@ class NewPasswordController extends Controller
     /**
      * Display the password reset view.
      */
-    public function create(Request $request): RedirectResponse|View
+    public function create(Request $request, $token)
     {
-        dd($request);
-        // Fetch token from route and email from query parameters
-        $token = $request->route('token');
-        $email = $request->query('email'); // Use query() to get email from URL
+        // Find user by token
+        $user = User::where('remember_token', $token)->first();
 
-        // Check if the token exists in the database
-        $user = User::where('remember_token', $token)->where('email', $email)->first();
-
+        // If token is invalid, redirect to login with an error message
         if (!$user) {
             return redirect()->route('login')->withErrors(['error' => 'The reset link has expired or is invalid.']);
         }
 
-        return view('auth.reset-password', compact('token', 'email'));
+        // Redirect to the reset password page with token & email
+        return view('auth.reset-password', [
+            'token' => $token,
+            'email' => $user->email
+        ]);
     }
-
 
     /**
      * Handle an incoming new password request.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    // public function store(Request $request): RedirectResponse
-    // {
+    public function store(Request $request): RedirectResponse
+    {
+        // Find user by token
+        $user = User::where('remember_token', $request->token)->first();
 
-    // }
+        // If user exists, update password and clear token
+        if ($user) {
+            $user->update([
+                'password' => bcrypt($request->password),
+                'remember_token' => null,
+            ]);
+
+            return redirect()->route('login')->with('success', 'Your password has been reset successfully.');
+        }
+
+        // If user not found, redirect to login with error
+        return redirect()->route('login')->withErrors(['error' => 'Invalid or expired reset link.']);
+    }
+
 }

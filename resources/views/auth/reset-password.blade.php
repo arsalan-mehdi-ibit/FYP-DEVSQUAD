@@ -23,7 +23,7 @@
             <!-- Email Address -->
             <input type="email" id="email" class="mb-3 form-control border-0 shadow-sm" name="email"
             placeholder="Email..." required
-            value="{{ old('email', $email ?? '') }}" 
+            value="{{ old('email', $email ?? '') }}" readonly
             style="background-color: #eef0f7; color: #233554; border-radius: 20px; padding: 10px;">
             <div class="text-danger" id="email-error"></div>
         
