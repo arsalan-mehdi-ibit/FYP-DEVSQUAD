@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailSender;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\URL;
 
 class UsersController extends Controller
 {
@@ -47,28 +49,32 @@ class UsersController extends Controller
 
             // Set additional attributes
             $validated['email_verified_at'] = now();
-            // $validated['password'] = bcrypt('default_password'); // Set a default password
             $validated['is_active'] = $request->has('is_active') ? 1 : 0;
             $validated['send_emails'] = $request->has('send_emails') ? 1 : 0;
+
+            $validated['remember_token'] = Str::random(32);
 
             // Create the user
             $user = User::create($validated);
             MediaController::uploadFile($request, $user->id);
 
-            // Get the admin's name (assuming the admin is authenticated)
+
             $admin = Auth::user();
             $adminName = $admin ? "{$admin->firstname} {$admin->lastname}" : 'Admin';
 
-            // Send Email if send_emails checkbox is checked
-            if ($validated['send_emails']) {
-                $emailData = [
-                    'user_name' => $user->firstname . ' ' . $user->lastname, // Ensure this is included
-                    'message' => 'Welcome to TrackPoint!',
-                    'admin_name' => auth()->user()->firstname . ' ' . auth()->user()->lastname // Who created the user
-                ];
+            
+            $resetLink = URL::route('password.reset', ['token' => $validated['remember_token']]);
 
-                Mail::to($user->email)->send(new EmailSender($user->email, 'Welcome to TrackPoint', $emailData, 'emails.welcome_email'));
-            }
+            // Prepare email data
+            $emailData = [
+                'user_name' => "{$user->firstname} {$user->lastname}",
+                'message' => 'Welcome to TrackPoint!',
+                'admin_name' => $adminName,
+                'reset_link' => $resetLink, 
+            ];
+
+            // Send welcome email
+            Mail::to($user->email)->send(new EmailSender($user->email, 'Welcome to TrackPoint', $emailData, 'emails.welcome_email'));
 
             // Redirect with success message
             return redirect()->route('users.index')->with('user_invitation_sent', true);
@@ -81,8 +87,6 @@ class UsersController extends Controller
             // return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
-
-
 
     /**
      * Display the specified resource.
