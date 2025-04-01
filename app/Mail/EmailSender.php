@@ -19,9 +19,9 @@ class EmailSender extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct($receiverEmail, $subject, $data, $bladeTemplate)
+    public function __construct( $subject, $data, $bladeTemplate)
     {
-        $this->receiverEmail = $receiverEmail;
+        
         $this->subject = $subject;
         $this->data = $data;
         $this->bladeTemplate = $bladeTemplate;

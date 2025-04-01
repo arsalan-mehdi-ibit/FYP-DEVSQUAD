@@ -80,6 +80,9 @@
 
     <script>
         $(document).ready(function() {
+           
+
+
             $("#logout-icon").click(function(e) {
                 e.preventDefault(); // Prevent default action
                 $("#logout-form").submit(); // Submit the logout form
@@ -238,7 +241,7 @@
                 // Append files to the table
                 let tableBody = $("#file-table-body");
                 filesArray.forEach((file, index) => {
-                       // Append files to the DataTransfer object
+                    // Append files to the DataTransfer object
                     fileList.items.add(file);
 
                     let rowHtml = `
@@ -253,8 +256,8 @@
 
                     tableBody.append(rowHtml);
                 });
-                    // Append files to the DataTransfer object
-                    $("#file-input")[0].files = fileList.files;
+                // Append files to the DataTransfer object
+                $("#file-input")[0].files = fileList.files;
                 // Clear modal fields
                 $("#uploaded-files").html("");
                 // $("#file-input").val("");

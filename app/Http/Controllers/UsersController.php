@@ -62,7 +62,7 @@ class UsersController extends Controller
             $admin = Auth::user();
             $adminName = $admin ? "{$admin->firstname} {$admin->lastname}" : 'Admin';
 
-            
+
             $resetLink = URL::route('password.reset', ['token' => $validated['remember_token']]);
 
             // Prepare email data
@@ -70,11 +70,12 @@ class UsersController extends Controller
                 'user_name' => "{$user->firstname} {$user->lastname}",
                 'message' => 'Welcome to TrackPoint!',
                 'admin_name' => $adminName,
-                'reset_link' => $resetLink, 
+                'reset_link' => $resetLink,
             ];
 
             // Send welcome email
-            Mail::to($user->email)->send(new EmailSender($user->email, 'Welcome to TrackPoint', $emailData, 'emails.welcome_email'));
+            Mail::to($user->email)->send(new EmailSender('Welcome to TrackPoint', $emailData, 'emails.welcome_email'));
+
 
             // Redirect with success message
             return redirect()->route('users.index')->with('user_invitation_sent', true);

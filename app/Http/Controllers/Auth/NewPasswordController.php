@@ -42,6 +42,11 @@ class NewPasswordController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        // Validate request
+        $request->validate([
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+        ]);
+
         // Find user by token
         $user = User::where('remember_token', $request->token)->first();
 
@@ -52,11 +57,12 @@ class NewPasswordController extends Controller
                 'remember_token' => null,
             ]);
 
+            // Redirect to login with success message
             return redirect()->route('login')->with('success', 'Your password has been reset successfully.');
         }
 
-        // If user not found, redirect to login with error
-        return redirect()->route('login')->withErrors(['error' => 'Invalid or expired reset link.']);
+        // If user not found, redirect back with error
+        return redirect()->back()->withErrors(['error' => 'Invalid or expired reset link.']);
     }
 
 }
