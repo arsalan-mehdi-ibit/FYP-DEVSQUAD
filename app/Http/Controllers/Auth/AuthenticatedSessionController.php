@@ -33,7 +33,7 @@ class AuthenticatedSessionController extends Controller
     {
         // Validate credentials
         $credentials = $request->only('email', 'password');
-    
+        
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Regenerate session to prevent session fixation attacks
     

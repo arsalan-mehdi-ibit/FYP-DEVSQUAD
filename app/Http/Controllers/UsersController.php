@@ -18,7 +18,7 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $pageTitle = "Users LIst";
+        $pageTitle = "Users List";
         $users = User::all();
         return view('users', compact('pageTitle', 'users'));
     }
@@ -84,8 +84,6 @@ class UsersController extends Controller
             \Log::error('User creation failed: ' . $e->getMessage());
             return redirect()->back()->withInput()->withErrors(['error' => 'Something went wrong' . (env('APP_DEBUG', false) ? $e->getMessage() : '')]);
 
-            // Redirect back with an error message
-            // return redirect()->back()->with('error', 'Something went wrong! Please try again.');
         }
     }
 

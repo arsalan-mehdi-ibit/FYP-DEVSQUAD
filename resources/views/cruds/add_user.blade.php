@@ -72,8 +72,8 @@
                                                 Consultant</option>
                                             <option value="Contractor" {{ old('role') == 'Contractor' ? 'selected' : '' }}>
                                                 Contractor</option>
-                                            <option value="Timesheet Admin"
-                                                {{ old('role') == 'Timesheet Admin' ? 'selected' : '' }}>Timesheet Admin
+                                            <option value="Supervisor"
+                                                {{ old('role') == 'Supervisor' ? 'selected' : '' }}>Supervisor
                                             </option>
                                         </select>
                                     </div>

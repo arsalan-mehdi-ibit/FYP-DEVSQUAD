@@ -1,15 +1,17 @@
 <?php
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
 class ProfileController extends Controller 
 {  public function index(Request $request)
     {
-        $pageTitle = 'Hi ARSALAN ';
+
+        $pageTitle = 'Hi, ' . Auth::user()->firstname . " " . Auth::user()->lastname;
         return view('profile' , compact('pageTitle'));
     }
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
         return view('profile.edit', [
             'user' => $request->user(),
