@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Auth\Events\PasswordReset;
@@ -20,19 +20,24 @@ class NewPasswordController extends Controller
      */
     public function create(Request $request, $token)
     {
-        // Find user by token
-        $user = User::where('remember_token', $token)->first();
+        if(!Auth::check())
+        {
 
-        // If token is invalid, redirect to login with an error message
-        if (!$user) {
-            return redirect()->route('login')->withErrors(['error' => 'The reset link has expired or is invalid.']);
+            // Find user by token
+            $user = User::where('remember_token', $token)->first();
+
+            // If token is invalid, redirect to login with an error message
+            if (!$user) {
+                return redirect()->route('login')->withErrors(['error' => 'The reset link has expired or is invalid.']);
+            }
+
+            // Redirect to the reset password page with token & email
+            return view('auth.reset-password', [
+                'token' => $token,
+                'email' => $user->email
+            ]);
         }
-
-        // Redirect to the reset password page with token & email
-        return view('auth.reset-password', [
-            'token' => $token,
-            'email' => $user->email
-        ]);
+            return redirect()->route('dashboard.index');
     }
 
     /**
