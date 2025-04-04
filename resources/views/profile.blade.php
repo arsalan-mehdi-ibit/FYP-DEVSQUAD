@@ -102,15 +102,18 @@
 
 {{-- JS for Profile Picture Preview --}}
 <script>
-    document.getElementById('profile-pic-upload').addEventListener('change', function (event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                document.getElementById('profile-pic-preview').src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
+    $(document).ready(function() {
+        console.log("here i comes");
+        $('#profile-pic-upload').on('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#profile-pic-preview').attr('src', e.target.result);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
     });
 </script>
 @endsection
