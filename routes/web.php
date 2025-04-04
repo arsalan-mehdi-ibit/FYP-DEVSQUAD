@@ -47,7 +47,12 @@ Route::middleware('auth')->group(function () {
     Route::group(['as' => 'dashboard.', 'prefix' => '/dashboard'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
     });
+
+
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile'); // Use the correct controller and method
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
