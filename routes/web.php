@@ -21,9 +21,12 @@ Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
 Route::post('/reset-password', [NewPasswordController::class, 'store'])
     ->name('password.store'); // This route handles the form submission (POST request)
 
-Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])->middleware('guest')->name('password.request');
+// Forgot Password
+Route::get('/forgot-password', [NewPasswordController::class, 'showForgotForm'])->name('password.request');
 
-Route::post('/forgot-password', [PasswordResetLinkController::class, 'store'])->middleware('guest')->name('password.email');
+Route::post('/forgot-password', [NewPasswordController::class, 'forgotPassword'])
+    ->name('password.email');
+
 
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);

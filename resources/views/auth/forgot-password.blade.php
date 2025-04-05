@@ -53,4 +53,36 @@
 
     </div>
 </div>
+
+@if (session('success'))
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        let message = "{{ session('success') }}";
+        let popup = $('<div></div>').text(message).css({
+            position: "fixed",
+            top: "20px",
+            left: "50%",
+            transform: "translateX(-50%)",
+            background: "#28a745",
+            color: "white",
+            padding: "10px 20px",
+            borderRadius: "5px",
+            boxShadow: "0px 4px 6px rgba(0,0,0,0.1)",
+            zIndex: "1000"
+        });
+
+        $("body").append(popup);
+
+        // Hide pop-up and redirect after 3 seconds
+        // setTimeout(function() {
+        //     popup.fadeOut(500, function() {
+        //         $(this).remove();
+        //         window.location.href =
+        //         "{{ route('login') }}"; // Redirect to login page after success message disappears
+        //     });
+        // }, 3000);
+    });
+</script>
+@endif
 @endsection

@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
+use App\Mail\EmailSender;
+
 
 class NewPasswordController extends Controller
 {
@@ -20,8 +24,7 @@ class NewPasswordController extends Controller
      */
     public function create(Request $request, $token)
     {
-        if(!Auth::check())
-        {
+        if (!Auth::check()) {
 
             // Find user by token
             $user = User::where('remember_token', $token)->first();
@@ -37,7 +40,45 @@ class NewPasswordController extends Controller
                 'email' => $user->email
             ]);
         }
-            return redirect()->route('dashboard.index');
+        return redirect()->route('dashboard.index');
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email|exists:users,email',
+        ]);
+
+        $user = User::where('email', $request->email)->first();
+
+        // Generate and save token
+        $token = Str::random(32);
+        $user->remember_token = $token;
+        $user->save();
+
+        // Generate reset link
+        $resetLink = URL::route('password.reset', ['token' => $token]);
+
+        // Prepare email data
+        $emailData = [
+            'user_name' => "{$user->firstname} {$user->lastname}",
+            'message' => 'Click the button below to reset your password.',
+            'reset_link' => $resetLink,
+        ];
+
+        // Send email
+        Mail::to($user->email)->send(new EmailSender(
+            'Reset your TrackPoint Password',
+            $emailData,
+            'emails.forgot_password_email' // updated template name
+        ));
+
+        return back()->with('status', 'We have emailed your password reset link!');
+    }
+
+    public function showForgotForm()
+    {
+        return view('auth.forgot-password'); 
     }
 
     /**
