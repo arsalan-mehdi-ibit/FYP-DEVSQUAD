@@ -90,6 +90,7 @@ class UsersController extends Controller
     public function editUser($id)
     {
         $user = User::findOrFail($id);
+        // dd($user);
         $pageTitle = "Edit User"; // Define the page title for edit
         return view('cruds.add_user', compact('pageTitle', 'user')); // Pass both variables to the view
     }

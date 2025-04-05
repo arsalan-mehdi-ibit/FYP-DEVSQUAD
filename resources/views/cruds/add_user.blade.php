@@ -68,20 +68,29 @@
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
+
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Role*</label>
-                                        <select name="role" required
-                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
-                                            <option value="">Select Role</option>
-                                            @foreach(['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
-                                                <option value="{{ $role }}"
-                                                    {{ old('role', $user->role ?? '') === $role ? 'selected' : '' }}>
-                                                    {{ $role }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        {{-- @php
+                                            dd($user->role, old('role'));
+                                        @endphp --}}
+                                        {{-- <pre>
+                                            User Role: {{ $user->role }}
+                                            Old Role: {{ old('role') }}
+                                            </pre> --}}
+                                            
+                                            <select name="role" required class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
+                                                <option value="">Select Role</option>
+                                                @foreach (['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
+                                                    <option value="{{ strtolower($role) }}" 
+                                                        {{ strtolower($user->role) == strtolower($role) ? 'selected' : '' }}>
+                                                        {{ ucfirst($role) }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
                                     </div>
-                            
+
+
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Address</label>
                                         <input type="text" name="address"
@@ -92,8 +101,7 @@
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Email*</label>
                                         <input type="email" name="email" value="{{ old('email', $user->email ?? '') }}"
-                                            required
-                                            @if(isset($user)) readonly @endif
+                                            required @if (isset($user)) readonly @endif
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
@@ -155,20 +163,21 @@
                                         <tbody id="file-table-body">
                                             <!-- Uploaded files will be added here dynamically -->
                                             @if (isset($user) && $user->fileAttachments)
-                                            @foreach ($user->fileAttachments as $file)
-                                            <tr>
-                                                <td class="p-2">{{ $loop->iteration }}</td>
-                                                
-                                                {{-- This will extract the original file name from the stored path --}}
-                                                <td class="p-2">
-                                                    {{ Str::afterLast($file->file_path, '_') }}
-                                                </td>
-                                        
-                                                <td class="p-2 text-right">
-                                                    <button class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
-                                                </td>
-                                            </tr>
-                                        @endforeach
+                                                @foreach ($user->fileAttachments as $file)
+                                                    <tr>
+                                                        <td class="p-2">{{ $loop->iteration }}</td>
+
+                                                        {{-- This will extract the original file name from the stored path --}}
+                                                        <td class="p-2">
+                                                            {{ Str::afterLast($file->file_path, '_') }}
+                                                        </td>
+
+                                                        <td class="p-2 text-right">
+                                                            <button
+                                                                class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
                                             @endif
                                         </tbody>
                                     </table>
