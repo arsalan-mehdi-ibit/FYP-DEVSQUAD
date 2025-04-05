@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Auth\AuthenticatedSessionController; // Use the correct controller
+use App\Http\Controllers\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\UsersController;
@@ -13,8 +13,6 @@ use App\Http\Controllers\TimesheetDetailController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
-
-
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
     ->name('password.reset'); // This route displays the form (GET request)
@@ -45,6 +43,7 @@ Route::middleware('auth')->group(function () {
     Route::group(['as' => 'dashboard.', 'prefix' => '/dashboard'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
     });
+
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile'); // Use the correct controller and method
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
@@ -57,20 +56,17 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [UsersController::class, 'store'])->name('store');
     });
 
-
     Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
         Route::get('/details', [TimesheetDetailController::class, 'index'])->name('details.index');
         Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
     });
 
-
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
-        Route::get('/add', [ProjectController::class, 'add'])->name('add');
-        Route::post('/store', [ProjectController::class, 'store'])->name('store');
+        Route::get('/add', [ProjectController::class, 'add'])->name('add'); // Route for the "add project" form
+        Route::post('/store', [ProjectController::class, 'store'])->name('store'); // Route for storing the project data to the database
     });
-
 
     Route::middleware(['web'])->group(function () {
         // Route::post('/upload-file', [MediaController::class, 'uploadFile'])->name('upload.file');
@@ -78,9 +74,3 @@ Route::middleware('auth')->group(function () {
     });
 
 });
-
-
-
-
-
-
