@@ -116,9 +116,11 @@
                                 <td class="p-2 sm:p-3 text-xs text-left sm:text-sm md:text-base">{{ $user->source ?? '-' }}
                                 </td>
                                 <td class="p-2 sm:p-3 flex justify-center space-x-2">
-                                    <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
-                                        <i class="bi bi-pencil text-orange-500"></i>
-                                    </button>
+                                    <a href="{{ route('users.edit', $user->id) }}">
+                                        <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
+                                            <i class="bi bi-pencil text-orange-500"></i>
+                                        </button>
+                                    </a>
                                     <button class="p-2 rounded-xl bg-red-100 hover:bg-red-200 transition-all">
                                         <i class="bi bi-trash text-red-500"></i>
                                     </button>

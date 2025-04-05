@@ -87,6 +87,36 @@ class UsersController extends Controller
         }
     }
 
+    public function editUser($id)
+    {
+        $user = User::findOrFail($id);
+        $pageTitle = "Edit User"; // Define the page title for edit
+        return view('cruds.add_user', compact('pageTitle', 'user')); // Pass both variables to the view
+    }
+    public function update(Request $request, $id)
+{
+    // Validate the request
+    $validated = $request->validate([
+        'firstname' => 'required|string|max:255',
+        'middlename' => 'nullable|string|max:255',
+        'lastname' => 'required|string|max:255',
+        'role' => 'required|string',
+        'address' => 'nullable|string|max:255',
+        'email' => 'required|email|unique:users,email,' . $id, // Ensure unique email except for this user
+        'phone' => 'required|string|max:20',
+        'source' => 'nullable|string|max:255',
+        'is_active' => 'nullable|boolean',
+        'send_emails' => 'nullable|boolean',
+    ]);
+
+    // Find the user and update their details
+    $user = User::findOrFail($id);
+    $user->update($validated);
+
+    // Optionally, handle file uploads or other logic here
+
+    return redirect()->route('users.index')->with('user_updated', true); // Redirect back after update
+}
     /**
      * Display the specified resource.
      */
@@ -98,18 +128,12 @@ class UsersController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
-    {
-        //
-    }
+    
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+
 
     /**
      * Remove the specified resource from storage.

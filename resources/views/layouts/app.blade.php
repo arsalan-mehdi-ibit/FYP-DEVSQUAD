@@ -80,7 +80,7 @@
 
     <script>
         $(document).ready(function() {
-           
+
 
 
             $("#logout-icon").click(function(e) {
@@ -240,22 +240,28 @@
 
                 // Append files to the table
                 let tableBody = $("#file-table-body");
+                let existingRowCount = tableBody.find("tr").length;
+
                 filesArray.forEach((file, index) => {
                     // Append files to the DataTransfer object
                     fileList.items.add(file);
 
+                    // Start numbering from existing rows
+                    let srNo = existingRowCount + index + 1;
+
                     let rowHtml = `
-                    <tr class="border-b">
-                        <td class="p-2">${index + 1}</td>
-                        <td class="p-2">${file.name}</td>
-                        <td class="p-2 text-right">
-                            <button class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
-                        </td>
-                    </tr>
-                `;
+        <tr class="border-b">
+            <td class="p-2">${srNo}</td>
+            <td class="p-2">${file.name}</td>
+            <td class="p-2 text-right">
+                <button class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
+            </td>
+        </tr>
+    `;
 
                     tableBody.append(rowHtml);
                 });
+
                 // Append files to the DataTransfer object
                 $("#file-input")[0].files = fileList.files;
                 // Clear modal fields

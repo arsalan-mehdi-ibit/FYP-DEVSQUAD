@@ -1,3 +1,5 @@
+@php use Illuminate\Support\Str; @endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -23,8 +25,12 @@
 
         <!-- Form Card -->
         <div class="bg-white shadow-xl rounded-xl p-2 mt-4">
-            <form action="{{ route('users.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ isset($user) ? route('users.update', $user->id) : route('users.store') }}" method="POST"
+                enctype="multipart/form-data">
                 @csrf
+                @if (isset($user))
+                    @method('PUT')
+                @endif
 
                 <div class="accordion" id="userAccordion">
                     <!-- User Details -->
@@ -43,19 +49,22 @@
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">First Name*</label>
-                                        <input type="text" name="firstname" value="{{ old('firstname') }}" required
+                                        <input type="text" name="firstname"
+                                            value="{{ old('firstname', $user->firstname ?? '') }}" required
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Middle Name</label>
-                                        <input type="text" name="middlename" value="{{ old('middlename') }}"
+                                        <input type="text" name="middlename"
+                                            value="{{ old('middlename', $user->middlename ?? '') }}"
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Last Name*</label>
-                                        <input type="text" name="lastname" value="{{ old('lastname') }}" required
+                                        <input type="text" name="lastname"
+                                            value="{{ old('lastname', $user->lastname ?? '') }}" required
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
@@ -64,49 +73,49 @@
                                         <select name="role" required
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                             <option value="">Select Role</option>
-                                            <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin
-                                            </option>
-                                            <option value="Client" {{ old('role') == 'Client' ? 'selected' : '' }}>Client
-                                            </option>
-                                            <option value="Consultant" {{ old('role') == 'Consultant' ? 'selected' : '' }}>
-                                                Consultant</option>
-                                            <option value="Contractor" {{ old('role') == 'Contractor' ? 'selected' : '' }}>
-                                                Contractor</option>
-                                            <option value="Supervisor"
-                                                {{ old('role') == 'Supervisor' ? 'selected' : '' }}>Supervisor
-                                            </option>
+                                            @foreach(['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
+                                                <option value="{{ $role }}"
+                                                    {{ old('role', $user->role ?? '') === $role ? 'selected' : '' }}>
+                                                    {{ $role }}
+                                                </option>
+                                            @endforeach
                                         </select>
                                     </div>
-
+                            
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Address</label>
-                                        <input type="text" name="address" value="{{ old('address') }}"
+                                        <input type="text" name="address"
+                                            value="{{ old('address', $user->address ?? '') }}"
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Email*</label>
-                                        <input type="email" name="email" value="{{ old('email') }}" required
+                                        <input type="email" name="email" value="{{ old('email', $user->email ?? '') }}"
+                                            required
+                                            @if(isset($user)) readonly @endif
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Phone*</label>
-                                        <input type="text" name="phone" value="{{ old('phone') }}" required
+                                        <input type="text" name="phone" value="{{ old('phone', $user->phone ?? '') }}"
+                                            required
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white"
                                             placeholder="+X (XXX) XXX-XXXX">
                                     </div>
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Source</label>
-                                        <input type="text" name="source" value="{{ old('source') }}"
+                                        <input type="text" name="source"
+                                            value="{{ old('source', $user->source ?? '') }}"
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
                                     <div class="flex flex-col items-center space-y-1">
                                         <label class="text-black text-sm font-medium text-center">Active</label>
                                         <input type="checkbox" name="is_active" class="custom-checkbox" value="1"
-                                            checked>
+                                            {{ old('is_active', $user->is_active ?? false) ? 'checked' : '' }}>
                                     </div>
 
                                     <div class="flex flex-col items-center">
@@ -115,7 +124,7 @@
                                             Send Approval/Rejection Email
                                         </label>
                                         <input type="checkbox" name="send_emails" class="custom-checkbox" value="1"
-                                            checked>
+                                            {{ old('send_emails', $user->send_emails ?? false) ? 'checked' : '' }}>
                                     </div>
                                 </div>
                             </div>
@@ -145,6 +154,22 @@
                                         </thead>
                                         <tbody id="file-table-body">
                                             <!-- Uploaded files will be added here dynamically -->
+                                            @if (isset($user) && $user->fileAttachments)
+                                            @foreach ($user->fileAttachments as $file)
+                                            <tr>
+                                                <td class="p-2">{{ $loop->iteration }}</td>
+                                                
+                                                {{-- This will extract the original file name from the stored path --}}
+                                                <td class="p-2">
+                                                    {{ Str::afterLast($file->file_path, '_') }}
+                                                </td>
+                                        
+                                                <td class="p-2 text-right">
+                                                    <button class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>
@@ -170,7 +195,7 @@
                 <div class="flex justify-end my-4 mx-1">
                     <button type="submit"
                         class="bg-gradient-to-r from-yellow-400 to-red-400 hover:from-yellow-300 hover:to-red-300 text-white px-4 py-2 rounded-full text-sm font-medium shadow-md">
-                        Create User
+                        {{ isset($user) ? 'Update User' : 'Create User' }}
                     </button>
                 </div>
                 @include('components.file-upload-modal')
@@ -181,6 +206,10 @@
     <script>
         $(document).ready(function() {
             $('.basic_details').click();
+
+            @if (isset($user))
+                $('h2.text-2xl').text('Edit User');
+            @endif
         });
     </script>
 @endsection

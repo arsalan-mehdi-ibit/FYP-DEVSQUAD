@@ -18,21 +18,25 @@ class User extends Authenticatable
      * @var list<string>
      */
     protected $fillable = [
-      'firstname',
-    'middlename',
-    'lastname',
-    'email',
-    'email_verified_at',  
-    'password',
-    'role',
-    'source',
-    'phone',
-    'address',
-    'is_active',
-    'send_emails',          
+        'firstname',
+        'middlename',
+        'lastname',
+        'email',
+        'email_verified_at',
+        'password',
+        'role',
+        'source',
+        'phone',
+        'address',
+        'is_active',
+        'send_emails',
         'remember_token',
     ];
 
+    public function fileAttachments()
+    {
+        return $this->hasMany(\App\Models\FileAttachment::class, 'parent_id');
+    }
     /**
      * The attributes that should be hidden for serialization.
      *

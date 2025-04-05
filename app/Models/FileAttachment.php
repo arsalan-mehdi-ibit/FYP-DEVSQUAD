@@ -16,4 +16,9 @@ class FileAttachment extends Model
         'file_type',
         'file_path',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(\App\Models\User::class, 'parent_id');  // 'parent_id' as foreign key
+    }
 }
