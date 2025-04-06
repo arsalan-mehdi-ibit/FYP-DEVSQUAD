@@ -15,15 +15,18 @@ class Project extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'description',
-        'client_id',
+        'name',       // Updated from 'name' to 'project_name'
+        // 'type',
+        'client_id',             // You may want to map this to client_id if that's your intention
+        // 'consultant',
+        'client_rate',
+        'status',
         'start_date',
         'end_date',
-        'status',
-        'client_rate',
-        'created_at',
-        'updated_at',
+        // 'referral_source',    // New field added
+        'description',              // New field added
+        'created_at',         // These may be auto-handled by Laravel, but included for completeness
+        'updated_at',         // These may be auto-handled by Laravel, but included for completeness
     ];
 
     /**
@@ -31,7 +34,7 @@ class Project extends Model
      */
     public function client()
     {
-        return $this->belongsTo(User::class, 'client_id');
+        return $this->belongsTo(User::class, 'client_id'); // Ensure you are referencing client_id here
     }
 
     /**
@@ -43,4 +46,12 @@ class Project extends Model
                     ->withPivot('contractor_rate')
                     ->withTimestamps();
     }
+
+    // Optionally, if you want to have custom attribute names (for example, if you want `client_name` instead of `client`)
+    public function getClientNameAttribute()
+    {
+        return $this->client->name; // If the User model has a 'name' attribute
+    }
+
+    // You can also define custom methods for other relationships if necessary
 }
