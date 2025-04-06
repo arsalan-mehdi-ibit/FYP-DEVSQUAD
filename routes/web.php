@@ -64,6 +64,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/store', [UsersController::class, 'store'])->name('store');
         Route::get('/edit/{id}', [UsersController::class, 'editUser'])->name('edit');
         Route::put('/update/{id}', [UsersController::class, 'update'])->name('update');
+        Route::delete('/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
+
 
     });
 
@@ -82,10 +84,12 @@ Route::middleware('auth')->group(function () {
     });
 
 
-    Route::middleware(['web'])->group(function () {
-        // Route::post('/upload-file', [MediaController::class, 'uploadFile'])->name('upload.file');
-        Route::delete('/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
-    });
+    // Route::middleware(['web'])->group(function () {
+    //     // Route::post('/upload-file', [MediaController::class, 'uploadFile'])->name('upload.file');
+    //     // Route::delete('/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
+    //     // Route::delete('/users/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
+
+    // });
 
 });
 

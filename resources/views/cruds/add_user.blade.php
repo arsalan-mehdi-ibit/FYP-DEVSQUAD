@@ -29,7 +29,7 @@
                 enctype="multipart/form-data">
                 @csrf
                 @if (isset($user))
-                    @method('PUT')
+                    @method('PUT') <!-- This ensures the request method is PUT for updating -->
                 @endif
 
                 <div class="accordion" id="userAccordion">
@@ -78,16 +78,18 @@
                                             User Role: {{ $user->role }}
                                             Old Role: {{ old('role') }}
                                             </pre> --}}
-                                            
-                                            <select name="role" required class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
-                                                <option value="">Select Role</option>
-                                                @foreach (['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
-                                                    <option value="{{ strtolower($role) }}" 
-                                                        {{ strtolower($user->role) == strtolower($role) ? 'selected' : '' }}>
-                                                        {{ ucfirst($role) }}
-                                                    </option>
-                                                @endforeach
-                                            </select>
+
+                                        <select name="role" required
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
+                                            <option value="">Select Role</option>
+                                            @foreach (['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
+                                                <option value="{{ strtolower($role) }}"
+                                                    {{ isset($user) && strtolower($user->role) == strtolower($role) ? 'selected' : '' }}>
+                                                    {{ ucfirst($role) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
                                     </div>
 
 
@@ -120,8 +122,10 @@
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
                                     </div>
 
+                                    <!-- Hidden input to ensure unchecked value gets sent -->
                                     <div class="flex flex-col items-center space-y-1">
                                         <label class="text-black text-sm font-medium text-center">Active</label>
+                                        <input type="hidden" name="is_active" value="0">
                                         <input type="checkbox" name="is_active" class="custom-checkbox" value="1"
                                             {{ old('is_active', $user->is_active ?? false) ? 'checked' : '' }}>
                                     </div>
@@ -131,9 +135,13 @@
                                             style="font-size:11px !important;">
                                             Send Approval/Rejection Email
                                         </label>
+                                        <input type="hidden" name="send_emails" value="0">
                                         <input type="checkbox" name="send_emails" class="custom-checkbox" value="1"
                                             {{ old('send_emails', $user->send_emails ?? false) ? 'checked' : '' }}>
                                     </div>
+
+
+
                                 </div>
                             </div>
                         </div>
@@ -151,7 +159,8 @@
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#userAccordion">
                             <div class="accordion-body p-0">
-                                <div class="bg-white rounded-lg shadow-sm p-0">
+                                @if (isset($user) && $user->fileAttachments)
+                                <div class="bg-white rounded-lg shadow-sm p-4 mt-4">
                                     <table class="w-full border-none rounded-lg">
                                         <thead class="bg-gray-100 text-gray-600 text-sm">
                                             <tr>
@@ -161,28 +170,23 @@
                                             </tr>
                                         </thead>
                                         <tbody id="file-table-body">
-                                            <!-- Uploaded files will be added here dynamically -->
-                                            @if (isset($user) && $user->fileAttachments)
-                                                @foreach ($user->fileAttachments as $file)
-                                                    <tr>
-                                                        <td class="p-2">{{ $loop->iteration }}</td>
-
-                                                        {{-- This will extract the original file name from the stored path --}}
-                                                        <td class="p-2">
-                                                            {{ Str::afterLast($file->file_path, '_') }}
-                                                        </td>
-
-                                                        <td class="p-2 text-right">
-                                                            <button
-                                                                class="bg-red-500 text-white px-4 py-1 text-xs rounded remove-row">&times;</button>
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
-                                            @endif
+                                            @foreach ($user->fileAttachments as $file)
+                                                <tr>
+                                                    <td class="p-2">{{ $loop->iteration }}</td>
+                                                    <td class="p-2">{{ Str::afterLast($file->file_path, '_') }}</td>
+                                                    <td class="p-2 text-right">
+                                                        <!-- Delete button with data-id attribute -->
+                                                        <button type="button" class="bg-red-500 text-white px-4 py-1 text-xs rounded delete-file-btn" data-file-id="{{ $file->id }}">
+                                                            &times;
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
                                         </tbody>
                                     </table>
                                 </div>
-
+                            @endif
+                        
                                 <!-- Hidden inputs for file storage -->
                                 <input type="hidden" name="file_for" value="user">
 
@@ -219,6 +223,33 @@
             @if (isset($user))
                 $('h2.text-2xl').text('Edit User');
             @endif
+
+            // Listen for delete button clicks
+            $('.delete-file-btn').on('click', function(event) {
+                var fileId = $(this).data('file-id'); // Get the file ID from the data attribute
+
+                if (confirm('Are you sure you want to delete this file?')) {
+                    // Perform an AJAX DELETE request to delete the file
+                    $.ajax({
+                        url: '{{ route('users.delete.file', ' ') }}/' + fileId,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}' // Include the CSRF token for security
+                        },
+                        success: function(data) {
+                            if (data.success) {
+                                // Remove the file row from the table
+                                $(event.target).closest('tr').remove();
+                            } else {
+                                alert('Error deleting the file');
+                            }
+                        },
+                        error: function() {
+                            alert('An error occurred while deleting the file');
+                        }
+                    });
+                }
+            });
         });
     </script>
 @endsection

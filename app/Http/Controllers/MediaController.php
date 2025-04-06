@@ -8,14 +8,14 @@ use Illuminate\Support\Facades\Storage;
 
 class MediaController extends Controller
 {
-    public static function uploadFile($request , $parent_id)
+    public static function uploadFile($request, $parent_id)
     {
         // dd($request);
         if (!$request->hasFile('attachments')) {
             // dd("Herk kse");
             return response()->json(['success' => false, 'message' => 'No files uploaded'], 400);
         }
-        
+
         // dd("Here");
         $uploadedFiles = [];
         foreach ($request->file('attachments') as $file) {
@@ -30,21 +30,21 @@ class MediaController extends Controller
                 'file_path' => $imagePath,
             ]);
             // Generate new filename (file_id + original filename)
-                $newFileName = $fileAttachment->id . '_' . $file->getClientOriginalName();
+            $newFileName = $fileAttachment->id . '_' . $file->getClientOriginalName();
 
-                // Define the storage path
-                $imagePath = 'storage/' . $newFileName;
+            // Define the storage path
+            $imagePath = 'storage/' . $newFileName;
 
-                // Store file in 'public/storage' with the new name
-                $filePath = $file->storeAs('public', $newFileName);
+            // Store file in 'public/storage' with the new name
+            $filePath = $file->storeAs('public', $newFileName);
 
-                // dd(Storage::disk('public')->exists($filePath));
+            // dd(Storage::disk('public')->exists($filePath));
 
 
-                // Update the file path in the database
-                $fileAttachment->update(['file_path' => $imagePath]);
+            // Update the file path in the database
+            $fileAttachment->update(['file_path' => $imagePath]);
 
-                $uploadedFiles[] = $imagePath;
+            $uploadedFiles[] = $imagePath;
 
         }
 
@@ -53,14 +53,20 @@ class MediaController extends Controller
 
     public function deleteFile($id)
     {
+        // Find the file to delete by ID
         $file = FileAttachment::find($id);
-        if (!$file) {
-            return response()->json(['success' => false, 'message' => 'File not found'], 404);
+
+        if ($file) {
+            // Delete the file from storage
+            Storage::delete($file->file_path);
+
+            // Delete the file entry from the database
+            $file->delete();
+
+            return redirect()->back()->with('success', 'File deleted successfully');
         }
 
-        Storage::disk('public')->delete($file->file_path);
-        $file->delete();
-
-        return response()->json(['success' => true, 'message' => 'File deleted successfully']);
+        return redirect()->back()->with('error', 'File not found');
     }
+
 }
