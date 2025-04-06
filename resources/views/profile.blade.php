@@ -44,16 +44,16 @@
                     {{-- Profile Fields --}}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="first_name">First Name</label>
+                            <label for="firstname">First Name</label>
                             <input required value="{{  $user->firstname }}" type="text"
-                                   class="form-control" id="first_name" name="first_name"
+                                   class="form-control" id="firstname" name="firstname"
                                    placeholder="Enter your first name">
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="last_name">Last Name</label>
+                            <label for="lastname">Last Name</label>
                             <input required value="{{  $user->lastname }}" type="text"
-                                   class="form-control" id="last_name" name="last_name"
+                                   class="form-control" id="lastname" name="lastname"
                                    placeholder="Enter your last name">
                         </div>
                     </div>
