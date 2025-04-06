@@ -53,20 +53,16 @@ class MediaController extends Controller
 
     public function deleteFile($id)
     {
-        // Find the file to delete by ID
         $file = FileAttachment::find($id);
 
         if ($file) {
-            // Delete the file from storage
+            // Ensure file is only deleted when the user manually clicks the delete button
             Storage::delete($file->file_path);
-
-            // Delete the file entry from the database
             $file->delete();
-
-            return redirect()->back()->with('success', 'File deleted successfully');
+            return response()->json(['success' => true]);
         }
 
-        return redirect()->back()->with('error', 'File not found');
+        return response()->json(['success' => false, 'message' => 'File not found']);
     }
 
 }

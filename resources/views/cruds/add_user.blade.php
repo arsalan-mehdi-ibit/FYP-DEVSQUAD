@@ -79,16 +79,17 @@
                                             Old Role: {{ old('role') }}
                                             </pre> --}}
 
-                                        <select name="role" required
-                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
-                                            <option value="">Select Role</option>
-                                            @foreach (['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
-                                                <option value="{{ strtolower($role) }}"
-                                                    {{ isset($user) && strtolower($user->role) == strtolower($role) ? 'selected' : '' }}>
-                                                    {{ ucfirst($role) }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                            <select name="role" required class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
+                                                <option value="">Select Role</option>
+                                                @foreach (['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
+                                                    @if (isset($user) && strtolower($user->role) == strtolower($role))
+                                                        <option value="{{ strtolower($role) }}" selected>{{ ucfirst($role) }}</option>
+                                                    @else
+                                                        <option value="{{ strtolower($role) }}">{{ ucfirst($role) }}</option>
+                                                    @endif
+                                                @endforeach
+                                            </select>
+                                            
 
                                     </div>
 
@@ -160,33 +161,37 @@
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#userAccordion">
                             <div class="accordion-body p-0">
                                 @if (isset($user) && $user->fileAttachments)
-                                <div class="bg-white rounded-lg shadow-sm p-4 mt-4">
-                                    <table class="w-full border-none rounded-lg">
-                                        <thead class="bg-gray-100 text-gray-600 text-sm">
-                                            <tr>
-                                                <th class="p-2 text-left">Sr</th>
-                                                <th class="p-2 text-left">File</th>
-                                                <th class="p-2 text-right">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="file-table-body">
-                                            @foreach ($user->fileAttachments as $file)
+                                    <div class="bg-white rounded-lg shadow-sm p-4 mt-4">
+                                        <table class="w-full border-none rounded-lg">
+                                            <thead class="bg-gray-100 text-gray-600 text-sm">
                                                 <tr>
-                                                    <td class="p-2">{{ $loop->iteration }}</td>
-                                                    <td class="p-2">{{ Str::afterLast($file->file_path, '_') }}</td>
-                                                    <td class="p-2 text-right">
-                                                        <!-- Delete button with data-id attribute -->
-                                                        <button type="button" class="bg-red-500 text-white px-4 py-1 text-xs rounded delete-file-btn" data-file-id="{{ $file->id }}">
-                                                            &times;
-                                                        </button>
-                                                    </td>
+                                                    <th class="p-2 text-left">Sr</th>
+                                                    <th class="p-2 text-left">File</th>
+                                                    <th class="p-2 text-right">Actions</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </div>
-                            @endif
-                        
+                                            </thead>
+                                            <tbody id="file-table-body">
+                                                @foreach ($user->fileAttachments as $file)
+                                                    <tr>
+                                                        <td class="p-2">{{ $loop->iteration }}</td>
+                                                        <td class="p-2">{{ Str::afterLast($file->file_path, '_') }}
+                                                        </td>
+                                                        <td class="p-2 text-right">
+                                                            <!-- Delete button with data-id attribute -->
+                                                            <button type="button"
+                                                                class="delete-file-btn bg-red-500 text-white px-4 py-1 text-xs rounded"
+                                                                data-file-id="{{ $file->id }}">
+                                                                &times;
+                                                            </button>
+
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @endif
+
                                 <!-- Hidden inputs for file storage -->
                                 <input type="hidden" name="file_for" value="user">
 
@@ -224,32 +229,37 @@
                 $('h2.text-2xl').text('Edit User');
             @endif
 
-            // Listen for delete button clicks
             $('.delete-file-btn').on('click', function(event) {
+                event.preventDefault(); // Prevent any default action
+
                 var fileId = $(this).data('file-id'); // Get the file ID from the data attribute
 
                 if (confirm('Are you sure you want to delete this file?')) {
-                    // Perform an AJAX DELETE request to delete the file
+                    // Perform the AJAX DELETE request
                     $.ajax({
-                        url: '{{ route('users.delete.file', ' ') }}/' + fileId,
+                        url: '/users/delete-file/' + fileId, // The correct route for file deletion
                         type: 'DELETE',
                         data: {
-                            _token: '{{ csrf_token() }}' // Include the CSRF token for security
+                            _token: '{{ csrf_token() }}' // CSRF token for security
                         },
-                        success: function(data) {
-                            if (data.success) {
-                                // Remove the file row from the table
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                // Remove the file row from the table if deletion was successful
                                 $(event.target).closest('tr').remove();
                             } else {
-                                alert('Error deleting the file');
+                                alert('Error: ' + (response.message ||
+                                'Unable to delete file'));
                             }
                         },
-                        error: function() {
-                            alert('An error occurred while deleting the file');
+                        error: function(xhr, status, error) {
+                            alert('Error occurred while deleting the file.');
                         }
                     });
                 }
             });
+
+
         });
     </script>
 @endsection
