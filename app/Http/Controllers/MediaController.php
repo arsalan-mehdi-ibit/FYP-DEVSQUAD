@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\FileAttachment;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+
+
 
 class MediaController extends Controller
 {
@@ -65,4 +68,20 @@ class MediaController extends Controller
         return response()->json(['success' => false, 'message' => 'File not found']);
     }
 
+    public function downloadFile($id)
+{
+    $file = FileAttachment::findOrFail($id);
+
+    // Remove 'storage/' prefix to get the actual storage path
+    $relativePath = Str::after($file->file_path, 'storage/');
+
+    if (!Storage::disk('public')->exists($relativePath)) {
+        abort(404, 'File not found');
+    }
+
+    // Get original file name after underscore
+    $originalFilename = Str::after($relativePath, '_');
+
+    return Storage::disk('public')->download($relativePath, $originalFilename);
+}
 }

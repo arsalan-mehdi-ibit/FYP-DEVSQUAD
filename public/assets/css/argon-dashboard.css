@@ -27644,8 +27644,8 @@ text::placeholder {
     border-left: 4px solid #3b82f6; /* Blue left border */
     padding-left: 6px;
 }
- /* Responsive and Centered Dropdown */
- #notificationDropdown {
+/* Responsive and Centered Dropdown */
+#notificationDropdown {
     width: 90%;
     max-width: 400px;
     min-width: 280px;
@@ -27676,15 +27676,15 @@ text::placeholder {
     border-left: none;
 }
 
-
- /* Responsive Table */
- @media (max-width: 768px) {
+/* Responsive Table */
+@media (max-width: 768px) {
     .table-responsive {
         overflow-x: auto;
         white-space: nowrap;
     }
 
-    th, td {
+    th,
+    td {
         padding: 8px;
         font-size: 12px;
     }
@@ -27694,8 +27694,6 @@ text::placeholder {
 /* .table thead {
     background-color: gray ; /* Light Gray */
 /* }  */
-
-
 
 .table tbody tr {
     background-color: white !important ;
@@ -27715,8 +27713,8 @@ text::placeholder {
 
 /* .nested-table thead {
     background-color: #374151 !important; /* Tailwind bg-gray-700 */
-    /* color: white !important; */
-/* } */ 
+/* color: white !important; */
+/* } */
 /* .nested-table thead {
     display: table-header-group !important;
 } */
@@ -27725,7 +27723,7 @@ text::placeholder {
 /* .table thead,
 .nested-table thead {
     background-color: #374151 !important; /* Tailwind bg-gray-700 */
-    /* color: white !important; */
+/* color: white !important; */
 /* }  */
 
 /* Ensure all table body rows are white with dark gray text */
@@ -27735,23 +27733,22 @@ text::placeholder {
     color: #1f2937 !important; /* Tailwind text-gray-800 */
 /* }  */
 
-.table > thead
- {
-    background-color: #374151 !important; 
+.table > thead {
+    background-color: #374151 !important;
     color: white !important;
 }
 
-.nested-table thead, 
-.nested-table thead tr{
-    background-color: #4B5563 !important; 
+.nested-table thead,
+.nested-table thead tr {
+    background-color: #4b5563 !important;
     color: white !important;
 }
+
 
 
 /* .table tbody tr{
     background-color: white !important;
 } */
- /* .table tbody tr{
+/* .table tbody tr{
     background-color: white !important;
  } */
-

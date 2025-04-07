@@ -1,6 +1,22 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        #updateSuccessPopup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #38a169;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            boxShadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
+
     <div id="users" class="main-layout max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -141,5 +157,21 @@
         </script>
 
         @include('components.new_user_model')
+    @endif
+
+    @if (session('user_updated'))
+        <div id="updateSuccessPopup" class=" duration-300">
+            User has been successfully updated.
+        </div>
+
+        <script>
+            setTimeout(() => {
+                const popup = document.getElementById('updateSuccessPopup');
+                if (popup) {
+                    popup.style.opacity = '0';
+                    setTimeout(() => popup.remove(), 500); // Fade out before removing
+                }
+            }, 3000); // Hide after 3 seconds
+        </script>
     @endif
 @endsection

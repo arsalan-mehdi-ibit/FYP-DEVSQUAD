@@ -79,17 +79,19 @@
                                             Old Role: {{ old('role') }}
                                             </pre> --}}
 
-                                            <select name="role" required class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
-                                                <option value="">Select Role</option>
-                                                @foreach (['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
-                                                    @if (isset($user) && strtolower($user->role) == strtolower($role))
-                                                        <option value="{{ strtolower($role) }}" selected>{{ ucfirst($role) }}</option>
-                                                    @else
-                                                        <option value="{{ strtolower($role) }}">{{ ucfirst($role) }}</option>
-                                                    @endif
-                                                @endforeach
-                                            </select>
-                                            
+                                        <select name="role" required
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white">
+                                            <option value="">Select Role</option>
+                                            @foreach (['Admin', 'Client', 'Contractor', 'Consultant'] as $role)
+                                                @if (isset($user) && strtolower($user->role) == strtolower($role))
+                                                    <option value="{{ strtolower($role) }}" selected>{{ ucfirst($role) }}
+                                                    </option>
+                                                @else
+                                                    <option value="{{ strtolower($role) }}">{{ ucfirst($role) }}</option>
+                                                @endif
+                                            @endforeach
+                                        </select>
+
 
                                     </div>
 
@@ -160,17 +162,17 @@
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#userAccordion">
                             <div class="accordion-body p-0">
-                                @if (isset($user) && $user->fileAttachments)
-                                    <div class="bg-white rounded-lg shadow-sm p-4 mt-4">
-                                        <table class="w-full border-none rounded-lg">
-                                            <thead class="bg-gray-100 text-gray-600 text-sm">
-                                                <tr>
-                                                    <th class="p-2 text-left">Sr</th>
-                                                    <th class="p-2 text-left">File</th>
-                                                    <th class="p-2 text-right">Actions</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="file-table-body">
+                                <div class="bg-white rounded-lg shadow-sm p-4 mt-4">
+                                    <table class="w-full border-none rounded-lg">
+                                        <thead class="bg-gray-100 text-gray-600 text-sm">
+                                            <tr>
+                                                <th class="p-2 text-left">Sr</th>
+                                                <th class="p-2 text-left">File</th>
+                                                <th class="p-2 text-right">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="file-table-body">
+                                            @if (isset($user) && $user->fileAttachments)
                                                 @foreach ($user->fileAttachments as $file)
                                                     <tr>
                                                         <td class="p-2">{{ $loop->iteration }}</td>
@@ -183,14 +185,21 @@
                                                                 data-file-id="{{ $file->id }}">
                                                                 &times;
                                                             </button>
+                                                            <!-- Download button -->
+                                                            <a href="{{ route('users.downloadFile', $file->id) }}"
+                                                                class="bg-blue-500 text-white px-2 py-1 text-xs rounded"
+                                                                title="Download File"
+                                                                target="_blank">
+                                                                 download
+                                                             </a>
 
                                                         </td>
                                                     </tr>
                                                 @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                @endif
+                                            @endif
+                                        </tbody>
+                                    </table>
+                                </div>
 
                                 <!-- Hidden inputs for file storage -->
                                 <input type="hidden" name="file_for" value="user">
@@ -247,9 +256,12 @@
                             if (response.success) {
                                 // Remove the file row from the table if deletion was successful
                                 $(event.target).closest('tr').remove();
+                                $('#file-table-body tr').each(function(index) {
+                                    $(this).find('td:first').text(index + 1);
+                                });
                             } else {
                                 alert('Error: ' + (response.message ||
-                                'Unable to delete file'));
+                                    'Unable to delete file'));
                             }
                         },
                         error: function(xhr, status, error) {
