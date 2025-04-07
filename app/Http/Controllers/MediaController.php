@@ -18,9 +18,14 @@ class MediaController extends Controller
             return response()->json(['success' => false, 'message' => 'No files uploaded'], 400);
         }
         
-        //dd($request->file("attachments"));
+        // dd($request->file("attachments"));
+        $files = $request->file('attachments');
+        // Normalize to an array
+        $files = is_array($files) ? $files : [$files];
+
         $uploadedFiles = [];
-        foreach ($request->file('attachments') as $file) {
+        foreach ( $files as $file) {
+            // dd($file);
             $fileName = $file->getClientOriginalName();
             $imagePath = 'storage/' . $fileName;
             // $file->storeAs('public', $fileName);
