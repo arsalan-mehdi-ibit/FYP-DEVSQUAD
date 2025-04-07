@@ -222,6 +222,37 @@
                                         </thead>
                                         <tbody id="contractor-table-body">
                                             <!-- Contractor rows will be dynamically added here -->
+                                            @if (isset($projectContractors))
+                                                @foreach ($projectContractors as $index => $contractor)
+                                                    <tr id="contractor-row-{{ $index }}">
+                                                        <td class="p-2">{{ $index + 1 }}</td>
+                                                        <td class="p-2">
+                                                            <select name="contractors[{{ $index }}][contractor_id]"
+                                                                class="contractor-id w-full">
+                                                                @foreach ($contractors as $contractorOption)
+                                                                    <option value="{{ $contractorOption->id }}"
+                                                                        {{ $contractorOption->id == $contractor['contractor_id'] ? 'selected' : '' }}>
+                                                                        {{ $contractorOption->firstname }}
+                                                                        {{ $contractorOption->lastname }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </td>
+                                                        <td class="p-2">
+                                                            <input type="number"
+                                                                name="contractors[{{ $index }}][rate]"
+                                                                value="{{ $contractor['contractor_rate'] }}"
+                                                                class="contractor-rate w-full" min="0">
+                                                        </td>
+                                                        <td class="p-2 text-right">
+                                                            <button type="button"
+                                                                class="removeContractorBtn text-red-500 hover:text-red-700">
+                                                                Remove
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                     {{-- <!-- Add Button -->

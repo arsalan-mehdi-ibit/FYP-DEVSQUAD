@@ -37,6 +37,13 @@ class User extends Authenticatable
     {
         return $this->hasMany(\App\Models\FileAttachment::class, 'parent_id');
     }
+
+    public function projects()
+    {
+        return $this->belongsToMany(Project::class, 'project_contractor')
+            ->withPivot('contractor_rate');  // Attach additional columns
+    }
+
     /**
      * The attributes that should be hidden for serialization.
      *

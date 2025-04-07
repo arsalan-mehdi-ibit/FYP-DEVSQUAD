@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
+
 
 class ProjectController extends Controller
 {
@@ -24,15 +26,14 @@ class ProjectController extends Controller
      */
     public function add()
     {
-
-        $pageTitle = "Add Project"; // Set the page title
-        $clients = User::where('role', 'client')->get(); // Get users with 'client' role
-        $consultants = User::where('role', 'consultant')->get(); // Get users with 'consultant' role
+        $pageTitle = "Add Project";
+        $clients = User::where('role', 'client')->get();
+        $consultants = User::where('role', 'consultant')->get();
+        $contractors = User::where('role', 'contractor')->get(); // Get contractors
         $statusOptions = ['pending', 'in_progress', 'completed', 'cancelled'];
-        // Use lowercase for project types to match the database enum
-        $projectTypes = ['fixed', 'time_and_material']; // Ensure lowercase to match database enum values
+        $projectTypes = ['fixed', 'time_and_material'];
 
-        return view('cruds.add_project', compact('pageTitle', 'statusOptions', 'projectTypes', 'clients', 'consultants'));
+        return view('cruds.add_project', compact('pageTitle', 'statusOptions', 'projectTypes', 'clients', 'consultants', 'contractors'));
     }
 
     /**
@@ -52,6 +53,9 @@ class ProjectController extends Controller
             'end_date' => 'nullable|date',
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
+            'contractors' => 'array', // Validate the contractors field
+            'contractors.*.contractor_id' => 'required|exists:users,id',
+            'contractors.*.rate' => 'required|numeric|min:0',
         ]);
 
         // Set client_rate, default to 0.00 if not provided
@@ -62,6 +66,13 @@ class ProjectController extends Controller
 
         // Create the project
         $project = Project::create($validated);
+
+        // Handle the contractors for the project
+        if (isset($request->contractors)) {
+            foreach ($request->contractors as $contractor) {
+                $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+            }
+        }
 
         // Handle file uploads (if any)
         if ($request->hasFile('attachments')) {
@@ -82,9 +93,19 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id); // Find the project by its ID
         $clients = User::where('role', 'client')->get(); // Get users with 'client' role
         $consultants = User::where('role', 'consultant')->get(); // Get users with 'consultant' role
+        $contractors = User::where('role', 'contractor')->get();
         $statusOptions = ['pending', 'in_progress', 'completed', 'cancelled']; // Correct status options from enum
-        $projectTypes = ['Fixed', 'Time and Material']; // Project types for the dropdown
-        return view('cruds.add_project', compact('pageTitle', 'statusOptions', 'projectTypes', 'clients', 'consultants', 'project'));
+        $projectTypes = ['fixed', 'time_and_material'];
+
+        // Get the contractors for this project
+        $projectContractors = $project->contractors->map(function ($contractor) {
+            return [
+                'contractor_id' => $contractor->id,
+                'contractor_rate' => $contractor->pivot->contractor_rate
+            ];
+        });
+
+        return view('cruds.add_project', compact('pageTitle', 'statusOptions', 'projectTypes', 'clients', 'consultants', 'contractors', 'project', 'projectContractors'));
     }
 
 
@@ -105,6 +126,9 @@ class ProjectController extends Controller
             'end_date' => 'nullable|date',
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
+            'contractors' => 'array', // Validate contractors for the project
+            'contractors.*.contractor_id' => 'required|exists:users,id',
+            'contractors.*.rate' => 'required|numeric|min:0',
         ]);
 
         // Find the project by ID
@@ -112,6 +136,17 @@ class ProjectController extends Controller
 
         // Update the project
         $project->update($validated);
+
+        // Sync the contractors for the project (replace existing contractors with the updated ones)
+        if (isset($request->contractors)) {
+            // Remove all previous contractors
+            $project->contractors()->detach();
+
+            // Add new contractors
+            foreach ($request->contractors as $contractor) {
+                $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+            }
+        }
 
         // Handle file uploads (if any)
         if ($request->hasFile('attachments')) {

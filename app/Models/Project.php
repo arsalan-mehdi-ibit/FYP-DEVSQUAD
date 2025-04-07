@@ -47,10 +47,11 @@ class Project extends Model
      */
     public function contractors()
     {
-        return $this->belongsToMany(User::class, 'project_contractor', 'project_id', 'contractor_id')
-                    ->withPivot('contractor_rate')
-                    ->withTimestamps();
+        return $this->belongsToMany(User::class, 'project_contractor')
+            ->withPivot('contractor_rate')  // Attach additional columns
+            ->where('role', 'contractor');  // Ensure only contractors are returned
     }
+
 
     // Optionally, if you want to have custom attribute names (for example, if you want `client_name` instead of `client`)
     public function getClientNameAttribute()
