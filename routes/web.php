@@ -82,7 +82,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [ProjectController::class, 'index'])->name('index');
         Route::get('/add', [ProjectController::class, 'add'])->name('add');
         Route::post('/store', [ProjectController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [ProjectController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [ProjectController::class, 'update'])->name('update');
+        Route::delete('/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
+        Route::get('/download-file/{id}', [MediaController::class, 'downloadFile'])->name('downloadFile');
     });
+    
 
 
     // Route::middleware(['web'])->group(function () {

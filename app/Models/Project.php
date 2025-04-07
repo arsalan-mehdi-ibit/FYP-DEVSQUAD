@@ -16,18 +16,23 @@ class Project extends Model
      */
     protected $fillable = [
         'name',       // Updated from 'name' to 'project_name'
-        // 'type',
+        'type',
         'client_id',             // You may want to map this to client_id if that's your intention
-        // 'consultant',
+        'consultant_id',
         'client_rate',
         'status',
         'start_date',
         'end_date',
-        // 'referral_source',    // New field added
-        'description',              // New field added
+        'referral_source',    // New field added
+        'notes',              // New field added
         'created_at',         // These may be auto-handled by Laravel, but included for completeness
         'updated_at',         // These may be auto-handled by Laravel, but included for completeness
     ];
+
+    public function fileAttachments()
+    {
+        return $this->hasMany(\App\Models\FileAttachment::class, 'parent_id');
+    }
 
     /**
      * Get the client associated with the project.

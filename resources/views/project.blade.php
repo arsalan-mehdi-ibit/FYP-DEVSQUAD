@@ -1,6 +1,21 @@
 @extends('layouts.app')
 
 @section('content')
+    <style>
+        .success-popup {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #38a169;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            transition: opacity 0.3s ease-in-out;
+        }
+    </style>
     <div id="project" class="main-layout max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -140,10 +155,11 @@
                                         class="px-2 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 transition-all text-xs">
                                         <span class="bi bi-eye text-blue-500"></span>
                                     </button>
-                                    <button
-                                        class="px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                        <span class="bi bi-pencil text-black"></span>
-                                    </button>
+                                    <a href="{{ route('project.edit', $project->id) }}">
+                                        <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
+                                            <i class="bi bi-pencil text-orange-500"></i>
+                                        </button>
+                                    </a>
                                     <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
                                         <span class="bi bi-trash text-red-500"></span>
                                     </button>
@@ -155,4 +171,19 @@
             </div>
         </div>
     </div>
+
+    @if (session('project_created') || session('project_updated'))
+        <div id="projectSuccessPopup" class="success-popup">
+            {{ session('project_created') ? 'Project has been successfully created.' : 'Project has been successfully updated.' }}
+        </div>
+        <script>
+            setTimeout(() => {
+                const popup = document.getElementById('projectSuccessPopup');
+                if (popup) {
+                    popup.style.opacity = '0';
+                    setTimeout(() => popup.remove(), 500);
+                }
+            }, 3000);
+        </script>
+    @endif
 @endsection
