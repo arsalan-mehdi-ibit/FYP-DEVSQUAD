@@ -32,24 +32,24 @@ class ProfileController extends Controller
     {
         // Get the authenticated user
         $user = Auth::user();
-        
+       
         // Validate the incoming request
         $request->validate([
-            'firstname' => 'required|string|max:255',
-            // 'middlename' => 'nullable|string|max:255',
-            'lastname' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255',
+             'middle_name' => 'nullable|string|max:255',
+            'last_name' => 'required|string|max:255',
             'phone' => 'required|string|max:20',
             'password' => 'nullable|string|min:8|same:password_confirmation',
             'password_confirmation' => 'nullable|string|min:8',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        dd($request);
+        //dd($request);
         // Update the user's information
-        $user->firstname = $request->input('firstname');
-        $user->middlename = $request->input('middlename');
-        $user->lastname = $request->input('lastname');
+        $user->firstname = $request->input('first_name');
+        $user->middlename = $request->input('middl_ename');
+        $user->lastname = $request->input('last_name');
         $user->phone = $request->input('phone');
-
+        //dd($request);
         // Update password if provided
         if ($request->filled('password')) {
             $user->password = Hash::make($request->input('password'));

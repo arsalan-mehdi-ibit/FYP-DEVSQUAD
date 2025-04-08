@@ -36,7 +36,7 @@
                                 <label for="profile-pic-upload" class="upload-text">
                                     Upload Photo
                                 </label>
-                                <input type="file" name="profile_picture" id="profile-pic-upload" class="d-none" accept="image/*" />
+                                <input type="file" name="attachments" id="profile-pic-upload" class="d-none" accept="image/*" />
                             </div>
                         </div>
                     </div>
@@ -49,8 +49,14 @@
                                    class="form-control" id="first_name" name="first_name"
                                    placeholder="Enter your first name">
                         </div>
-
                         <div class="col-md-6 mb-3">
+                            <label for="middle_name">Middle Name</label>
+                            <input required value="{{  $user->firstname }}" type="text"
+                                   class="form-control" id="middle_name" name="middle_name"
+                                   placeholder="Enter your middle name">
+                        </div>
+
+                        <div class="row-md-6 mb-3">
                             <label for="last_name">Last Name</label>
                             <input required value="{{  $user->lastname }}" type="text"
                                    class="form-control" id="last_name" name="last_name"

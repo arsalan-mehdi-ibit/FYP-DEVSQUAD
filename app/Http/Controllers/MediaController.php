@@ -12,16 +12,19 @@ class MediaController extends Controller
     {
         // dd($request);
         if (!$request->hasFile('attachments')) {
-            // dd("Herk kse");
+            
+             
+             dd("Herk kse");
             return response()->json(['success' => false, 'message' => 'No files uploaded'], 400);
         }
         
-        // dd("Here");
+        //dd($request->file("attachments"));
         $uploadedFiles = [];
         foreach ($request->file('attachments') as $file) {
             $fileName = $file->getClientOriginalName();
             $imagePath = 'storage/' . $fileName;
             // $file->storeAs('public', $fileName);
+            //dd("Here");
             $fileAttachment = FileAttachment::create([
                 'file_size' => $file->getSize(),
                 'file_for' => $request->file_for,
