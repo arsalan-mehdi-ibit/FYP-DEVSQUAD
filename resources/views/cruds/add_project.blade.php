@@ -461,7 +461,8 @@
                             if (response.success) {
                                 $(event.target).closest('tr').remove();
                                 $('#contractor-table-body tr').each(function(index) {
-                                    $(this).find('td:first').text(index +1); // Reorder the contractor list
+                                    $(this).find('td:first').text(index +
+                                    1); // Reorder the contractor list
                                 });
                             } else {
                                 alert('Error: ' + (response.message ||
