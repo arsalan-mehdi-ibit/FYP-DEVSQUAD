@@ -154,13 +154,13 @@
 
                 let isValid = true;
                 // Validate Password
-                if (!password || password.length < 8) {
+                if (password && password.length < 8) {
                     $('#password-error').text('Password must be at least 8 characters long.');
                     isValid = false;
                 }
 
                 // Validate Password Confirmation
-                if (password !== passwordConfirmation) {
+                if (password && password !== passwordConfirmation) {
                     $('#password_confirmation-error').text('Password confirmation does not match.');
                     isValid = false;
                 }
