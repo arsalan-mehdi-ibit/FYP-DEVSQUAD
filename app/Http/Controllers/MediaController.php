@@ -17,7 +17,7 @@ class MediaController extends Controller
         if (!$request->hasFile('attachments')) {
             
              
-             dd("Herk kse");
+             //dd("Herk kse");
             return response()->json(['success' => false, 'message' => 'No files uploaded'], 400);
         }
         
