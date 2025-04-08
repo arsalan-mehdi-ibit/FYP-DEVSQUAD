@@ -50,7 +50,7 @@
                             </div>
                             <div class="col-md-3 mb-1">
                                 <label for="middle_name">Middle Name</label>
-                                <input required value="{{ $user->middlename }}" type="text" class="form-control"
+                                <input  value="{{ $user->middlename }}" type="text" class="form-control"
                                     id="middle_name" name="middle_name" placeholder="Enter your middle name">
                             </div>
 
