@@ -40,20 +40,20 @@
                             </div>
                         </div>
                     </div>
-
+                   <input type="hidden" name="file_for" value="profile">
                     {{-- Profile Fields --}}
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label for="firstname">First Name</label>
+                            <label for="first_name">First Name</label>
                             <input required value="{{  $user->firstname }}" type="text"
-                                   class="form-control" id="firstname" name="firstname"
+                                   class="form-control" id="first_name" name="first_name"
                                    placeholder="Enter your first name">
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="lastname">Last Name</label>
+                            <label for="last_name">Last Name</label>
                             <input required value="{{  $user->lastname }}" type="text"
-                                   class="form-control" id="lastname" name="lastname"
+                                   class="form-control" id="last_name" name="last_name"
                                    placeholder="Enter your last name">
                         </div>
                     </div>
@@ -72,23 +72,37 @@
                                    maxlength="14" placeholder="Enter your phone number">
                         </div>
                     </div>
+{{-- Optional Password Fields --}}
+<div class="row">
+    {{-- Password Field --}}
+    <div class="col-md-6 mb-3 position-relative">
+        <label for="password">Password (Optional)</label>
+        <div class="position-relative">
+            <input type="password" class="form-control pr-5" id="password" name="password"
+                   placeholder="Enter new password">
+            <!-- Eye Icon -->
+            <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer"
+                  style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%);">
+                <i class="bi bi-eye-slash text-gray-500" data-target="password"></i>
+            </span>
+        </div>
+    </div>
 
-                    {{-- Optional Password Fields --}}
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="password">Password (Optional)</label>
-                            <input type="password" class="form-control" id="password" name="password"
-                                   placeholder="Enter new password">
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="password_confirmation">Confirm Password</label>
-                            <input type="password" class="form-control" id="password_confirmation"
-                                   name="password_confirmation" placeholder="Confirm new password">
-                        </div>
-                    </div>
-
-                    {{-- Save Button --}}
+    {{-- Confirm Password Field --}}
+    <div class="col-md-6 mb-3 position-relative">
+        <label for="password_confirmation">Confirm Password</label>
+        <div class="position-relative">
+            <input type="password" class="form-control pr-5" id="password_confirmation"
+                   name="password_confirmation" placeholder="Confirm new password">
+            <!-- Eye Icon -->
+            <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer"
+                  style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%);">
+                <i class="bi bi-eye-slash text-gray-500" data-target="password_confirmation"></i>
+            </span>
+        </div>
+    </div>
+</div>
+                   {{-- Save Button --}}
                     <div class="d-flex justify-content-center mt-5">
                         <button type="submit" class="btn btn-primary" style="width: 300px;">
                             Save
