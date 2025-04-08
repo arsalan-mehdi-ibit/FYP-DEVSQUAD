@@ -27,13 +27,9 @@ class ProjectController extends Controller
     public function add()
     {
         $pageTitle = "Add Project";
-        $clients = User::where('role', 'client')->get();
-        $consultants = User::where('role', 'consultant')->get();
-        $contractors = User::where('role', 'contractor')->get(); // Get contractors
-        $statusOptions = ['pending', 'in_progress', 'completed', 'cancelled'];
-        $projectTypes = ['fixed', 'time_and_material'];
-
-        return view('cruds.add_project', compact('pageTitle', 'statusOptions', 'projectTypes', 'clients', 'consultants', 'contractors'));
+        $users = User::all();
+        $contractors = $users->where('role', 'contractor');
+        return view('cruds.add_project', compact('pageTitle', 'users','contractors'));
     }
 
     /**
@@ -49,8 +45,8 @@ class ProjectController extends Controller
             'consultant_id' => 'nullable|exists:users,id',
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date',
+            'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
             'contractors' => 'array', // Validate the contractors field
@@ -89,24 +85,31 @@ class ProjectController extends Controller
      */
     public function edit($id)
     {
-        $pageTitle = "Edit Project"; // Set the page title
-        $project = Project::findOrFail($id); // Find the project by its ID
-        $clients = User::where('role', 'client')->get(); // Get users with 'client' role
-        $consultants = User::where('role', 'consultant')->get(); // Get users with 'consultant' role
-        $contractors = User::where('role', 'contractor')->get();
-        $statusOptions = ['pending', 'in_progress', 'completed', 'cancelled']; // Correct status options from enum
-        $projectTypes = ['fixed', 'time_and_material'];
+        $pageTitle = "Edit Project";
 
-        // Get the contractors for this project
+        $project = Project::findOrFail($id);
+
+        $users = User::all(); // Fetch all users once
+        $contractors = $users->where('role', 'contractor'); // Filter contractors only
+
+        // Get the contractors already assigned to this project
         $projectContractors = $project->contractors->map(function ($contractor) {
             return [
                 'contractor_id' => $contractor->id,
-                'contractor_rate' => $contractor->pivot->contractor_rate
+                'contractor_rate' => $contractor->pivot->contractor_rate,
             ];
         });
 
-        return view('cruds.add_project', compact('pageTitle', 'statusOptions', 'projectTypes', 'clients', 'consultants', 'contractors', 'project', 'projectContractors'));
+        return view('cruds.add_project', compact(
+            'pageTitle',
+            'project',
+            'users',
+            'contractors',
+            'projectContractors'
+        ));
     }
+
+
 
 
     /**
@@ -122,8 +125,8 @@ class ProjectController extends Controller
             'consultant_id' => 'nullable|exists:users,id',
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-            'start_date' => 'required|date',
-            'end_date' => 'nullable|date',
+            'start_date' => ['required', 'date'],
+            'end_date' => ['nullable', 'date', 'after:start_date'],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
             'contractors' => 'array', // Validate contractors for the project
@@ -155,6 +158,20 @@ class ProjectController extends Controller
 
         // Redirect with success message
         return redirect()->route('project.index')->with('project_updated', true);
+    }
+
+    public function removeContractor($contractorId, Request $request)
+    {
+        $project = Project::findOrFail($request->project_id); // This should return an object, not an array
+        $contractor = User::findOrFail($contractorId); // Ensure this is an object
+
+        // Detach the contractor from the project
+        $project->contractors()->detach($contractor->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Contractor removed successfully.',
+        ]);
     }
 
     /**

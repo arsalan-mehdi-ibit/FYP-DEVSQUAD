@@ -280,55 +280,7 @@
             });
 
 
-            // add contractor details dynamically
-            let contractorCount = {{ isset($projectContractors) ? count($projectContractors) : 0 }};
-
-            $("#addContractorBtn").click(function() {
-                let rowCount = $("#contractor-table-body tr").length + 1;
-                contractorCount++;
-                const newRow = `
-            <tr id="contractor-row-${contractorCount}" class="border-b">
-                <td class="p-2 text-left">${contractorCount + 1}</td>
-                <td class="p-2">
-                   <select  name="contractors[${contractorCount}][contractor_id]" class="contractor-id form-control">
-                    <option>Select Contractor</option>
-                   @foreach($contractors as $contractorOption)
-                            <option value="{{ $contractorOption->id }}">
-                                {{ $contractorOption->firstname }} {{ $contractorOption->lastname }}
-                            </option>
-                        @endforeach
-                </select>
-                </td>
-               <td class="p-2 flex">
-                    <select class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
-                        <option>USD</option>
-                        <option>CAD</option>
-                    </select>
-                    <input type="number" name="contractors[${contractorCount}][rate]" class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100" placeholder="Contractor Rate">
-                </td>
-                <td class="p-2 text-right">
-                    <button class="removeRow text-md bg-red-500 text-white px-3 py-0 rounded">X</button>
-                </td>
-            </tr>`;
-
-                $("#contractor-table-body").append(newRow);
-            });
-
-            $(document).on("click", ".removeRow", function() {
-                $(this).closest("tr").remove();
-                contractorCount--;
-                $('#contractor-table-body tr').each(function(index) {
-                    $(this).find('td:first').text(index + 1);
-                });
-            });
-
-
-            // add button only appear when accordian is open
-            $("#collapseTwo").on('show.bs.collapse', function() {
-                $("#addContractorBtn").removeClass("hidden");
-            }).on('hide.bs.collapse', function() {
-                $("#addContractorBtn").addClass("hidden");
-            });
+           
 
             // notification dropdown
             function updateNotificationCount() {

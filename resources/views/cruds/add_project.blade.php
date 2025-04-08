@@ -52,8 +52,7 @@
                                         <label class="block text-black text-sm text-center font-medium">Project
                                             Name*</label>
                                         <input type="text" name="name" value="{{ old('name', $project->name ?? '') }}"
-                                            required value="{{ old('project_name', $project->project_name ?? '') }}"
-                                            style="background-color: #F3F4F6;"
+                                            required style="background-color: #F3F4F6;"
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
                                             onblur="this.style.backgroundColor='#F3F4F6'"
                                             class="w-full px-2 py-1 text-sm border rounded-md ">
@@ -68,7 +67,7 @@
                                             onblur="this.style.backgroundColor='#F3F4F6'" required>
                                             <option value="" disabled selected>Select Type</option>
                                             <!-- Default option -->
-                                            @foreach ($projectTypes as $type)
+                                            @foreach (['fixed', 'time_and_material'] as $type)
                                                 <option value="{{ $type }}"
                                                     @if (isset($project) && strtolower($project->type) == strtolower($type)) selected @endif>
                                                     {{ ucfirst(str_replace('_', ' ', $type)) }}
@@ -86,7 +85,7 @@
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
                                             onblur="this.style.backgroundColor='#F3F4F6'">
                                             <option>Select Client</option>
-                                            @foreach ($clients as $client)
+                                            @foreach ($users->where('role', 'client') as $client)
                                                 <option value="{{ $client->id }}"
                                                     @if (isset($project) && $project->client_id == $client->id) selected @endif>
                                                     {{ $client->firstname }} {{ $client->lastname }}
@@ -104,7 +103,7 @@
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
                                             onblur="this.style.backgroundColor='#F3F4F6'">
                                             <option>Select Consultant</option>
-                                            @foreach ($consultants as $consultant)
+                                            @foreach ($users->where('role', 'consultant') as $consultant)
                                                 <option value="{{ $consultant->id }}"
                                                     @if (isset($project) && $project->consultant_id == $consultant->id) selected @endif>
                                                     {{ $consultant->firstname }} {{ $consultant->lastname }}
@@ -122,7 +121,7 @@
                                                 <option>USD</option>
                                                 <option>CAD</option>
                                             </select>
-                                            <input type="text" name="client_rate"
+                                            <input type="number" name="client_rate"
                                                 value="{{ old('client_rate', $project->client_rate ?? '') }}"
                                                 style="background-color: #F3F4F6;"
                                                 onfocus="this.style.backgroundColor='#FFFFFF'"
@@ -139,7 +138,7 @@
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
                                             onblur="this.style.backgroundColor='#F3F4F6'" required>
                                             <option>Select Status</option>
-                                            @foreach ($statusOptions as $status)
+                                            @foreach (['pending', 'in_progress', 'completed', 'cancelled'] as $status)
                                                 <option value="{{ $status }}"
                                                     @if (isset($project) && $project->status == $status) selected @endif>
                                                     {{ ucfirst(str_replace('_', ' ', $status)) }}
@@ -224,11 +223,11 @@
                                             <!-- Contractor rows will be dynamically added here -->
                                             @if (isset($projectContractors))
                                                 @foreach ($projectContractors as $index => $contractor)
-                                                    <tr id="contractor-row-{{ $index }}">
-                                                        <td class="p-2">{{ $index + 1 }}</td>
+                                                    <tr class="border-b" id="contractor-row-{{ $index }}">
+                                                        <td class="p-2 text-left">{{ $index + 1 }}</td>
                                                         <td class="p-2">
                                                             <select name="contractors[{{ $index }}][contractor_id]"
-                                                                class="contractor-id w-full">
+                                                                class="contractor-id w-56 px-2 py-1 border rounded-md bg-gray-100">
                                                                 @foreach ($contractors as $contractorOption)
                                                                     <option value="{{ $contractorOption->id }}"
                                                                         {{ $contractorOption->id == $contractor['contractor_id'] ? 'selected' : '' }}>
@@ -238,16 +237,24 @@
                                                                 @endforeach
                                                             </select>
                                                         </td>
-                                                        <td class="p-2">
+                                                        <td class="p-2 flex">
+                                                            <select
+                                                                class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
+                                                                <option>USD</option>
+                                                                <option>CAD</option>
+                                                            </select>
                                                             <input type="number"
                                                                 name="contractors[{{ $index }}][rate]"
                                                                 value="{{ $contractor['contractor_rate'] }}"
-                                                                class="contractor-rate w-full" min="0">
+                                                                class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100"
+                                                                min="0">
                                                         </td>
                                                         <td class="p-2 text-right">
                                                             <button type="button"
-                                                                class="removeContractorBtn text-red-500 hover:text-red-700">
-                                                                Remove
+                                                                class="remove-contractor-btn text-md bg-red-500 text-white px-3 py-0 rounded"
+                                                                data-contractor-id="{{ $contractor['contractor_id'] }}"
+                                                                data-project-id="{{ $project->id }}">
+                                                                X
                                                             </button>
                                                         </td>
                                                     </tr>
@@ -355,6 +362,7 @@
             @endif
 
             $('.delete-file-btn').on('click', function(event) {
+
                 event.preventDefault();
 
                 var fileId = $(this).data('file-id');
@@ -384,6 +392,90 @@
                     });
                 }
             });
+
+            // add contractor details dynamically
+            let contractorCount = {{ isset($projectContractors) ? count($projectContractors) : 0 }};
+
+            $("#addContractorBtn").click(function() {
+                let rowCount = $("#contractor-table-body tr").length + 1;
+                // contractorCount++;
+                const newRow = `
+<tr id="contractor-row-${contractorCount}" class="border-b">
+    <td class="p-2 text-left">${contractorCount + 1}</td>
+    <td class="p-2">
+       <select name="contractors[${contractorCount}][contractor_id]" class="contractor-id form-control w-56 px-2 py-1 border rounded-md bg-gray-100">
+        <option>Select Contractor</option>
+       @foreach ($contractors as $contractorOption)
+                <option value="{{ $contractorOption->id }}">
+                    {{ $contractorOption->firstname }} {{ $contractorOption->lastname }}
+                </option>
+            @endforeach
+    </select>
+    </td>
+   <td class="p-2 flex">
+        <select class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
+            <option>USD</option>
+            <option>CAD</option>
+        </select>
+        <input type="number" name="contractors[${contractorCount}][rate]" class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100" placeholder="Contractor Rate">
+    </td>
+    <td class="p-2 text-right">
+        <button class="removeRow text-md bg-red-500 text-white px-3 py-0 rounded">X</button>
+    </td>
+</tr>`;
+
+                $("#contractor-table-body").append(newRow);
+            });
+
+            $(document).on("click", ".removeRow", function() {
+                $(this).closest("tr").remove();
+
+            });
+
+
+            // add button only appear when accordian is open
+            $("#collapseTwo").on('show.bs.collapse', function() {
+                $("#addContractorBtn").removeClass("hidden");
+            }).on('hide.bs.collapse', function() {
+                $("#addContractorBtn").addClass("hidden");
+            });
+
+            $('.remove-contractor-btn').on('click', function(event) {
+
+                event.preventDefault();
+
+                var contractorId = $(this).data('contractor-id');
+                var projectId = $(this).data(
+                    'project-id'); // Assuming you have project ID as data attribute
+
+                if (confirm('Are you sure you want to remove this contractor?')) {
+                    $.ajax({
+                        url: '/project/remove-contractor/' + contractorId,
+                        type: 'DELETE',
+                        data: {
+                            _token: '{{ csrf_token() }}',
+                            project_id: projectId // Send the project ID with the request
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            if (response.success) {
+                                $(event.target).closest('tr').remove();
+                                $('#contractor-table-body tr').each(function(index) {
+                                    $(this).find('td:first').text(index +1); // Reorder the contractor list
+                                });
+                            } else {
+                                alert('Error: ' + (response.message ||
+                                    'Unable to remove contractor'));
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            alert('Error occurred while removing the contractor.');
+                        }
+                    });
+                }
+            });
+
+
         });
     </script>
 @endsection

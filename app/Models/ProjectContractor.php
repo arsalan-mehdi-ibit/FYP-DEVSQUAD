@@ -15,6 +15,8 @@ class ProjectContractor extends Model
         'project_id',
         'contractor_id',
         'contractor_rate',
+        'created_at',
+        'updated_at',
     ];
     public function project()
     {

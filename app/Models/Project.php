@@ -46,11 +46,11 @@ class Project extends Model
      * Get the contractors associated with the project.
      */
     public function contractors()
-    {
-        return $this->belongsToMany(User::class, 'project_contractor')
-            ->withPivot('contractor_rate')  // Attach additional columns
-            ->where('role', 'contractor');  // Ensure only contractors are returned
-    }
+{
+    return $this->belongsToMany(User::class, 'project_contractor', 'project_id', 'contractor_id')
+                ->withPivot('contractor_rate');
+}
+
 
 
     // Optionally, if you want to have custom attribute names (for example, if you want `client_name` instead of `client`)
