@@ -43,13 +43,13 @@ class ProfileController extends Controller
             'password_confirmation' => 'nullable|string|min:8',
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
-        //dd($request);
+        
         // Update the user's information
         $user->firstname = $request->input('first_name');
-        $user->middlename = $request->input('middl_ename');
+        $user->middlename = $request->input('middle_name');
         $user->lastname = $request->input('last_name');
         $user->phone = $request->input('phone');
-        //dd($request);
+        
         // Update password if provided
         if ($request->filled('password')) {
             $user->password = Hash::make($request->input('password'));
