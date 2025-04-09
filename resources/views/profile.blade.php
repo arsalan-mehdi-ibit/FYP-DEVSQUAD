@@ -27,8 +27,8 @@
                         <div class="d-flex justify-content-center mb-4">
                             <div class="profile-picture text-center">
                                 <img id="profile-pic-preview"
-                                    src="{{ $user->profile_picture
-                                        ? asset('storage/profile_pictures/' . $user->profile_picture)
+                                    src="{{ $profilePicture && $profilePicture->file_path
+                                        ? asset($profilePicture->file_path)
                                         : asset('assets/profile.jpeg') }}"
                                     alt="Profile Picture" class="rounded-circle" width="100" height="100">
                                 <div class="upload-container mt-2">
@@ -139,37 +139,37 @@
             });
 
             // Form validation on submit
-            
-            
-                $('#updateProfileForm').submit(function(e) {
-                    e.preventDefault();
 
-                    // Clear previous error messages
-                    $('.text-danger').empty();
 
-                    // Get values from form fields
+            $('#updateProfileForm').submit(function(e) {
+                e.preventDefault();
 
-                    let password = $('#password').val();
-                    let passwordConfirmation = $('#password_confirmation').val();
+                // Clear previous error messages
+                $('.text-danger').empty();
 
-                    let isValid = true;
-                    // Validate Password
-                    if (!password || password.length < 8) {
-                        $('#password-error').text('Password must be at least 8 characters long.');
-                        isValid = false;
-                    }
+                // Get values from form fields
 
-                    // Validate Password Confirmation
-                    if (password !== passwordConfirmation) {
-                        $('#password_confirmation-error').text('Password confirmation does not match.');
-                        isValid = false;
-                    }
+                let password = $('#password').val();
+                let passwordConfirmation = $('#password_confirmation').val();
 
-                    // Submit the form if all fields are valid
-                    if (isValid) {
-                        this.submit();
-                    }
-                });
+                let isValid = true;
+                // Validate Password
+                if (!password || password.length < 8) {
+                    $('#password-error').text('Password must be at least 8 characters long.');
+                    isValid = false;
+                }
+
+                // Validate Password Confirmation
+                if (password !== passwordConfirmation) {
+                    $('#password_confirmation-error').text('Password confirmation does not match.');
+                    isValid = false;
+                }
+
+                // Submit the form if all fields are valid
+                if (isValid) {
+                    this.submit();
+                }
+            });
         });
     </script>
 @endsection
