@@ -43,18 +43,18 @@
                         <input type="hidden" name="file_for" value="profile">
                         {{-- Profile Fields --}}
                         <div class="row">
-                            <div class="col-md-3 mb-1">
+                            <div class="col-md-4 mb-1">
                                 <label for="first_name">First Name</label>
                                 <input required value="{{ $user->firstname }}" type="text" class="form-control"
                                     id="first_name" name="first_name" placeholder="Enter your first name">
                             </div>
-                            <div class="col-md-3 mb-1">
+                            <div class="col-md-4 mb-1">
                                 <label for="middle_name">Middle Name</label>
                                 <input  value="{{ $user->middlename }}" type="text" class="form-control"
                                     id="middle_name" name="middle_name" placeholder="Enter your middle name">
                             </div>
 
-                            <div class="col-md-3 mb-1">
+                            <div class="col-md-4 mb-1">
                                 <label for="last_name">Last Name</label>
                                 <input required value="{{ $user->lastname }}" type="text" class="form-control"
                                     id="last_name" name="last_name" placeholder="Enter your last name">
