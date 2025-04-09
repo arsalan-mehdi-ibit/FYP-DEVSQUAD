@@ -3,11 +3,14 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
+use App\Models\FileAttachment;
 
 class AppServiceProvider extends ServiceProvider
 {
     /**
-     * Register any application services.
+     * Register services.
      */
     public function register(): void
     {
@@ -15,10 +18,26 @@ class AppServiceProvider extends ServiceProvider
     }
 
     /**
-     * Bootstrap any application services.
+     * Bootstrap services.
      */
     public function boot(): void
     {
-        //
+        View::composer('*', function ($view) {
+            if (Auth::check()) {
+                $user = Auth::user();
+                $profilePicture = FileAttachment::where('parent_id', $user->id)
+                    ->where('file_for', 'profile')
+                    ->latest()
+                    ->first();
+
+                $view->with(
+                    'headerProfilePic',
+                    $profilePicture ? asset($profilePicture->file_path) : asset('assets/profile.jpeg')
+                );
+            } else {
+                $view->with('headerProfilePic', asset('assets/profile.jpeg'));
+            }
+        });
     }
+
 }

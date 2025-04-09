@@ -118,7 +118,9 @@
                 <!-- Profile Image -->
                 <div class="relative w-full md:w-12 h-10 md:h-12 rounded-full overflow-hidden border border-gray-300">
                     <a href="{{ route('profile') }}">
-                        <img src="{{ asset('assets/profile.jpeg') }}" class="w-full h-full object-cover cursor-pointer"
+                        <img src="{{ $profilePicture && $profilePicture->file_path
+                        ? asset($profilePicture->file_path)
+                        : asset('assets/profile.jpeg') }}" class="w-full h-full object-cover cursor-pointer"
                             alt="User">
                     </a>
                 </div>
