@@ -172,48 +172,58 @@
 
             let filesArray = [];
 
+            $('#uploadModal').on('show.bs.modal', function() {
+                $("#uploaded-files").html("");
+                $("#file-input").val("");
+                $("#fileNameInput").val("");
+                $("#file-name-error").addClass("hidden");
+                filesArray = []; // 💥 This clears previous files
+            });
+
             // Open file dialog when clicking on the upload box
             $("#upload-box").on("click", function() {
                 $("#file-input").trigger("click");
             });
 
             // Handle file selection
-            $("#file-input").on("change", function(event) {
-                let files = Array.from(event.target.files);
-
-                if (files.length > 0) {
-                    filesArray = [...filesArray, ...files]; // Append new files to the array
-                    updateFileDisplay();
-                }
+            $("#file-input").on("change", function(e) {
+                const newFiles = Array.from(e.target.files);
+                filesArray.push(...newFiles); // Add selected files to the array
+                updateFileDisplay();
+                this.value = ""; // Reset the file input so the same file can be selected again if needed
             });
 
             // Function to update the displayed file names and input value
             function updateFileDisplay() {
-                $("#uploaded-files").html(""); // Clear the file list display
+                $("#uploaded-files").html(""); // Clear the visual list
                 let fileNames = [];
 
                 filesArray.forEach((file, index) => {
-                    fileNames.push(file.name); // Store file names for input field
+                    fileNames.push(file.name);
 
                     let fileHtml = `
-                <div class="inline-flex text-sm items-center bg-gray-100 px-2 py-1 border rounded-md mr-2 mb-2 file-item" data-index="${index}">
-                    <span class="text-gray-800">${file.name}</span>
-                    <button type="button" class="ml-2 text-red-500 remove-file" data-index="${index}">&times;</button>
-                </div>
-                    `;
+            <div class="inline-flex text-sm items-center bg-gray-100 px-2 py-1 border rounded-md mr-2 mb-2 file-item" data-index="${index}">
+                <span class="text-gray-800">${file.name}</span>
+                <button type="button" class="ml-2 text-red-500 remove-file" data-index="${index}">&times;</button>
+            </div>
+        `;
                     $("#uploaded-files").append(fileHtml);
                 });
 
-                $("#fileNameInput").val(fileNames.join(", ")); // Update input field with file names
+                $("#fileNameInput").val(fileNames.join(", "));
             }
 
-            // Remove file from the uploaded list (when clicking the "X" button)
-            $(document).on("click", ".remove-file", function() {
-                let index = $(this).data("index");
 
-                filesArray.splice(index, 1); // Remove file from array
-                updateFileDisplay(); // Refresh display after removing
+            // Remove file from the uploaded list (when clicking the "X" button)
+            $(document).on("click", ".remove-row", function() {
+                $(this).closest("tr").remove();
+
+                // Re-index the SR numbers
+                $("#file-table-body tr").each(function(index) {
+                    $(this).find("td:first").text(index + 1); // Update SR number
+                });
             });
+
 
             // Detect manual input change in filename field
             $("#fileNameInput").on("input", function() {
@@ -280,7 +290,7 @@
             });
 
 
-           
+
 
             // notification dropdown
             function updateNotificationCount() {

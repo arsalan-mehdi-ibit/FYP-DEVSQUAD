@@ -397,11 +397,11 @@
             let contractorCount = {{ isset($projectContractors) ? count($projectContractors) : 0 }};
 
             $("#addContractorBtn").click(function() {
-                let rowCount = $("#contractor-table-body tr").length + 1;
-                // contractorCount++;
+                let rowIndex = $("#contractor-table-body tr").length + 1;
+                contractorCount++; // Keep this for naming uniqueness
                 const newRow = `
 <tr id="contractor-row-${contractorCount}" class="border-b">
-    <td class="p-2 text-left">${contractorCount + 1}</td>
+    <td class="p-2 text-left">${rowIndex}</td>
     <td class="p-2">
        <select name="contractors[${contractorCount}][contractor_id]" class="contractor-id form-control w-56 px-2 py-1 border rounded-md bg-gray-100">
         <option>Select Contractor</option>
@@ -430,7 +430,19 @@
             $(document).on("click", ".removeRow", function() {
                 $(this).closest("tr").remove();
 
+                // Re-index rows
+                $("#contractor-table-body tr").each(function(index) {
+                    $(this).attr("id", "contractor-row-" + (index + 1));
+                    $(this).find("td:first").text(index + 1); // SR number
+
+                    // Update select/input name attributes
+                    //$(this).find("select.contractor-id").attr("name",
+                      //  `contractors[${index + 1}][contractor_id]`);
+                  //  $(this).find("input.contractor-rate").attr("name",
+                     //   `contractors[${index + 1}][rate]`);
+                });
             });
+
 
 
             // add button only appear when accordian is open
@@ -462,7 +474,7 @@
                                 $(event.target).closest('tr').remove();
                                 $('#contractor-table-body tr').each(function(index) {
                                     $(this).find('td:first').text(index +
-                                    1); // Reorder the contractor list
+                                        1); // Reorder the contractor list
                                 });
                             } else {
                                 alert('Error: ' + (response.message ||

@@ -188,10 +188,9 @@
                                                             <!-- Download button -->
                                                             <a href="{{ route('users.downloadFile', $file->id) }}"
                                                                 class="bg-blue-500 text-white px-2 py-1 text-xs rounded"
-                                                                title="Download File"
-                                                                target="_blank">
-                                                                 download
-                                                             </a>
+                                                                title="Download File" target="_blank">
+                                                                download
+                                                            </a>
 
                                                         </td>
                                                     </tr>
@@ -238,38 +237,42 @@
                 $('h2.text-2xl').text('Edit User');
             @endif
 
+            function renumberTable() {
+                $('#file-table-body tr').each(function(index) {
+                    $(this).find('td:first').text(index + 1);
+                });
+            }
+
             $('.delete-file-btn').on('click', function(event) {
                 event.preventDefault(); // Prevent any default action
 
                 var fileId = $(this).data('file-id'); // Get the file ID from the data attribute
 
                 if (confirm('Are you sure you want to delete this file?')) {
-                    // Perform the AJAX DELETE request
                     $.ajax({
-                        url: '/users/delete-file/' + fileId, // The correct route for file deletion
+                        url: '/users/delete-file/' + fileId,
                         type: 'DELETE',
                         data: {
-                            _token: '{{ csrf_token() }}' // CSRF token for security
+                            _token: '{{ csrf_token() }}'
                         },
-                        dataType: 'json',
                         success: function(response) {
                             if (response.success) {
-                                // Remove the file row from the table if deletion was successful
-                                $(event.target).closest('tr').remove();
-                                $('#file-table-body tr').each(function(index) {
-                                    $(this).find('td:first').text(index + 1);
-                                });
+                                // Remove the file row
+                                $('button[data-file-id="' + fileId + '"]').closest('tr')
+                                .remove();
+                                // Re-number the table
+                                renumberTable();
                             } else {
-                                alert('Error: ' + (response.message ||
-                                    'Unable to delete file'));
+                                alert('Failed to delete file.');
                             }
                         },
-                        error: function(xhr, status, error) {
-                            alert('Error occurred while deleting the file.');
+                        error: function(xhr) {
+                            alert('An error occurred while deleting the file.');
                         }
                     });
                 }
             });
+
 
 
         });
