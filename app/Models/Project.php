@@ -46,10 +46,11 @@ class Project extends Model
      * Get the contractors associated with the project.
      */
     public function contractors()
-{
-    return $this->belongsToMany(User::class, 'project_contractor', 'project_id', 'contractor_id')
-                ->withPivot('contractor_rate');
-}
+    {
+        return $this->belongsToMany(User::class, 'project_contractor', 'project_id', 'contractor_id')
+                    ->withPivot('contractor_rate');
+    }
+    
 
 
 

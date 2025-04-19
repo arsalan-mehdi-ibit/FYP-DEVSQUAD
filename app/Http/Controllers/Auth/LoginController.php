@@ -19,18 +19,35 @@ class LoginController extends Controller
     // Handle login attempt
     public function login(Request $request)
     {
-        $request->authenticate();
-
-        $request->session()->regenerate();
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|string',
+        ]);
+    
         $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-            return redirect()->intended('/dashboard');
-        } else {
+    
+        // Check user and status
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
+    
+        if (!$user || !$user->is_active) {
             return back()->withErrors([
-                'username' => 'The provided credentials do not match our records.',
-            ])->onlyInput('username');
+                'email' => 'These credentials do not match our records.',
+            ])->onlyInput('email');
         }
+    
+        // Attempt login
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+            return redirect()->intended('/dashboard');
+        }
+    
+        return back()->withErrors([
+            'email' => 'Invalid credentials.',
+        ])->onlyInput('email');
     }
+    
+    
+
 
     // Handle logout
     public function logout(Request $request)

@@ -137,9 +137,17 @@
                                             <i class="bi bi-pencil text-orange-500"></i>
                                         </button>
                                     </a>
-                                    <button class="p-2 rounded-xl bg-red-100 hover:bg-red-200 transition-all">
-                                        <i class="bi bi-trash text-red-500"></i>
-                                    </button>
+                                    @if (!$user->isLinkedToAnyProject())
+                                        <form method="POST" action="{{ route('users.destroy', $user->id) }}"
+                                            onsubmit="return confirm('Are you sure?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="p-2 rounded-xl bg-red-100 hover:bg-red-200 transition-all">
+                                                <i class="bi bi-trash text-red-500"></i>
+                                            </button>
+                                        </form>
+                                    @endif
+
                                 </td>
                             </tr>
                         @endforeach

@@ -21,7 +21,7 @@ class UsersController extends Controller
     public function index()
     {
         $pageTitle = "Users List";
-        $users = User::all();
+        $users = User::with(['projects'])->get(); // All users + related projects
         return view('users', compact('pageTitle', 'users'));
     }
 
@@ -42,12 +42,23 @@ class UsersController extends Controller
                 'lastname' => 'required|string|max:255',
                 'role' => 'required|string',
                 'address' => 'nullable|string|max:255',
-                'email' => 'required|email|unique:users,email',
+                'email' => 'required|email|unique:users,email,NULL,id,deleted_at,NULL',
                 'phone' => 'required|string|max:20',
                 'source' => 'nullable|string|max:255',
                 'is_active' => 'nullable|boolean',
                 'send_emails' => 'nullable|boolean',
             ]);
+
+            // ✅ Check for existing soft-deleted user with same email
+        $softDeletedUser = User::onlyTrashed()->where('email', $validated['email'])->first();
+        if ($softDeletedUser) {
+            $softDeletedUser->forceDelete(); // Hard delete the previous soft-deleted user
+        }
+
+        // Now validate uniqueness after deleting
+        $request->validate([
+            'email' => 'unique:users,email',
+        ]);
 
             // Set additional attributes
             $validated['email_verified_at'] = now();
@@ -113,6 +124,9 @@ class UsersController extends Controller
             'send_emails' => 'nullable|boolean',
             'attachments.*' => 'nullable|file|max:2048', // For multiple files
         ]);
+        
+        $validated['is_active'] = $request->has('is_active') ? 1 : 0;
+
 
         $user = User::findOrFail($id);
         $user->update($validated);
@@ -147,8 +161,20 @@ class UsersController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-    {
-        //
+    public function destroy($id)
+{
+    try {
+        $user = User::findOrFail($id);
+
+        // Optional: Soft delete logic (if using SoftDeletes trait)
+        $user->delete();
+
+        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+    } catch (\Exception $e) {
+        \Log::error('User deletion failed: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Something went wrong while deleting the user.');
     }
+}
+
+    
 }

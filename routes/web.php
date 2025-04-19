@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
         Route::put('/update/{id}', [UsersController::class, 'update'])->name('update');
         Route::delete('/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
         Route::get('/download-file/{id}', [MediaController::class, 'downloadFile'])->name('downloadFile');
+        Route::delete('/destroy/{id}', [UsersController::class, 'destroy'])->name('destroy');
 
 
     });

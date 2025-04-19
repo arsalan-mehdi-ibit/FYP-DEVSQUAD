@@ -6,11 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable,SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -40,9 +41,25 @@ class User extends Authenticatable
 
     public function projects()
     {
-        return $this->belongsToMany(Project::class, 'project_contractor')
-            ->withPivot('contractor_rate');  // Attach additional columns
+        return $this->belongsToMany(Project::class, 'project_contractor', 'contractor_id', 'project_id')
+            ->withPivot('contractor_rate');
     }
+
+// public function clientProjects()
+// {
+//     return $this->hasMany(Project::class, 'client_id');
+// }
+public function isLinkedToAnyProject(): bool
+{
+    $isContractor = $this->projects()->exists();
+    $isClient = \App\Models\Project::where('client_id', $this->id)->exists();
+    $isConsultant = \App\Models\Project::where('consultant_id', $this->id)->exists();
+
+    return $isContractor || $isClient || $isConsultant;
+}
+
+
+
 
     /**
      * The attributes that should be hidden for serialization.
