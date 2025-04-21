@@ -20,7 +20,7 @@
                 <!-- Show validation errors -->
                 @if ($errors->any())
                     <div class="alert alert-danger text-start">
-                        <ul class="mb-0">
+                        <ul class="mb-0 p-0" style="font-size: small;">
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
                             @endforeach
@@ -51,7 +51,7 @@
                             </span>
                         </div>
                     </div>
-                
+
 
 
                     <div class="text-end mb-3">
@@ -100,7 +100,7 @@
                     popup.fadeOut(500, function() {
                         $(this).remove();
                         window.location.href =
-                        "{{ route('login') }}"; // Redirect to login page after success message disappears
+                            "{{ route('login') }}"; // Redirect to login page after success message disappears
                     });
                 }, 3000);
             });

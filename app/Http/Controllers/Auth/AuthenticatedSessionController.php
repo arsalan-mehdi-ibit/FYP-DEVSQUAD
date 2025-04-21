@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -31,12 +32,21 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request)
     {
-        // Validate credentials
         $credentials = $request->only('email', 'password');
         
+        // Check if the user exists and is active
+        $user = User::where('email', $request->email)->first();
+
+        // If no user is found or user is not active, return error
+        if (!$user || !$user->is_active) {
+            return back()->withErrors([
+                'email' => 'The provided credentials do not match our records or your account is inactive.',
+            ])->onlyInput('email');
+        }
+
+        // Proceed with the authentication if the user is active
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate(); // Regenerate session to prevent session fixation attacks
-    
             return redirect()->route('dashboard.index'); // Redirect to intended route
         }
     
@@ -44,6 +54,7 @@ class AuthenticatedSessionController extends Controller
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
+
     
 
     /**
