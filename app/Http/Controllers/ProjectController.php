@@ -45,7 +45,7 @@ class ProjectController extends Controller
             'consultant_id' => 'nullable|exists:users,id',
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-            'start_date' => ['required', 'date'],
+            'start_date' => 'required|date|after_or_equal:today',
             'end_date' => ['nullable', 'date', 'after:start_date'],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
@@ -53,6 +53,16 @@ class ProjectController extends Controller
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
+
+        if (
+            $validated['status'] === 'in_progress' &&
+            (!isset($validated['contractors']) || count($validated['contractors']) < 1)
+        ) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
+        }
+        
 
         // Set client_rate, default to 0.00 if not provided
         $validated['client_rate'] = $request->client_rate ?? 0.00;
@@ -125,7 +135,7 @@ class ProjectController extends Controller
             'consultant_id' => 'nullable|exists:users,id',
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-            'start_date' => ['required', 'date'],
+            'start_date' => 'required|date|after_or_equal:today',
             'end_date' => ['nullable', 'date', 'after:start_date'],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
@@ -133,7 +143,15 @@ class ProjectController extends Controller
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
-
+        if (
+            $validated['status'] === 'in_progress' &&
+            (!isset($validated['contractors']) || count($validated['contractors']) < 1)
+        ) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
+        }
+        
         // Find the project by ID
         $project = Project::findOrFail($id);
 
