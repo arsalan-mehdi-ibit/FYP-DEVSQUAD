@@ -80,8 +80,10 @@
                                 Project</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Contractor</th>
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Client</th>
+                                @endif
                                 <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Detail</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
@@ -99,7 +101,9 @@
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ ucfirst($timesheet->status) }}</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->id }}</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_hours }}</td>
+                            @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->client->firstname ?? 'N/A' }}</td>
+                            @endif
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->project->name ?? 'N/A' }}</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->contractor->firstname ?? 'N/A' }}</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->project->status ?? 'N/A' }}</td>
@@ -110,6 +114,7 @@
                                     </a>
                                 </button>
                             </td>
+                            @if(Auth::user()->role =='admin'  ||  Auth::user()->role =='client')
                             <td class="p-2 sm:p-2 text-center">
                                 <div class="inline-flex space-x-1">
                                     <button class="px-2 py-1 rounded-lg bg-green-200 hover:bg-green-100 transition-all text-xs">
@@ -120,6 +125,16 @@
                                     </button>
                                 </div>
                             </td>
+                            @else
+                            <td class="p-2 sm:p-2 text-center">
+                                <div class="inline-flex space-x-1">
+                                    <button class="px-2 py-1 rounded-lg bg-blue-200 hover:bg-blue-100 transition-all text-xs">
+                                        <span class="text-black">Submit</span>
+                                    </button>
+                                  
+                                </div>
+                            </td>
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>

@@ -182,15 +182,15 @@
                     <!-- Only allow deletion for pending or cancelled projects -->
                     @if(in_array($project->status, ['pending', 'cancelled']))
                     <button type="submit" class="px-2 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-sm">
-    <span class="bi bi-trash text-red-500 text-base"></span>
-</button>
+                        <span class="bi bi-trash text-red-500 text-base"></span>
+                    </button>
 
-        </button>
-                    @else
-                    <button type="submit" class="px-2 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-sm">
-    <span class="bi bi-trash text-red-500 text-base"></span>
-</button>
-    </button>
+                            </button>
+                                        @else
+                                            <button type="submit" class="px-2 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-sm">
+                            <span class="bi bi-trash text-red-500 text-base"></span>
+                        </button>
+                        </button>
                     @endif
                 </form>
                 @endif
