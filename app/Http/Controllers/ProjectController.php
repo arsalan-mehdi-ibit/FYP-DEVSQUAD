@@ -25,9 +25,19 @@ class ProjectController extends Controller
             //ADMIN CAN SEE ALL THE PROJECTS
             $projects = Project::all();
         }
+        elseif(Auth::user()->role == 'client')
+        {
+            //Client CAN SEE only his PROJECTS
+            $projects = Project::where('client_id', Auth::id())->get();
+        }
+        elseif(Auth::user()->role == 'consultant')
+        {
+            //Consultant CAN SEE only his PROJECTS
+            $projects = Project::where('consultant_id', Auth::id())->get();
+        }
         elseif(Auth::user()->role == 'contractor')
         {
-//CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
+        //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
 
             $contractorId = Auth::id();
 

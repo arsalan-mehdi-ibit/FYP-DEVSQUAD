@@ -105,7 +105,7 @@
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Project Name</th>
-                                @if(Auth::user()->role =='admin')
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Client Name</th>
@@ -119,9 +119,11 @@
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Status</th>
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Client Rate</th>
+                                @endif
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Created At</th>
@@ -153,7 +155,9 @@
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ ucfirst($project->status) }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                                     {{ $project->client_rate }}</td>
+                                    @endif
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->created_at }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
@@ -163,6 +167,7 @@
                                         class="px-2 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 transition-all text-xs">
                                         <span class="bi bi-eye text-blue-500"></span>
                                     </button>
+                                    @if(Auth::user()->role =='admin')
                                     <a href="{{ route('project.edit', $project->id) }}">
                                         <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                             <i class="bi bi-pencil text-orange-500"></i>
@@ -171,6 +176,7 @@
                                     <button class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
                                         <span class="bi bi-trash text-red-500"></span>
                                     </button>
+                                    @endif
                                 </td>
                             </tr>
                         @endforeach
