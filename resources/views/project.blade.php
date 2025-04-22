@@ -79,17 +79,20 @@
                 </div>
             </div>
         </div>
-
-
+        
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
-            <div class="mx-2 flex justify-between items-center mb-1 sm:mb-4">
-                <h2 class="text-lg sm:text-xl font-bold">Projects</h2>
-                <a href="{{ route('project.add') }}"
-                    class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
-          hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
-                    <i class="bi bi-person-plus text-sm"></i> Add
-                </a>
-            </div>
+                <div class="mx-2 flex justify-between items-center mb-1 sm:mb-4">
+                    <h2 class="text-lg sm:text-xl font-bold">Projects</h2>
+                @if(Auth::user()->role == 'admin')
+
+                    <a href="{{ route('project.add') }}"
+                        class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
+            hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
+                        <i class="bi bi-person-plus text-sm"></i> Add
+                    </a>
+            @endif
+
+                </div>
             <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
 
 
@@ -102,9 +105,11 @@
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Project Name</th>
+                                @if(Auth::user()->role =='admin')
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Client Name</th>
+                                @endif
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Start Date</th>
@@ -135,9 +140,12 @@
                                     {{ $loop->iteration }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->name }}</td>
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
+
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ isset($project->client) ? trim("{$project->client->firstname} {$project->client->middlename} {$project->client->lastname}") : 'N/A' }}
                                 </td>
+                                @endif
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->start_date }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">

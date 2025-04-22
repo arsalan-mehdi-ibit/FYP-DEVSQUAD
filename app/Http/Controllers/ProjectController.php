@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 
@@ -17,7 +18,24 @@ class ProjectController extends Controller
     public function index()
     {
         $pageTitle = "Projects";
+        // $projects= null;
         $projects = Project::all();
+        if(Auth::user()->role == 'admin')
+        {
+            //ADMIN CAN SEE ALL THE PROJECTS
+            $projects = Project::all();
+        }
+        elseif(Auth::user()->role == 'contractor')
+        {
+//CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
+
+            $contractorId = Auth::id();
+
+            // Fetch projects where contractor_id matches
+            $projects = Project::whereHas('contractors', function($query) use ($contractorId) {
+                $query->where('users.id', $contractorId);
+            })->get();
+        }
         return view('project', compact('pageTitle', 'projects'));
     }
 
