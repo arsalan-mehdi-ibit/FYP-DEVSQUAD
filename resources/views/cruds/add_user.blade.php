@@ -259,7 +259,7 @@
                             if (response.success) {
                                 // Remove the file row
                                 $('button[data-file-id="' + fileId + '"]').closest('tr')
-                                .remove();
+                                    .remove();
                                 // Re-number the table
                                 renumberTable();
                             } else {
