@@ -24,7 +24,9 @@ class UsersController extends Controller
         {
             $pageTitle = "Users List";
 
-        $users = User::with(['projects'])->get(); // All users + related projects
+       // Get all projects ordered by ID (serial number) descending
+       $users = User::orderBy('id', 'desc')->get();
+     // All users + related projects
         return view('users', compact('pageTitle', 'users'));
         }
         else{

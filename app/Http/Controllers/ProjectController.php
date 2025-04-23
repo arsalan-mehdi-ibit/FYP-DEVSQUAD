@@ -21,21 +21,30 @@ class ProjectController extends Controller
     public function index()
     {
         $pageTitle = "Projects";
-        $projects = Project::all();
+    
         if(Auth::user()->role == 'admin')
         {
             //ADMIN CAN SEE ALL THE PROJECTS
-            $projects = Project::all();
+            $projects = Project::orderBy('id', 'desc')->get();
+
         }
         elseif(Auth::user()->role == 'client')
         {
+           
             //Client CAN SEE only his PROJECTS
-            $projects = Project::where('client_id', Auth::id())->get();
+            $projects = Project::where('client_id', Auth::id())
+            ->orderBy('id', 'desc')
+            ->get();
+
         }
         elseif(Auth::user()->role == 'consultant')
         {
+          
             //Consultant CAN SEE only his PROJECTS
-            $projects = Project::where('consultant_id', Auth::id())->get();
+            $projects = Project::where('consultant_id', Auth::id())
+            ->orderBy('id', 'desc')
+            ->get();
+
         }
         elseif(Auth::user()->role == 'contractor')
         {
@@ -44,9 +53,10 @@ class ProjectController extends Controller
             $contractorId = Auth::id();
 
             // Fetch projects where contractor_id matches
-            $projects = Project::whereHas('contractors', function($query) use ($contractorId) {
-                $query->where('users.id', $contractorId);
-            })->get();
+           $projects = Project::whereHas('contractors', function($query) use ($contractorId) {
+    $query->where('users.id', $contractorId);
+})->orderBy('id', 'desc')->get();
+
         }
         return view('project', compact('pageTitle', 'projects'));
     }
