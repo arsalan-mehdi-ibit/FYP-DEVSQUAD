@@ -165,7 +165,7 @@ class ProjectController extends Controller
     $pageTitle = "View Project";
     
     // Eager load 'client', 'contractors', and 'fileAttachments' relationships
-    $project = Project::with(['client', 'contractors', 'fileAttachments'])->findOrFail($id);
+    $project = Project::with(['client', 'contractors','consultant', 'fileAttachments'])->findOrFail($id);
     
     // Prepare contractor data for display (read-only)
     $projectContractors = $project->contractors->map(function ($contractor) {
