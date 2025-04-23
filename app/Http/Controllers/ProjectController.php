@@ -7,7 +7,7 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use App\Models\Contractor;
-
+use Illuminate\Validation\Rule;
 
 class ProjectController extends Controller
 {
@@ -39,7 +39,12 @@ class ProjectController extends Controller
 {
     // Validate the form data
     $validated = $request->validate([
-        'name' => 'required|unique:projects,name|string|max:255',
+        'name' => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('projects')->whereNull('deleted_at')  // <-- main part
+        ],
         'type' => 'required|string',
         'client_id' => 'required|exists:users,id',
         'consultant_id' => 'nullable|exists:users,id',
@@ -67,13 +72,7 @@ class ProjectController extends Controller
             $trashed->forceDelete(); // Hard delete the old project
         }
 
-        // Create the new project
-        $project = Project::create($validated);
-        return back()->with('success', 'Project created successfully.');
-
-    } catch (\Exception $e) {
-        return back()->with('error', 'An error occurred while creating the project.');
-    
+       
     
 
             // Set client_rate, default to 0.00 if not provided
@@ -94,7 +93,7 @@ class ProjectController extends Controller
                 MediaController::uploadFile($request, $project->id);
             }
 
-            return redirect()->route('project.index')->with('success', 'Project created successfully.');
+            return redirect()->route('project.index')->with('project_created', 'Project created successfully.');
         } catch (\Exception $e) {
             Log::error('Create Error: ' . $e->getMessage());
             return back()->with('error', 'Failed to create project.');
@@ -155,7 +154,12 @@ class ProjectController extends Controller
     {
         // Validate the form data
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('projects')->whereNull('deleted_at')  
+            ],
             'type' => 'required|string',
             'client_id' => 'required|exists:users,id',
             'consultant_id' => 'nullable|exists:users,id',
@@ -188,7 +192,7 @@ class ProjectController extends Controller
             $project->update($validated);
     
             // Return a success message
-            return redirect()->route('project.index')->with('success', 'Project updated successfully.');
+            return redirect()->route('project.index')->with('project_updated', 'Project updated successfully.');
     
         } catch (\Exception $e) {
             // Handle any errors during the update process
@@ -223,19 +227,21 @@ class ProjectController extends Controller
      * Remove the specified project from storage (soft delete).
      */
     
-    public function destroy(Project $project)
+    public function destroy($id)
     {
         try {
+            $project = Project::findOrFail($id);
+
             if (in_array($project->status, ['pending', 'cancelled'])) {
-                return back()->with('error', 'Only pending or cancelled projects can be deleted.');
+                $project->delete(); // Soft delete
+                return back()->with('success', 'Project deleted successfully.');
             }
 
-    
-            $project->delete(); // Soft delete
-            return back()->with('success', 'Project deleted successfully.');
-    
+            return back()->with('error', 'Only pending or cancelled projects can be deleted.');
+
         } catch (\Exception $e) {
-            return back()->with('error', 'Something went wrong while deleting the project.');
+            Log::error('Delete Error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete project.');
         }
     }
     

@@ -188,9 +188,15 @@
         </div>
     </div>
 
-    @if (session('project_created') || session('project_updated'))
+    @if (session('project_created') || session('project_updated') || session('success'))
         <div id="projectSuccessPopup" class="success-popup">
-            {{ session('project_created') ? 'Project has been successfully created.' : 'Project has been successfully updated.' }}
+            @if( session('project_created'))
+            Project has been successfully created.
+        @elseif( session('project_updated'))
+        Project has been successfully updated. 
+        @else
+        Action sucessful. 
+@endif
         </div>
         <script>
             setTimeout(() => {
