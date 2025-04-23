@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+
+
     <style>
         .success-popup {
             position: fixed;
@@ -16,6 +18,7 @@
             transition: opacity 0.3s ease-in-out;
         }
     </style>
+     
     <div id="project" class="main-layout max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -92,7 +95,7 @@
             </div>
             <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
 
-
+           
                 <table class="w-full border-collapse border border-gray-200">
                     <thead>
                         <tr class="border-b bg-gray-100">
@@ -151,35 +154,31 @@
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->updated_at }}</td>
                                 <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                                    <button
-                                        class="px-2 py-1 rounded-lg bg-blue-100 hover:bg-blue-200 transition-all text-xs">
-                                        <span class="bi bi-eye text-blue-500"></span>
-                                    </button>
+                        
+                                <a href="{{ route('project.view', $project->id) }}">
+    <button class="p-2 rounded-xl bg-blue-100 hover:bg-blue-200 transition-all">
+        <i class="fas fa-eye text-blue-500"></i>
+    </button>
+</a>
+
+
+
                                     <a href="{{ route('project.edit', $project->id) }}">
                                         <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                             <i class="bi bi-pencil text-orange-500"></i>
                                         </button>
-                                    </a>
-                                    <form method="POST" action="{{ route('project.destroy', $project->id) }}" 
-                    
-                    class="inline-block">
-                    @csrf
-                    @method('DELETE')
-
-                    <!-- Only allow deletion for pending or cancelled projects -->
-                    @if(in_array($project->status, ['pending', 'cancelled']))
-                    <button type="submit" class="px-2 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-sm">
-    <span class="bi bi-trash text-red-500 text-base"></span>
-</button>
-
+                                      
+                                        @if(in_array($project->status, ['pending', 'cancelled']))
+    <form method="POST" action="{{ route('project.destroy', $project->id) }}" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this project?');">
+        @csrf
+        @method('DELETE')
+        <button type="submit" class="px-2 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-sm">
+            <span class="bi bi-trash text-red-500 text-base"></span>
         </button>
-                    @else
-                    <button type="submit" class="px-2 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-sm">
-    <span class="bi bi-trash text-red-500 text-base"></span>
-</button>
-    </button>
-                    @endif
-                </form>
+    </form>
+@endif
+
+
                                 </td>
                             </tr>
                         @endforeach

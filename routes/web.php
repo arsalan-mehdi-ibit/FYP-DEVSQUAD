@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/download-file/{id}', [MediaController::class, 'downloadFile'])->name('downloadFile');
         Route::delete('/remove-contractor/{contractorId}', [ProjectController::class, 'removeContractor'])->name('removeContractor');
         Route::delete('/destroy/{id}', [ProjectController::class, 'destroy'])->name('destroy');
+        Route::get('/view/{id}', [ProjectController::class, 'view'])->name('view');
 
 
     });
