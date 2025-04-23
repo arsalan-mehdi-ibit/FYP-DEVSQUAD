@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
 
     /**
@@ -50,9 +50,11 @@ class Project extends Model
     public function contractors()
     {
         return $this->belongsToMany(User::class, 'project_contractor', 'project_id', 'contractor_id')
-                    ->withPivot('contractor_rate');
+            ->withPivot('contractor_rate');  // Ensure we include the contractor_rate in the pivot table
     }
-    
+
+
+
 
 
 

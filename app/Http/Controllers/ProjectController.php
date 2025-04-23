@@ -8,6 +8,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
+use App\Jobs\FillTimesheet;
+
 
 
 class ProjectController extends Controller
@@ -30,7 +32,7 @@ class ProjectController extends Controller
         $pageTitle = "Add Project";
         $users = User::all();
         $contractors = $users->where('role', 'contractor');
-        return view('cruds.add_project', compact('pageTitle', 'users','contractors'));
+        return view('cruds.add_project', compact('pageTitle', 'users', 'contractors'));
     }
 
     /**
@@ -47,14 +49,16 @@ class ProjectController extends Controller
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
             'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'end_date' => ['nullable', 'date', 'after:start_date', 'after_or_equal:today'],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
             'contractors' => 'array', // Validate the contractors field
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
-   if (
+
+        // Check if at least one contractor is required for an "in_progress" project
+        if (
             $validated['status'] === 'in_progress' &&
             (!isset($validated['contractors']) || count($validated['contractors']) < 1)
         ) {
@@ -94,12 +98,27 @@ class ProjectController extends Controller
                 MediaController::uploadFile($request, $project->id);
             }
 
+            // Dispatch the FillTimesheet job after project creation
+            $this->triggerTimesheetJob($project);
+
             return redirect()->route('project.index')->with('success', 'Project created successfully.');
         } catch (\Exception $e) {
             Log::error('Create Error: ' . $e->getMessage());
             return back()->with('error', 'Failed to create project.');
         }
     }
+
+    protected function triggerTimesheetJob(Project $project)
+    {
+        // Fetch contractors for the project
+        $contractors = $project->contractors; // Assuming contractors is a many-to-many relationship on Project
+
+        // Dispatch the FillTimesheet job
+        FillTimesheet::dispatch($project, $contractors);
+
+        Log::info('Timesheet job dispatched for project ID: ' . $project->id);
+    }
+
 
     /**
      * Show the form for editing the specified project.
@@ -110,7 +129,7 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
         $users = User::all();
         $contractors = $users->where('role', 'contractor');
-        
+
         $projectContractors = $project->contractors->map(function ($contractor) {
             return [
                 'contractor_id' => $contractor->id,
@@ -135,7 +154,7 @@ class ProjectController extends Controller
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
             'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'end_date' => ['nullable', 'date', 'after:start_date', 'after_or_equal:today'],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
             'contractors' => 'array', // Validate contractors for the project
@@ -150,7 +169,7 @@ class ProjectController extends Controller
                 ->withInput()
                 ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
         }
-        
+
         // Find the project by ID
         $project = Project::findOrFail($id);
 
@@ -208,5 +227,26 @@ class ProjectController extends Controller
             Log::error('Delete Error: ' . $e->getMessage());
             return back()->with('error', 'Failed to delete project.');
         }
+    }
+
+    public function createTimesheet(Request $request, $contractorId, $projectId)
+    {
+        // Validate the request data
+        $validated = $request->validate([
+            'week_start_date' => 'required|date',
+            'week_end_date' => 'required|date|after_or_equal:week_start_date',
+            'hours_worked' => 'required|numeric|min:0',
+        ]);
+
+        // Dispatch the job to handle the timesheet creation
+        FillTimesheet::dispatch(
+            $contractorId,
+            $projectId,
+            $validated['week_start_date'],
+            $validated['week_end_date'],
+            $validated['hours_worked']
+        );
+
+        return response()->json(['message' => 'Timesheet creation job dispatched.']);
     }
 }
