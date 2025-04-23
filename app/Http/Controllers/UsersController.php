@@ -20,9 +20,17 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $pageTitle = "Users List";
+        if(Auth::user()->role =='admin')
+        {
+            $pageTitle = "Users List";
+
         $users = User::with(['projects'])->get(); // All users + related projects
         return view('users', compact('pageTitle', 'users'));
+        }
+        else{
+            return redirect('/dashboard');
+
+        }
     }
 
     public function add()

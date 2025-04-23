@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Timesheet;
+use App\Models\Project;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
+
 
 class TimesheetController extends Controller
 {
@@ -13,7 +17,24 @@ class TimesheetController extends Controller
     public function index() 
     {
         $pageTitle  = "Timesheet";
-        $timesheets = timesheet::all();
+
+        if(Auth::user()->role == 'admin')
+        {
+            $timesheets = timesheet::all();
+
+        }
+        elseif(Auth::user()->role == 'client')
+        {
+            $projectIds = Project::where('client_id', Auth::id())->pluck('id'); 
+            $timesheets = Timesheet::whereIn('project_id', $projectIds)->get();
+        }elseif(Auth::user()->role == 'consultant')
+        {
+            $projectIds = Project::where('consultant_id', Auth::id())->pluck('id'); 
+            $timesheets = Timesheet::whereIn('project_id', $projectIds)->get();
+        }elseif (Auth::user()->role == 'contractor') {
+            // Contractor: See timesheets where he is assigned
+            $timesheets = Timesheet::where('contractor_id', Auth::id())->get();
+        }
         return view('timesheet', compact('pageTitle', 'timesheets'));
     }
 

@@ -8,6 +8,10 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use App\Models\Contractor;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+
 
 class ProjectController extends Controller
 {
@@ -18,6 +22,32 @@ class ProjectController extends Controller
     {
         $pageTitle = "Projects";
         $projects = Project::all();
+        if(Auth::user()->role == 'admin')
+        {
+            //ADMIN CAN SEE ALL THE PROJECTS
+            $projects = Project::all();
+        }
+        elseif(Auth::user()->role == 'client')
+        {
+            //Client CAN SEE only his PROJECTS
+            $projects = Project::where('client_id', Auth::id())->get();
+        }
+        elseif(Auth::user()->role == 'consultant')
+        {
+            //Consultant CAN SEE only his PROJECTS
+            $projects = Project::where('consultant_id', Auth::id())->get();
+        }
+        elseif(Auth::user()->role == 'contractor')
+        {
+        //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
+
+            $contractorId = Auth::id();
+
+            // Fetch projects where contractor_id matches
+            $projects = Project::whereHas('contractors', function($query) use ($contractorId) {
+                $query->where('users.id', $contractorId);
+            })->get();
+        }
         return view('project', compact('pageTitle', 'projects'));
     }
 
@@ -36,35 +66,38 @@ class ProjectController extends Controller
      * Store a newly created project in storage.
      */
     public function store(Request $request)
-{
-    // Validate the form data
-    $validated = $request->validate([
-        'name' => [
+    {
+        // Validate the form data
+        $validated = $request->validate([
+             'name' => [
             'required',
             'string',
             'max:255',
             Rule::unique('projects')->whereNull('deleted_at')  // <-- main part
         ],
-        'type' => 'required|string',
-        'client_id' => 'required|exists:users,id',
-        'consultant_id' => 'nullable|exists:users,id',
-        'referral_source' => 'nullable|string|max:255',
-        'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-        'start_date' => ['required', 'date'],
-        'end_date' => ['nullable', 'date', 'after:start_date'],
-        'notes' => 'nullable|string|max:255',
-        'attachments.*' => 'nullable|file|max:2048',
-        'contractors' => 'array',
-        'contractors.*.contractor_id' => 'required|exists:users,id',
-        'contractors.*.rate' => 'required|numeric|min:0',
-    ]);
-
+            'type' => 'required|string',
+            'client_id' => 'required|exists:users,id',
+            'consultant_id' => 'nullable|exists:users,id',
+            'referral_source' => 'nullable|string|max:255',
+            'status' => 'required|string|in:pending,in_progress,completed,cancelled',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'notes' => 'nullable|string|max:255',
+            'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
+            'contractors' => 'array', // Validate the contractors field
+            'contractors.*.contractor_id' => 'required|exists:users,id',
+            'contractors.*.rate' => 'required|numeric|min:0',
+        ]);
+   if (
+            $validated['status'] === 'in_progress' &&
+            (!isset($validated['contractors']) || count($validated['contractors']) < 1)
+        ) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
+        }
     try {
-        // Check for an active project with the same name
-        // $active = Project::where('name', $validated['name'])->first();
-        // if ($active) {
-        //     return back()->with('error', 'A project with this name already exists.');
-        // }
+       
 
         // Check for a soft-deleted project with the same name
         $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
@@ -72,8 +105,6 @@ class ProjectController extends Controller
             $trashed->forceDelete(); // Hard delete the old project
         }
 
-       
-    
 
             // Set client_rate, default to 0.00 if not provided
             $validated['client_rate'] = $request->client_rate ?? 0.00;
@@ -165,14 +196,22 @@ class ProjectController extends Controller
             'consultant_id' => 'nullable|exists:users,id',
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-            'start_date' => ['required', 'date'],
+            'start_date' => 'required|date|after_or_equal:today',
             'end_date' => ['nullable', 'date', 'after:start_date'],
             'notes' => 'nullable|string|max:255',
-            'attachments.*' => 'nullable|file|max:2048',
-            'contractors' => 'array',
+            'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
+            'contractors' => 'array', // Validate contractors for the project
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
+        if (
+            $validated['status'] === 'in_progress' &&
+            (!isset($validated['contractors']) || count($validated['contractors']) < 1)
+        ) {
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
+        }
         try {
             // Find the project to update
             $project = Project::findOrFail($id);
@@ -198,7 +237,6 @@ class ProjectController extends Controller
             // Handle any errors during the update process
             return back()->with('error', 'Whoops! Something went wrong, please try again.');
         }
-    
         // Find the project by ID
         $project = Project::findOrFail($id);
 
@@ -221,6 +259,20 @@ class ProjectController extends Controller
 
         // Redirect with success message
         return redirect()->route('project.index')->with('project_updated', true);
+    }
+
+    public function removeContractor($contractorId, Request $request)
+    {
+        $project = Project::findOrFail($request->project_id); // This should return an object, not an array
+        $contractor = User::findOrFail($contractorId); // Ensure this is an object
+
+        // Detach the contractor from the project
+        $project->contractors()->detach($contractor->id);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Contractor removed successfully.',
+        ]);
     }
 
     /**

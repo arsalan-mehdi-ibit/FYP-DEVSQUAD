@@ -133,20 +133,28 @@
                                     <!-- Status -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Status</label>
-                                        <select name="status" class="w-full px-2 py-1 text-sm border rounded-md"
+                                        <select name="status" id="status"
+                                            class="w-full px-2 py-1 text-sm border rounded-md"
                                             style="background-color: #F3F4F6;"
                                             onfocus="this.style.backgroundColor='#FFFFFF'"
                                             onblur="this.style.backgroundColor='#F3F4F6'" required>
-                                            <option>Select Status</option>
-                                            @foreach (['pending', 'in_progress', 'completed', 'cancelled'] as $status)
-                                                <option value="{{ $status }}"
-                                                    @if (isset($project) && $project->status == $status) selected @endif>
-                                                    {{ ucfirst(str_replace('_', ' ', $status)) }}
-                                                    <!-- Capitalize status and replace underscores with spaces -->
-                                                </option>
-                                            @endforeach
+                                            <option value="">Select Status</option>
+                                            @if (isset($project))
+                                                {{-- Edit form: show all statuses --}}
+                                                @foreach (['pending', 'in_progress', 'completed', 'cancelled'] as $status)
+                                                    <option value="{{ $status }}"
+                                                        @if ($project->status == $status) selected @endif>
+                                                        {{ ucfirst(str_replace('_', ' ', $status)) }}
+                                                    </option>
+                                                @endforeach
+                                            @else
+                                                {{-- Add form: only show pending and in_progress --}}
+                                                <option value="pending" selected>Pending</option>
+                                                <option value="in_progress" disabled>In Progress</option>
+                                            @endif
                                         </select>
                                     </div>
+
 
 
                                     <!-- Start Date -->
@@ -154,6 +162,7 @@
                                         <label class="block text-black text-sm text-center font-medium">Start Date</label>
                                         <input type="date" name="start_date"
                                             value="{{ old('start_date', $project->start_date ?? '') }}"
+                                            min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-white">
                                     </div>
 
@@ -432,18 +441,17 @@
 
                 // Re-index rows
                 $("#contractor-table-body tr").each(function(index) {
-                    $(this).attr("id", "contractor-row-" + (index + 1));
-                    $(this).find("td:first").text(index + 1); // SR number
+    $(this).attr("id", "contractor-row-" + (index + 1));
+    $(this).find("td:first").text(index + 1); // SR number
 
-                    // Update select/input name attributes
-                    //$(this).find("select.contractor-id").attr("name",
-                      //  `contractors[${index + 1}][contractor_id]`);
-                  //  $(this).find("input.contractor-rate").attr("name",
-                     //   `contractors[${index + 1}][rate]`);
-                });
+    // Update name attributes
+    $(this).find("select.contractor-id").attr("name", `contractors[${index + 1}][contractor_id]`);
+    $(this).find("input.contractor-rate").attr("name", `contractors[${index + 1}][rate]`);
+});
+
             });
 
-
+            
 
             // add button only appear when accordian is open
             $("#collapseTwo").on('show.bs.collapse', function() {
@@ -453,7 +461,6 @@
             });
 
             $('.remove-contractor-btn').on('click', function(event) {
-
                 event.preventDefault();
 
                 var contractorId = $(this).data('contractor-id');
@@ -476,6 +483,9 @@
                                     $(this).find('td:first').text(index +
                                         1); // Reorder the contractor list
                                 });
+
+                                // After contractor removal, check and toggle "In Progress" status
+                                toggleInProgressStatus();
                             } else {
                                 alert('Error: ' + (response.message ||
                                     'Unable to remove contractor'));
@@ -487,6 +497,11 @@
                     });
                 }
             });
+
+            $("#contractor-table-body").append(newRow);
+toggleInProgressStatus(); // 👈 Add this here
+
+
 
 
         });

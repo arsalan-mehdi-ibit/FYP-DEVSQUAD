@@ -12,11 +12,13 @@
                     <i class="bi bi-house-door mr-2"></i> Dashboard
                 </a>
             </li>
+            @if(Auth::user()->role =='admin')
             <li class="mb-4">
                 <a href="{{route('users.index')}}" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-people mr-2"></i> Users
                 </a>
             </li>
+            @endif
             <li class="mb-4">
                 <a href="{{ route('project.index') }}" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-folder2-open mr-2"></i> Projects

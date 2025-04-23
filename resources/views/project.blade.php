@@ -1,8 +1,6 @@
 @extends('layouts.app')
 
 @section('content')
-
-
     <style>
         .success-popup {
             position: fixed;
@@ -18,7 +16,6 @@
             transition: opacity 0.3s ease-in-out;
         }
     </style>
-     
     <div id="project" class="main-layout max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
@@ -82,20 +79,23 @@
                 </div>
             </div>
         </div>
-
-
+        
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
-            <div class="mx-2 flex justify-between items-center mb-1 sm:mb-4">
-                <h2 class="text-lg sm:text-xl font-bold">Projects</h2>
-                <a href="{{ route('project.add') }}"
-                    class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
-          hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
-                    <i class="bi bi-person-plus text-sm"></i> Add
-                </a>
-            </div>
+                <div class="mx-2 flex justify-between items-center mb-1 sm:mb-4">
+                    <h2 class="text-lg sm:text-xl font-bold">Projects</h2>
+                @if(Auth::user()->role == 'admin')
+
+                    <a href="{{ route('project.add') }}"
+                        class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
+            hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
+                        <i class="bi bi-person-plus text-sm"></i> Add
+                    </a>
+            @endif
+
+                </div>
             <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
 
-           
+
                 <table class="w-full border-collapse border border-gray-200">
                     <thead>
                         <tr class="border-b bg-gray-100">
@@ -105,9 +105,11 @@
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Project Name</th>
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Client Name</th>
+                                @endif
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Start Date</th>
@@ -117,9 +119,11 @@
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Status</th>
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Client Rate</th>
+                                @endif
                             <th
                                 class="p-2 sm:p-3 text-center font-semibold text-gray-700 text-xs sm:text-sm md:text-base whitespace-nowrap">
                                 Created At</th>
@@ -138,9 +142,12 @@
                                     {{ $loop->iteration }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->name }}</td>
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
+
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ isset($project->client) ? trim("{$project->client->firstname} {$project->client->middlename} {$project->client->lastname}") : 'N/A' }}
                                 </td>
+                                @endif
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->start_date }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
@@ -148,27 +155,27 @@
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ ucfirst($project->status) }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
+                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                                     {{ $project->client_rate }}</td>
+                                    @endif
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->created_at }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->updated_at }}</td>
                                 <td class="p-2 sm:p-2 flex justify-center space-x-1">
-                        
+                                 
                                 <a href="{{ route('project.view', $project->id) }}">
     <button class="p-2 rounded-xl bg-blue-100 hover:bg-blue-200 transition-all">
         <i class="fas fa-eye text-blue-500"></i>
     </button>
 </a>
-
-
-
+                                    @if(Auth::user()->role =='admin')
                                     <a href="{{ route('project.edit', $project->id) }}">
                                         <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
                                             <i class="bi bi-pencil text-orange-500"></i>
                                         </button>
-                                      
-                                        @if(in_array($project->status, ['pending', 'cancelled']))
+                                    </a>
+                                    @if(in_array($project->status, ['pending', 'cancelled']))
     <form method="POST" action="{{ route('project.destroy', $project->id) }}" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this project?');">
         @csrf
         @method('DELETE')
