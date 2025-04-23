@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\DB;
 
@@ -53,8 +54,7 @@ class ProjectController extends Controller
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
-
-        if (
+   if (
             $validated['status'] === 'in_progress' &&
             (!isset($validated['contractors']) || count($validated['contractors']) < 1)
         ) {
@@ -62,33 +62,44 @@ class ProjectController extends Controller
                 ->withInput()
                 ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
         }
-        
 
-        // Set client_rate, default to 0.00 if not provided
-        $validated['client_rate'] = $request->client_rate ?? 0.00;
-
-        // Generate a unique token for the project (like `remember_token` for users)
-        // $validated['remember_token'] = Str::random(32);
-
-        // Create the project
-        $project = Project::create($validated);
-
-        // Handle the contractors for the project
-        if (isset($request->contractors)) {
-            foreach ($request->contractors as $contractor) {
-                $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+        try {
+            // Check for an active project with the same name
+            $active = Project::where('name', $validated['name'])->first();
+            if ($active) {
+                return back()->with('error', 'A project with this name already exists.');
             }
-        }
 
-        // Handle file uploads (if any)
-        if ($request->hasFile('attachments')) {
-            MediaController::uploadFile($request, $project->id);
-        }
+            // Check for a soft-deleted project with the same name
+            $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
+            if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
+                $trashed->forceDelete(); // Hard delete
+            }
 
-        // Redirect with success message
-        return redirect()->route('project.index')->with('project_created', true);
+            // Set client_rate, default to 0.00 if not provided
+            $validated['client_rate'] = $request->client_rate ?? 0.00;
+
+            // Create the project
+            $project = Project::create($validated);
+
+            // Attach contractors to the project if any
+            if ($request->has('contractors')) {
+                foreach ($request->contractors as $contractor) {
+                    $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+                }
+            }
+
+            // Handle file uploads (attachments) if any
+            if ($request->hasFile('attachments')) {
+                MediaController::uploadFile($request, $project->id);
+            }
+
+            return redirect()->route('project.index')->with('success', 'Project created successfully.');
+        } catch (\Exception $e) {
+            Log::error('Create Error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to create project.');
+        }
     }
-
 
     /**
      * Show the form for editing the specified project.
@@ -96,13 +107,10 @@ class ProjectController extends Controller
     public function edit($id)
     {
         $pageTitle = "Edit Project";
-
         $project = Project::findOrFail($id);
-
-        $users = User::all(); // Fetch all users once
-        $contractors = $users->where('role', 'contractor'); // Filter contractors only
-
-        // Get the contractors already assigned to this project
+        $users = User::all();
+        $contractors = $users->where('role', 'contractor');
+        
         $projectContractors = $project->contractors->map(function ($contractor) {
             return [
                 'contractor_id' => $contractor->id,
@@ -110,17 +118,8 @@ class ProjectController extends Controller
             ];
         });
 
-        return view('cruds.add_project', compact(
-            'pageTitle',
-            'project',
-            'users',
-            'contractors',
-            'projectContractors'
-        ));
+        return view('cruds.add_project', compact('pageTitle', 'project', 'users', 'contractors', 'projectContractors'));
     }
-
-
-
 
     /**
      * Update the specified project in storage.
@@ -158,18 +157,16 @@ class ProjectController extends Controller
         // Update the project
         $project->update($validated);
 
-        // Sync the contractors for the project (replace existing contractors with the updated ones)
+        // Sync the contractors (remove previous and add new ones)
         if (isset($request->contractors)) {
-            // Remove all previous contractors
-            $project->contractors()->detach();
+            $project->contractors()->detach(); // Remove existing contractors
 
-            // Add new contractors
             foreach ($request->contractors as $contractor) {
                 $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
             }
         }
 
-        // Handle file uploads (if any)
+        // Handle file uploads (attachments)
         if ($request->hasFile('attachments')) {
             MediaController::uploadFile($request, $project->id);
         }
@@ -193,22 +190,23 @@ class ProjectController extends Controller
     }
 
     /**
-     * Display the specified project.
+     * Remove the specified project from storage (soft delete).
      */
-    // public function show($id)
-    // {
-    //     $project = Project::findOrFail($id);
-    //     return view('project.show', compact('project'));
-    // }
+    public function destroy($id)
+    {
+        try {
+            $project = Project::findOrFail($id);
 
-    // /**
-    //  * Remove the specified project from storage.
-    //  */
-    // public function destroy($id)
-    // {
-    //     $project = Project::findOrFail($id);
-    //     $project->delete();
+            if (in_array($project->status, ['pending', 'cancelled'])) {
+                $project->delete(); // Soft delete
+                return back()->with('success', 'Project deleted successfully.');
+            }
 
-    //     return redirect()->route('projects.index')->with('project_deleted', true);
-    // }
+            return back()->with('error', 'Only pending or cancelled projects can be deleted.');
+
+        } catch (\Exception $e) {
+            Log::error('Delete Error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to delete project.');
+        }
+    }
 }
