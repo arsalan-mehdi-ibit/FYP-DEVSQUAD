@@ -1,4 +1,5 @@
 @php use Illuminate\Support\Str; @endphp
+
 @extends('layouts.app')
 
 @section('content')
@@ -171,6 +172,7 @@
                                         <label class="block text-black text-sm text-center font-medium">End Date</label>
                                         <input type="date" name="end_date"
                                             value="{{ old('end_date', $project->end_date ?? '') }}"
+                                            min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-white">
                                     </div>
 
@@ -405,67 +407,100 @@
             // add contractor details dynamically
             let contractorCount = {{ isset($projectContractors) ? count($projectContractors) : 0 }};
 
+            // Function to update the status dropdown based on contractor count
+            function updateStatusBasedOnContractors() {
+                const contractorList = $("#contractor-table-body tr"); // Rows of contractor table
+                const statusDropdown = $('#status'); // ID of your dropdown
+                const inProgressOption = statusDropdown.find('option[value="in_progress"]');
+                const pendingOption = statusDropdown.find('option[value="pending"]');
+
+                if (contractorList.length === 0) {
+                    // Disable "In Progress" option if no contractors
+                    inProgressOption.prop('disabled', true);
+
+                    // Set dropdown back to "Pending" if no contractors
+                    statusDropdown.val("pending");
+                } else {
+                    // Enable "In Progress" option if at least 1 contractor
+                    inProgressOption.prop('disabled', false);
+                }
+            }
+
+            // Function to toggle the "In Progress" status based on contractor fields
+            function toggleInProgressStatus() {
+                let hasContractor = false;
+
+                // Check all contractor input fields to see if any contractor is selected
+                $('[name^="contractors"]').each(function() {
+                    if ($(this).val().trim() !== '') {
+                        hasContractor = true;
+                        return false; // break out of loop early
+                    }
+                });
+
+                // Enable or disable the "In Progress" option based on whether there are contractors
+                $('option[value="In Progress"]').prop('disabled', !hasContractor);
+            }
+
+            // Add contractor to the table when button is clicked
             $("#addContractorBtn").click(function() {
                 let rowIndex = $("#contractor-table-body tr").length + 1;
-                contractorCount++; // Keep this for naming uniqueness
+                contractorCount++; // Increment contractor count for uniqueness
                 const newRow = `
-<tr id="contractor-row-${contractorCount}" class="border-b">
-    <td class="p-2 text-left">${rowIndex}</td>
-    <td class="p-2">
-       <select name="contractors[${contractorCount}][contractor_id]" class="contractor-id form-control w-56 px-2 py-1 border rounded-md bg-gray-100">
-        <option>Select Contractor</option>
-       @foreach ($contractors as $contractorOption)
-                <option value="{{ $contractorOption->id }}">
-                    {{ $contractorOption->firstname }} {{ $contractorOption->lastname }}
-                </option>
-            @endforeach
-    </select>
-    </td>
-   <td class="p-2 flex">
-        <select class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
-            <option>USD</option>
-            <option>CAD</option>
+    <tr id="contractor-row-${contractorCount}" class="border-b">
+        <td class="p-2 text-left">${rowIndex}</td>
+        <td class="p-2">
+           <select name="contractors[${contractorCount}][contractor_id]" class="contractor-id form-control w-56 px-2 py-1 border rounded-md bg-gray-100">
+            <option>Select Contractor</option>
+            @foreach ($contractors as $contractorOption)
+                    <option value="{{ $contractorOption->id }}">
+                        {{ $contractorOption->firstname }} {{ $contractorOption->lastname }}
+                    </option>
+                @endforeach
         </select>
-        <input type="number" name="contractors[${contractorCount}][rate]" class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100" placeholder="Contractor Rate">
-    </td>
-    <td class="p-2 text-right">
-        <button class="removeRow text-md bg-red-500 text-white px-3 py-0 rounded">X</button>
-    </td>
-</tr>`;
+        </td>
+       <td class="p-2 flex">
+            <select class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
+                <option>USD</option>
+                <option>CAD</option>
+            </select>
+            <input type="number" name="contractors[${contractorCount}][rate]" class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100" placeholder="Contractor Rate">
+        </td>
+        <td class="p-2 text-right">
+            <button class="removeRow text-md bg-red-500 text-white px-3 py-0 rounded">X</button>
+        </td>
+    </tr>`;
 
                 $("#contractor-table-body").append(newRow);
+                updateStatusBasedOnContractors(); // Update status dropdown after contractor is added
             });
 
+            // Remove contractor row
             $(document).on("click", ".removeRow", function() {
                 $(this).closest("tr").remove();
 
-                // Re-index rows
+                // Re-index rows after removing
                 $("#contractor-table-body tr").each(function(index) {
-    $(this).attr("id", "contractor-row-" + (index + 1));
-    $(this).find("td:first").text(index + 1); // SR number
+                    $(this).find("td:first").text(index + 1); // Reorder the contractor list
+                });
 
-    // Update name attributes
-    $(this).find("select.contractor-id").attr("name", `contractors[${index + 1}][contractor_id]`);
-    $(this).find("input.contractor-rate").attr("name", `contractors[${index + 1}][rate]`);
-});
-
+                updateStatusBasedOnContractors(); // Update status dropdown after contractor is removed
             });
 
-            
-
-            // add button only appear when accordian is open
+            // Add button only appears when accordion is open
             $("#collapseTwo").on('show.bs.collapse', function() {
                 $("#addContractorBtn").removeClass("hidden");
             }).on('hide.bs.collapse', function() {
                 $("#addContractorBtn").addClass("hidden");
             });
 
+            // Remove contractor via Ajax
             $('.remove-contractor-btn').on('click', function(event) {
                 event.preventDefault();
 
                 var contractorId = $(this).data('contractor-id');
                 var projectId = $(this).data(
-                    'project-id'); // Assuming you have project ID as data attribute
+                'project-id'); // Assuming you have project ID as data attribute
 
                 if (confirm('Are you sure you want to remove this contractor?')) {
                     $.ajax({
@@ -481,11 +516,10 @@
                                 $(event.target).closest('tr').remove();
                                 $('#contractor-table-body tr').each(function(index) {
                                     $(this).find('td:first').text(index +
-                                        1); // Reorder the contractor list
+                                    1); // Reorder the contractor list
                                 });
-
-                                // After contractor removal, check and toggle "In Progress" status
-                                toggleInProgressStatus();
+                                updateStatusBasedOnContractors
+                            (); // Update status dropdown after contractor is removed
                             } else {
                                 alert('Error: ' + (response.message ||
                                     'Unable to remove contractor'));
@@ -498,11 +532,8 @@
                 }
             });
 
-            $("#contractor-table-body").append(newRow);
-toggleInProgressStatus(); // 👈 Add this here
-
-
-
+            // Initial call to set the status based on contractors when page loads
+            updateStatusBasedOnContractors();
 
         });
     </script>
