@@ -11,6 +11,7 @@ use App\Mail\EmailSender;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
+use App\Models\RecentActivity;
 
 
 class UsersController extends Controller
@@ -79,6 +80,20 @@ class UsersController extends Controller
 
             // Create the user
             $user = User::create($validated);
+            
+            $adminUsers = User::where('role', 'admin')->get(); // adjust this if your roles are stored differently
+
+            // Step 2: Loop through each admin user
+            foreach ($adminUsers as $admin) {
+                RecentActivity::create([
+                    'title' => 'User Created',
+                    'description' => 'New user ' . $user->firstname . ' ' . $user->lastname . ' has been created.',
+                    'parent_id' => $user->id,
+                    'created_for' => 'user',
+                    'user_id' => $admin->id, 
+                    'created_by' => Auth::id(), 
+                ]);
+            }
             MediaController::uploadFile($request, $user->id);
 
 
@@ -140,6 +155,19 @@ class UsersController extends Controller
 
         $user = User::findOrFail($id);
         $user->update($validated);
+        $adminUsers = User::where('role', 'admin')->get(); // Modify this if you're using a roles table or package
+
+        // Step 3: Create recent activity for each admin
+        foreach ($adminUsers as $admin) {
+            RecentActivity::create([
+                'title' => 'User Updated',
+                'description' => 'User ' . $user->firstname . ' ' . $user->lastname . ' was updated.',
+                'parent_id' => $user->id,
+                'created_for' => 'user',
+                'user_id' => $admin->id, // Notify each admin
+                'created_by' => Auth::id(), // Logged-in user
+            ]);
+        }
 
         if ($request->hasFile('attachments')) {
             MediaController::uploadFile($request, $user->id);

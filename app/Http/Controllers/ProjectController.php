@@ -11,6 +11,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\RecentActivity;
 
 
 class ProjectController extends Controller
@@ -133,6 +134,19 @@ class ProjectController extends Controller
             if ($request->hasFile('attachments')) {
                 MediaController::uploadFile($request, $project->id);
             }
+            $adminUsers = User::where('role', 'admin')->get(); // Modify this if you're using a roles table or package
+
+        // Step 2: Create recent activity for each admin
+        foreach ($adminUsers as $admin) {
+            RecentActivity::create([
+                'title' => 'Project Created',
+                'description' => 'New project "' . $project->name . '" has been created.',
+                'parent_id' => $project->id,
+                'created_for' => 'project',
+                'user_id' => $admin->id, // Notify each admin
+                'created_by' => Auth::id(), // Logged-in user
+            ]);
+        }
 
             return redirect()->route('project.index')->with('project_created', 'Project created successfully.');
         } catch (\Exception $e) {
@@ -266,6 +280,21 @@ class ProjectController extends Controller
         if ($request->hasFile('attachments')) {
             MediaController::uploadFile($request, $project->id);
         }
+        // Step 1: Get all admin users
+$adminUsers = User::where('role', 'admin')->get(); // Modify this if you're using a roles table or package
+
+// Step 2: Create recent activity for each admin
+foreach ($adminUsers as $admin) {
+    RecentActivity::create([
+        'title' => 'Project Updated',
+        'description' => 'Project "' . $project->name . '" has been updated.',
+        'parent_id' => $project->id,
+        'created_for' => 'project',
+        'user_id' => $admin->id, // Notify each admin
+        'created_by' => Auth::id(), // Logged-in user
+    ]);
+}
+
 
         // Redirect with success message
         return redirect()->route('project.index')->with('project_updated', true);
