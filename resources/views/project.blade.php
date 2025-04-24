@@ -154,8 +154,9 @@
                                     {{ $project->end_date }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ ucfirst($project->status) }}</td>
-                                <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
-                                @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
+
+                                    @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
+                                    <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->client_rate }}</td>
                                     @endif
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
@@ -165,26 +166,26 @@
                                 <td class="p-2 sm:p-2 flex justify-center space-x-1">
                                  
                                 <a href="{{ route('project.view', $project->id) }}">
-    <button class="p-2 rounded-xl bg-blue-100 hover:bg-blue-200 transition-all">
-        <i class="fas fa-eye text-blue-500"></i>
-    </button>
-</a>
+                                    <button class="p-2 rounded-xl bg-blue-100 hover:bg-blue-200 transition-all">
+                                        <i class="fas fa-eye text-blue-500"></i>
+                                    </button>
+                                </a>
                                     @if(Auth::user()->role =='admin')
-                                    <a href="{{ route('project.edit', $project->id) }}">
-                                        <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
-                                            <i class="bi bi-pencil text-orange-500"></i>
-                                        </button>
-                                    </a>
-                                    @if(in_array($project->status, ['pending', 'cancelled']))
-    <form method="POST" action="{{ route('project.destroy', $project->id) }}" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this project?');">
-        @csrf
-        @method('DELETE')
-        <button type="submit" class="px-2 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-sm">
-            <span class="bi bi-trash text-red-500 text-base"></span>
-        </button>
-    </form>
-@endif
-@endif
+                                        <a href="{{ route('project.edit', $project->id) }}">
+                                            <button class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
+                                                <i class="bi bi-pencil text-orange-500"></i>
+                                            </button>
+                                        </a>
+                                        @if(in_array($project->status, ['pending', 'cancelled']))
+                                        <form method="POST" action="{{ route('project.destroy', $project->id) }}" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this project?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="px-2 py-2 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-sm">
+                                                <span class="bi bi-trash text-red-500 text-base"></span>
+                                            </button>
+                                        </form>
+                                        @endif
+                                    @endif
 
 
                                 </td>
@@ -199,12 +200,12 @@
     @if (session('project_created') || session('project_updated') || session('success'))
         <div id="projectSuccessPopup" class="success-popup">
             @if( session('project_created'))
-            Project has been successfully created.
-        @elseif( session('project_updated'))
-        Project has been successfully updated. 
-        @else
-        Action sucessful. 
-@endif
+                Project has been successfully created.
+            @elseif( session('project_updated'))
+                Project has been successfully updated. 
+            @else
+                Action sucessful. 
+            @endif
         </div>
         <script>
             setTimeout(() => {

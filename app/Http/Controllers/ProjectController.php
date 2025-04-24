@@ -193,20 +193,21 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
+
         // Validate the form data
         $validated = $request->validate([
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('projects')->whereNull('deleted_at')  
+                Rule::unique('projects')->ignore($id)->whereNull('deleted_at'),
             ],
             'type' => 'required|string',
             'client_id' => 'required|exists:users,id',
             'consultant_id' => 'nullable|exists:users,id',
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-            'start_date' => 'required|date|after_or_equal:today',
+            'start_date' => 'required|date|',
             'end_date' => ['nullable', 'date', 'after:start_date'],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
@@ -237,38 +238,34 @@ class ProjectController extends Controller
                 }
             }
     
+         
+            // Sync the contractors (remove previous and add new ones)
+            if (isset($request->contractors)) {
+                $project->contractors()->detach(); // Remove existing contractors
+
+                foreach ($request->contractors as $contractor) {
+                    $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+                }
+            }
+
+            // Handle file uploads (attachments)
+            if ($request->hasFile('attachments')) {
+                MediaController::uploadFile($request, $project->id);
+            }
+
+            // Redirect with success message
+            return redirect()->route('project.index')->with('project_updated', true);
             // Update the project with the new validated data
             $project->update($validated);
-    
+        
             // Return a success message
             return redirect()->route('project.index')->with('project_updated', 'Project updated successfully.');
     
-        } catch (\Exception $e) {
-            // Handle any errors during the update process
-            return back()->with('error', 'Whoops! Something went wrong, please try again.');
-        }
-        // Find the project by ID
-        $project = Project::findOrFail($id);
+       } catch (\Exception $e) {
+           // Handle any errors during the update process
+           return back()->with('error', 'Whoops! Something went wrong, please try again.');
+       }
 
-        // Update the project
-        $project->update($validated);
-
-        // Sync the contractors (remove previous and add new ones)
-        if (isset($request->contractors)) {
-            $project->contractors()->detach(); // Remove existing contractors
-
-            foreach ($request->contractors as $contractor) {
-                $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
-            }
-        }
-
-        // Handle file uploads (attachments)
-        if ($request->hasFile('attachments')) {
-            MediaController::uploadFile($request, $project->id);
-        }
-
-        // Redirect with success message
-        return redirect()->route('project.index')->with('project_updated', true);
     }
 
     public function removeContractor($contractorId, Request $request)

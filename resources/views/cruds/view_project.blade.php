@@ -31,8 +31,14 @@
                     @method('PUT') <!-- This ensures the request method is PUT for updating -->
                 @endif
 
+
+                
                 <div class="accordion" id="ProjectAccordion">
 
+
+
+
+                    @if(Auth::user()->role=='admin' || Auth::user()->role == 'consultant')
                     <!-- Project Details -->
                     <div class="accordion-item border-none rounded-lg mb-3">
                         <h2 class="accordion-header" id="headingOne">
@@ -51,43 +57,43 @@
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Project
                                             Name</label>
-                                            <p>{{$project->name}}</p>
+                                            <p class = 'text-center' >{{$project->name}}</p>
                                     </div>
 
                                     <!-- Type -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Type*</label>
-                                        <p>{{$project->type}}</p>
+                                        <p class = 'text-center' >{{$project->type}}</p>
                                       
                                     </div>
 
                                     <!-- Client -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Client</label>
-                                        <p>{{$project->client->firstname}} {{ $project->client->lastname}}</p>
+                                        <p  class = 'text-center' >{{$project->client->firstname}} {{ $project->client->lastname}}</p>
                                     </div>
 
                                     <!-- Consultant -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Consultant</label>
                                         @if(isset($project->consultant))
-                                        <p>{{$project->consultant->firstname}} {{ $project->consultant->lastname}}</p>
+                                        <p class = 'text-center' >{{$project->consultant->firstname}} {{ $project->consultant->lastname}}</p>
                                         @endif
                                     </div>
 
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Client Rate</label>
-                                        <div class="flex relative">
+                                        <div class=" relative">
                                            
-                                        <p>{{$project->client_rate}}</p>
+                                        <p class = 'text-center' >{{$project->client_rate}}</p>
                                         </div>
                                     </div>
 
                                     <!-- Status -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Status</label>
-                                        <p>{{$project->status}}</p>
+                                        <p class = 'text-center' >{{$project->status}}</p>
                                     </div>
 
 
@@ -95,19 +101,92 @@
                                     <!-- Start Date -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Start Date</label>
-                                        <p>{{$project->start_date}}</p>
+                                        <p class = 'text-center' >{{$project->start_date}}</p>
                                     </div>
 
                                     <!-- End Date -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">End Date</label>
-                                        <p>{{$project->end_date}}</p>
+                                        <p class = 'text-center' >{{$project->end_date}}</p>
                                     </div>
 
                                     <!-- Referral Source -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Referral
-                                        <p>{{$project->referral_source}}</p>
+                                        <p class = 'text-center' >{{$project->referral_source}}</p>
+                                    </div>
+
+                                    <!-- Notes -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">Notes</label>
+                                        <textarea readonly name="notes" class="w-full px-2 py-1 text-sm border rounded-md bg-white">{{ old('notes', $project->notes ?? '') }}</textarea>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-b border-black my-2"></div>
+                    @else
+
+
+
+ <!-- Project Details -->
+ <div class="accordion-item border-none rounded-lg mb-3">
+                        <h2 class="accordion-header" id="headingOne">
+                            <button
+                                class="basic_details accordion-button text-black collapsed text-md font-semibold py-2 px-2 w-full flex justify-between items-center"
+                                type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne">
+                                <i class="bi bi-chevron-right transition-transform duration-200 mr-2"></i>
+                                Basic Details
+                            </button>
+                        </h2>
+                        <div id="collapseOne" class="accordion-collapse collapse" data-bs-parent="#ProjectAccordion">
+                            <div class="accordion-body p-5 sm:p-3 responsive-padding m-3 bg-white shadow-xl rounded-lg">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+
+                                    <!-- Project Name -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">Project
+                                            Name</label>
+                                            <p class = 'text-center' >{{$project->name}}</p>
+                                    </div>
+
+                                    <!-- Type -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">Type*</label>
+                                        <p class = 'text-center' >{{$project->type}}</p>
+                                      
+                                    </div>
+
+                                 
+
+                                    <!-- Status -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">Status</label>
+                                        <p class = 'text-center' >{{$project->status}}</p>
+                                    </div>
+
+
+
+                                    <!-- Start Date -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">Start Date</label>
+                                        <p class = 'text-center' >{{$project->start_date}}</p>
+                                    </div>
+
+                                    <!-- End Date -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">End Date</label>
+                                        <p class = 'text-center' >{{$project->end_date}}</p>
+                                    </div>
+
+                                    <!-- Referral Source -->
+                                    <div>
+                                        <label class="block text-black text-sm text-center font-medium">Referral
+                                        <p class = 'text-center' >{{$project->referral_source}}</p>
                                     </div>
 
                                     <!-- Notes -->
@@ -124,6 +203,14 @@
 
                     <div class="border-b border-black my-2"></div>
 
+
+
+
+                    @endif
+
+
+
+                    @if(Auth::user()->role == 'admin')
                     <!-- Contractor List -->
                     <div class="accordion-item border-none rounded-lg mb-3">
                         <h2 class="accordion-header" id="headingTwo">
@@ -134,10 +221,7 @@
                                     <i class="bi bi-chevron-right transition-transform duration-200 mr-2"></i>
                                     Contractor List
                                 </button>
-                                <button id="addContractorBtn" type="button"
-                                    class="bg-indigo-800 text-white px-3 py-1 mr-2 text-xs rounded-full shadow-md hover:bg-indigo-700 hidden">
-                                    +
-                                </button>
+                               
                             </div>
                         </h2>
                         <div id="collapseTwo" class="accordion-collapse collapse" data-bs-parent="#ProjectAccordion">
@@ -149,7 +233,6 @@
                                                 <th class="p-2 text-left">Sr</th>
                                                 <th class="p-2 text-left">Contractor Name</th>
                                                 <th class="p-2 text-left">Contractor's Rate</th>
-                                                <th class="p-2 text-right">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody id="contractor-table-body">
@@ -158,29 +241,11 @@
                                                 @foreach ($projectContractors as $index => $contractor)
                                                     <tr class="border-b" id="contractor-row-{{ $index }}">
                                                         <td class="p-2 text-left">{{ $index + 1 }}</td>
-                                                        <td class="p-2">
-                                                         
-                                                        </td>
+                                                        <td class="p-2">{{ $contractor['firstname'] }} {{ $contractor['lastname'] }}</td>
                                                         <td class="p-2 flex">
-                                                            <select
-                                                                class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
-                                                                <option>USD</option>
-                                                                <option>CAD</option>
-                                                            </select>
-                                                            <input type="number"
-                                                                name="contractors[{{ $index }}][rate]"
-                                                                value="{{ $contractor['contractor_rate'] }}"
-                                                                class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100"
-                                                                min="0">
+                                                                {{ $contractor['contractor_rate'] }}
                                                         </td>
-                                                        <td class="p-2 text-right">
-                                                            <button type="button"
-                                                                class="remove-contractor-btn text-md bg-red-500 text-white px-3 py-0 rounded"
-                                                                data-contractor-id="{{ $contractor['contractor_id'] }}"
-                                                                data-project-id="{{ $project->id }}">
-                                                                X
-                                                            </button>
-                                                        </td>
+                                                       
                                                     </tr>
                                                 @endforeach
                                             @endif
@@ -191,8 +256,8 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="border-b border-black my-2"></div>
+                    @endif
 
                     <!-- File Attachments -->
                     <div class="accordion-item border-none rounded-lg mb-4">
@@ -223,11 +288,6 @@
                                                         <td class="p-2">{{ Str::afterLast($file->file_path, '_') }}
                                                         </td>
                                                         <td class="p-2 text-right">
-                                                            <button type="button"
-                                                                class="delete-file-btn bg-red-500 text-white px-4 py-1 text-xs rounded"
-                                                                data-file-id="{{ $file->id }}">
-                                                                &times;
-                                                            </button>
                                                             <a href="{{ route('project.downloadFile', $file->id) }}"
                                                                 class="bg-blue-500 text-white px-2 py-1 text-xs rounded"
                                                                 title="Download File" target="_blank">
@@ -248,7 +308,6 @@
                     </div>
 
                 </div>
-
                 <div class="border-b border-black my-2"></div>
 
                 <!-- Submit Button -->
@@ -261,29 +320,6 @@
     <script>
         $(document).ready(function() {
             $('.basic_details').click();
-
-
-       
-            // add contractor details dynamically
-            let contractorCount = {{ isset($projectContractors) ? count($projectContractors) : 0 }};
-
-     
-
-
-            // add button only appear when accordian is open
-            $("#collapseTwo").on('show.bs.collapse', function() {
-                $("#addContractorBtn").removeClass("hidden");
-            }).on('hide.bs.collapse', function() {
-                $("#addContractorBtn").addClass("hidden");
-            });
-
-        
-
-            toggleInProgressStatus();
-
-
-
-
         });
     </script>
 @endsection
