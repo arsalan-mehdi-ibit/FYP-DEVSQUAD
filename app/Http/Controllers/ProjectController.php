@@ -143,12 +143,15 @@ $projectName = $project->name;
 $client = User::find($validated['client_id']);
 if ($client) {
     $emailData = [
+        'project_name' => $projectName,
         'user_name' => "{$client->firstname} {$client->lastname}",
         'message' => "A new project \"{$projectName}\" has been created and you are added as a client.",
         'admin_name' => $adminName,
+        'role' => 'client',
         'reset_link' => null,
     ];
     Mail::to($client->email)->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
+    // Mail::to("haishamfaizan@gmail.com")->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
 }
 
 // Send email to consultant if exists
@@ -156,9 +159,12 @@ if (!empty($validated['consultant_id'])) {
     $consultant = User::find($validated['consultant_id']);
     if ($consultant) {
         $emailData = [
+            'project_name' => $projectName,
+
             'user_name' => "{$consultant->firstname} {$consultant->lastname}",
             'message' => "You have been assigned as a consultant for the new project \"{$projectName}\".",
             'admin_name' => $adminName,
+            'role' => 'consultant',
             'reset_link' => null,
         ];
         Mail::to($consultant->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.project_created_email'));
@@ -171,9 +177,11 @@ if ($request->has('contractors')) {
         $contractorUser = User::find($contractor['contractor_id']);
         if ($contractorUser) {
             $emailData = [
+                'project_name' => $projectName,
                 'user_name' => "{$contractorUser->firstname} {$contractorUser->lastname}",
                 'message' => "You have been assigned as a contractor for the new project \"{$projectName}\".",
                 'admin_name' => $adminName,
+                'role' => 'contractor',
                 'reset_link' => null,
             ];
             Mail::to($contractorUser->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.project_created_email'));

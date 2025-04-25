@@ -64,11 +64,7 @@
                 <p>You have a new update related to the project <strong>"{{ $project_name }}"</strong>.</p>
             @endif
 
-            @if($reset_link)
-                <p>Click below to set your password and access your TrackPoint dashboard:</p>
-                <a href="{{ $reset_link }}" class="btn">Set Your Password</a>
-            @endif
-
+       
             <p>Best regards,<br><strong>{{ $admin_name }}</strong><br>TrackPoint Team</p>
         </div>
 
