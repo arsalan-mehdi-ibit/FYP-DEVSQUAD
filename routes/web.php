@@ -13,6 +13,8 @@ use App\Http\Controllers\TimesheetDetailController;
 use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\TaskController;
+
 
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])
@@ -75,8 +77,21 @@ Route::middleware('auth')->group(function () {
     Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
         Route::get('/details', [TimesheetDetailController::class, 'index'])->name('details.index');
+        // Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
+        // Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
         Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
+        // Route::put('/daily-task/{id}', [TimesheetDetailController::class, 'updateDailyTask'])->name('daily-task.update');
+        
     });
+    
+    // Route::post('/daily-task/store', [TaskController::class, 'storeDailyTask'])->name('daily-task.store');
+    Route::prefix('timesheet/{timesheetDetailId}/tasks')->group(function () {
+        Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
+        Route::put('/{taskId}', [TaskController::class, 'update'])->name('tasks.update');
+        Route::delete('/{taskId}', [TaskController::class, 'destroy'])->name('tasks.destroy');
+        Route::get('/', [TaskController::class, 'getTasks'])->name('tasks.index');
+    });
+    
 
 
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
@@ -89,6 +104,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/download-file/{id}', [MediaController::class, 'downloadFile'])->name('downloadFile');
         Route::delete('/remove-contractor/{contractorId}', [ProjectController::class, 'removeContractor'])->name('removeContractor');
         Route::delete('/destroy/{id}', [ProjectController::class, 'destroy'])->name('destroy');
+        // Route::get('/{projectId}/timesheet-details', [ProjectController::class, 'showTimesheetDetails'])->name('timesheet.details');
 
 
     });

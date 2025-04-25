@@ -23,29 +23,22 @@ class ProjectController extends Controller
         $pageTitle = "Projects";
         // $projects= null;
         $projects = Project::all();
-        if(Auth::user()->role == 'admin')
-        {
+        if (Auth::user()->role == 'admin') {
             //ADMIN CAN SEE ALL THE PROJECTS
             $projects = Project::all();
-        }
-        elseif(Auth::user()->role == 'client')
-        {
+        } elseif (Auth::user()->role == 'client') {
             //Client CAN SEE only his PROJECTS
             $projects = Project::where('client_id', Auth::id())->get();
-        }
-        elseif(Auth::user()->role == 'consultant')
-        {
+        } elseif (Auth::user()->role == 'consultant') {
             //Consultant CAN SEE only his PROJECTS
             $projects = Project::where('consultant_id', Auth::id())->get();
-        }
-        elseif(Auth::user()->role == 'contractor')
-        {
-        //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
+        } elseif (Auth::user()->role == 'contractor') {
+            //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
 
             $contractorId = Auth::id();
 
             // Fetch projects where contractor_id matches
-            $projects = Project::whereHas('contractors', function($query) use ($contractorId) {
+            $projects = Project::whereHas('contractors', function ($query) use ($contractorId) {
                 $query->where('users.id', $contractorId);
             })->get();
         }
@@ -62,7 +55,17 @@ class ProjectController extends Controller
         $contractors = $users->where('role', 'contractor');
         return view('cruds.add_project', compact('pageTitle', 'users', 'contractors'));
     }
+    public function triggerTimesheetJob($project)
+    {
+        // Ensure we have a single Project instance
+        if (!$project instanceof Project) {
+            $project = Project::findOrFail($project);
+        }
+        $contractors = $project->contractors;
+        FillTimesheet::dispatch($project, $contractors);
+    }
 
+    
     /**
      * Store a newly created project in storage.
      */
@@ -94,7 +97,6 @@ class ProjectController extends Controller
                 ->withInput()
                 ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
         }
-
         try {
             // Check for an active project with the same name
             $active = Project::where('name', $validated['name'])->first();
@@ -120,7 +122,6 @@ class ProjectController extends Controller
                     $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
                 }
             }
-
             // Handle file uploads (attachments) if any
             if ($request->hasFile('attachments')) {
                 MediaController::uploadFile($request, $project->id);
@@ -134,17 +135,6 @@ class ProjectController extends Controller
             Log::error('Create Error: ' . $e->getMessage());
             return back()->with('error', 'Failed to create project.');
         }
-    }
-
-    protected function triggerTimesheetJob(Project $project)
-    {
-        // Fetch contractors for the project
-        $contractors = $project->contractors; // Assuming contractors is a many-to-many relationship on Project
-
-        // Dispatch the FillTimesheet job
-        FillTimesheet::dispatch($project, $contractors);
-
-        Log::info('Timesheet job dispatched for project ID: ' . $project->id);
     }
 
 
@@ -184,11 +174,12 @@ class ProjectController extends Controller
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => ['nullable', 'date', 'after:start_date', 'after_or_equal:today'],
             'notes' => 'nullable|string|max:255',
-            'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
-            'contractors' => 'array', // Validate contractors for the project
+            'attachments.*' => 'nullable|file|max:2048',
+            'contractors' => 'array',
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
+
         if (
             $validated['status'] === 'in_progress' &&
             (!isset($validated['contractors']) || count($validated['contractors']) < 1)
@@ -198,29 +189,32 @@ class ProjectController extends Controller
                 ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
         }
 
-        // Find the project by ID
+        // Find the project
         $project = Project::findOrFail($id);
 
-        // Update the project
+        // Update project details
         $project->update($validated);
 
-        // Sync the contractors (remove previous and add new ones)
-        if (isset($request->contractors)) {
-            $project->contractors()->detach(); // Remove existing contractors
+        // Sync contractors
+        $project->contractors()->detach();
 
+        if (isset($request->contractors)) {
             foreach ($request->contractors as $contractor) {
                 $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
             }
         }
 
-        // Handle file uploads (attachments)
+        // Handle file uploads
         if ($request->hasFile('attachments')) {
             MediaController::uploadFile($request, $project->id);
         }
 
-        // Redirect with success message
+        // ✅ Dispatch the FillTimesheet job
+        $this->triggerTimesheetJob($project);
+
         return redirect()->route('project.index')->with('project_updated', true);
     }
+
 
     public function removeContractor($contractorId, Request $request)
     {
@@ -257,24 +251,24 @@ class ProjectController extends Controller
         }
     }
 
-    public function createTimesheet(Request $request, $contractorId, $projectId)
-    {
-        // Validate the request data
-        $validated = $request->validate([
-            'week_start_date' => 'required|date',
-            'week_end_date' => 'required|date|after_or_equal:week_start_date',
-            'hours_worked' => 'required|numeric|min:0',
-        ]);
+    // public function createTimesheet(Request $request, $contractorId, $projectId)
+    // {
+    //     // Validate the request data
+    //     $validated = $request->validate([
+    //         'week_start_date' => 'required|date',
+    //         'week_end_date' => 'required|date|after_or_equal:week_start_date',
+    //         'hours_worked' => 'required|numeric|min:0',
+    //     ]);
 
-        // Dispatch the job to handle the timesheet creation
-        FillTimesheet::dispatch(
-            $contractorId,
-            $projectId,
-            $validated['week_start_date'],
-            $validated['week_end_date'],
-            $validated['hours_worked']
-        );
+    //     // Dispatch the job to handle the timesheet creation
+    //     FillTimesheet::dispatch(
+    //         $contractorId,
+    //         $projectId,
+    //         $validated['week_start_date'],
+    //         $validated['week_end_date'],
+    //         $validated['hours_worked']
+    //     );
 
-        return response()->json(['message' => 'Timesheet creation job dispatched.']);
-    }
+    //     return response()->json(['message' => 'Timesheet creation job dispatched.']);
+    // }
 }
