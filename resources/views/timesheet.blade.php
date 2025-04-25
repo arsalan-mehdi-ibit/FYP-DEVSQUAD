@@ -74,8 +74,8 @@
                                 Total Hours</th>
                             <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Total OT Hours </th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Approver</th>
+                            {{-- <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                                Approver</th> --}}
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Project</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
@@ -98,18 +98,18 @@
                                 {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - 
                                 {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}
                             </td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ ucfirst($timesheet->status) }}</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->id }}</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_hours }}</td>
-                            @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{$timesheet->status ?? 'N/A' }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_hours}}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_ot_hours }}</td>
+                            {{-- @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->client->firstname ?? 'N/A' }}</td>
-                            @endif
+                            @endif --}}
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->project->name ?? 'N/A' }}</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->contractor->firstname ?? 'N/A' }}</td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->project->status ?? 'N/A' }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->project->client->firstname ?? 'N/A' }}</td>
                             <td class="p-2 sm:p-3 text-center">
                                 <button class="text-gray-600 hover:text-gray-900 transition-all">
-                                    <a href="{{ route('timesheet.details.index', $timesheet->id) }}" class="text-gray-600 hover:text-gray-900 transition-all">
+                                    <a href="{{ route('timesheet.details.detail', $timesheet->id) }}" class="text-gray-600 hover:text-gray-900 transition-all">
                                         <i class="fas fa-eye"></i>
                                     </a>
                                 </button>

@@ -28,4 +28,11 @@ class Timesheet extends Model
     {
         return $this->belongsTo(User::class, 'contractor_id');
     }
+
+    public function client()
+    {
+        return $this->belongsTo(User::class, 'client_id'); // or the correct FK
+    }
+
 }
+

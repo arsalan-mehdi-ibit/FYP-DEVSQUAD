@@ -14,6 +14,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\RecentActivity;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailSender;
+use App\Jobs\FillTimesheet;
+
 
 
 class ProjectController extends Controller
@@ -74,6 +76,15 @@ class ProjectController extends Controller
         $contractors = $users->where('role', 'contractor');
         return view('cruds.add_project', compact('pageTitle', 'users', 'contractors'));
     }
+    public function triggerTimesheetJob($project)
+    {
+        // Ensure we have a single Project instance
+        if (!$project instanceof Project) {
+            $project = Project::findOrFail($project);
+        }
+        $contractors = $project->contractors;
+        FillTimesheet::dispatch($project, $contractors);
+    }
 
     /**
      * Store a newly created project in storage.
@@ -94,7 +105,7 @@ class ProjectController extends Controller
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
             'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'end_date' => ['nullable', 'date', 'after:start_date', 'after_or_equal:today'],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
             'contractors' => 'array', // Validate the contractors field
@@ -177,7 +188,6 @@ if ($request->has('contractors')) {
                     $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
                 }
             }
-
             // Handle file uploads (attachments) if any
             if ($request->hasFile('attachments')) {
                 MediaController::uploadFile($request, $project->id);
@@ -196,12 +206,16 @@ if ($request->has('contractors')) {
             ]);
         }
 
+            // Dispatch the FillTimesheet job after project creation
+            $this->triggerTimesheetJob($project);
+
             return redirect()->route('project.index')->with('project_created', 'Project created successfully.');
         } catch (\Exception $e) {
             Log::error('Create Error: ' . $e->getMessage());
             return back()->with('error', 'Failed to create project.');
         }
     }
+
 
     /**
      * Show the form for editing the specified project.
@@ -212,7 +226,7 @@ if ($request->has('contractors')) {
         $project = Project::findOrFail($id);
         $users = User::all();
         $contractors = $users->where('role', 'contractor');
-        
+
         $projectContractors = $project->contractors->map(function ($contractor) {
             return [
                 'contractor_id' => $contractor->id,
@@ -227,7 +241,7 @@ if ($request->has('contractors')) {
     $pageTitle = "View Project";
     
     // Eager load 'client', 'contractors', and 'fileAttachments' relationships
-    $project = Project::with(['client', 'contractors', 'fileAttachments'])->findOrFail($id);
+    $project = Project::with(['client', 'contractors','consultant', 'fileAttachments'])->findOrFail($id);
     
     // Prepare contractor data for display (read-only)
     $projectContractors = $project->contractors->map(function ($contractor) {
@@ -261,7 +275,7 @@ if ($request->has('contractors')) {
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('projects')->whereNull('deleted_at')  
+                Rule::unique('projects')->ignore($id)->whereNull('deleted_at'),
             ],
             'type' => 'required|string',
             'client_id' => 'required|exists:users,id',
@@ -269,10 +283,10 @@ if ($request->has('contractors')) {
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
             'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => ['nullable', 'date', 'after:start_date'],
+            'end_date' => ['nullable', 'date', 'after:start_date', 'after_or_equal:today'],
             'notes' => 'nullable|string|max:255',
-            'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
-            'contractors' => 'array', // Validate contractors for the project
+            'attachments.*' => 'nullable|file|max:2048',
+            'contractors' => 'array',
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
@@ -299,18 +313,34 @@ if ($request->has('contractors')) {
                 }
             }
     
+         
+            // Sync the contractors (remove previous and add new ones)
+            if (isset($request->contractors)) {
+                $project->contractors()->detach(); // Remove existing contractors
+
+                foreach ($request->contractors as $contractor) {
+                    $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+                }
+            }
+
+            // Handle file uploads (attachments)
+            if ($request->hasFile('attachments')) {
+                MediaController::uploadFile($request, $project->id);
+            }
+
             // Update the project with the new validated data
             $project->update($validated);
-    
+             // ✅ Dispatch the FillTimesheet job
+            $this->triggerTimesheetJob($project);
+
+        
             // Return a success message
             return redirect()->route('project.index')->with('project_updated', 'Project updated successfully.');
     
-        } catch (\Exception $e) {
-            // Handle any errors during the update process
-            return back()->with('error', 'Whoops! Something went wrong, please try again.');
-        }
-        // Find the project by ID
-        $project = Project::findOrFail($id);
+       } catch (\Exception $e) {
+           // Handle any errors during the update process
+           return back()->with('error', 'Whoops! Something went wrong, please try again.');
+       }
 
         // Update the project
         $project->update($validated);
@@ -365,7 +395,6 @@ foreach ($adminUsers as $admin) {
     /**
      * Remove the specified project from storage (soft delete).
      */
-    
     public function destroy($id)
     {
         try {
@@ -383,6 +412,25 @@ foreach ($adminUsers as $admin) {
             return back()->with('error', 'Failed to delete project.');
         }
     }
-    
 
+    // public function createTimesheet(Request $request, $contractorId, $projectId)
+    // {
+    //     // Validate the request data
+    //     $validated = $request->validate([
+    //         'week_start_date' => 'required|date',
+    //         'week_end_date' => 'required|date|after_or_equal:week_start_date',
+    //         'hours_worked' => 'required|numeric|min:0',
+    //     ]);
+
+    //     // Dispatch the job to handle the timesheet creation
+    //     FillTimesheet::dispatch(
+    //         $contractorId,
+    //         $projectId,
+    //         $validated['week_start_date'],
+    //         $validated['week_end_date'],
+    //         $validated['hours_worked']
+    //     );
+
+    //     return response()->json(['message' => 'Timesheet creation job dispatched.']);
+    // }
 }
