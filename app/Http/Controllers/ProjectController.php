@@ -137,7 +137,7 @@ if ($client) {
         'admin_name' => $adminName,
         'reset_link' => null,
     ];
-    Mail::to($client->email)->send(new EmailSender("New Project Created", $emailData, 'emails.welcome_email'));
+    Mail::to($client->email)->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
 }
 
 // Send email to consultant if exists
@@ -150,7 +150,7 @@ if (!empty($validated['consultant_id'])) {
             'admin_name' => $adminName,
             'reset_link' => null,
         ];
-        Mail::to($consultant->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.welcome_email'));
+        Mail::to($consultant->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.project_created_email'));
     }
 }
 
@@ -165,7 +165,7 @@ if ($request->has('contractors')) {
                 'admin_name' => $adminName,
                 'reset_link' => null,
             ];
-            Mail::to($contractorUser->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.welcome_email'));
+            Mail::to($contractorUser->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.project_created_email'));
         }
     }
 }
