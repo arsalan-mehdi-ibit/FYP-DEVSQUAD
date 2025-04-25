@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory,SoftDeletes;
     protected $dates = ['deleted_at'];
 
     /**
@@ -41,7 +41,14 @@ class Project extends Model
      */
     public function client()
     {
-        return $this->belongsTo(User::class, 'client_id'); // Ensure you are referencing client_id here
+        return $this->belongsTo(User::class, 'client_id');
+    }
+    /**
+     * Get the consutant associated with the project.
+     */
+    public function consultant()
+    {
+        return $this->belongsTo(User::class, 'consultant_id');
     }
 
     /**
@@ -50,19 +57,7 @@ class Project extends Model
     public function contractors()
     {
         return $this->belongsToMany(User::class, 'project_contractor', 'project_id', 'contractor_id')
-            ->withPivot('contractor_rate');  // Ensure we include the contractor_rate in the pivot table
+                    ->withPivot('contractor_rate');
     }
-
-
-
-
-
-
-    // Optionally, if you want to have custom attribute names (for example, if you want `client_name` instead of `client`)
-    public function getClientNameAttribute()
-    {
-        return $this->client->name; // If the User model has a 'name' attribute
-    }
-
-    // You can also define custom methods for other relationships if necessary
+    
 }

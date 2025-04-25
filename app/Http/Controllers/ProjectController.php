@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use App\Models\Contractor;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -21,26 +23,42 @@ class ProjectController extends Controller
     public function index()
     {
         $pageTitle = "Projects";
-        // $projects= null;
-        $projects = Project::all();
-        if (Auth::user()->role == 'admin') {
+    
+        if(Auth::user()->role == 'admin')
+        {
             //ADMIN CAN SEE ALL THE PROJECTS
-            $projects = Project::all();
-        } elseif (Auth::user()->role == 'client') {
+            $projects = Project::orderBy('id', 'desc')->get();
+
+        }
+        elseif(Auth::user()->role == 'client')
+        {
+           
             //Client CAN SEE only his PROJECTS
-            $projects = Project::where('client_id', Auth::id())->get();
-        } elseif (Auth::user()->role == 'consultant') {
+            $projects = Project::where('client_id', Auth::id())
+            ->orderBy('id', 'desc')
+            ->get();
+
+        }
+        elseif(Auth::user()->role == 'consultant')
+        {
+          
             //Consultant CAN SEE only his PROJECTS
-            $projects = Project::where('consultant_id', Auth::id())->get();
-        } elseif (Auth::user()->role == 'contractor') {
-            //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
+            $projects = Project::where('consultant_id', Auth::id())
+            ->orderBy('id', 'desc')
+            ->get();
+
+        }
+        elseif(Auth::user()->role == 'contractor')
+        {
+        //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
 
             $contractorId = Auth::id();
 
             // Fetch projects where contractor_id matches
-            $projects = Project::whereHas('contractors', function ($query) use ($contractorId) {
-                $query->where('users.id', $contractorId);
-            })->get();
+           $projects = Project::whereHas('contractors', function($query) use ($contractorId) {
+    $query->where('users.id', $contractorId);
+})->orderBy('id', 'desc')->get();
+
         }
         return view('project', compact('pageTitle', 'projects'));
     }
@@ -65,7 +83,6 @@ class ProjectController extends Controller
         FillTimesheet::dispatch($project, $contractors);
     }
 
-    
     /**
      * Store a newly created project in storage.
      */
@@ -73,7 +90,12 @@ class ProjectController extends Controller
     {
         // Validate the form data
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+             'name' => [
+            'required',
+            'string',
+            'max:255',
+            Rule::unique('projects')->whereNull('deleted_at')  // <-- main part
+        ],
             'type' => 'required|string',
             'client_id' => 'required|exists:users,id',
             'consultant_id' => 'nullable|exists:users,id',
@@ -87,9 +109,7 @@ class ProjectController extends Controller
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
-
-        // Check if at least one contractor is required for an "in_progress" project
-        if (
+   if (
             $validated['status'] === 'in_progress' &&
             (!isset($validated['contractors']) || count($validated['contractors']) < 1)
         ) {
@@ -97,18 +117,15 @@ class ProjectController extends Controller
                 ->withInput()
                 ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
         }
-        try {
-            // Check for an active project with the same name
-            $active = Project::where('name', $validated['name'])->first();
-            if ($active) {
-                return back()->with('error', 'A project with this name already exists.');
-            }
+    try {
+       
 
-            // Check for a soft-deleted project with the same name
-            $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
-            if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
-                $trashed->forceDelete(); // Hard delete
-            }
+        // Check for a soft-deleted project with the same name
+        $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
+        if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
+            $trashed->forceDelete(); // Hard delete the old project
+        }
+
 
             // Set client_rate, default to 0.00 if not provided
             $validated['client_rate'] = $request->client_rate ?? 0.00;
@@ -130,7 +147,7 @@ class ProjectController extends Controller
             // Dispatch the FillTimesheet job after project creation
             $this->triggerTimesheetJob($project);
 
-            return redirect()->route('project.index')->with('success', 'Project created successfully.');
+            return redirect()->route('project.index')->with('project_created', 'Project created successfully.');
         } catch (\Exception $e) {
             Log::error('Create Error: ' . $e->getMessage());
             return back()->with('error', 'Failed to create project.');
@@ -157,6 +174,33 @@ class ProjectController extends Controller
 
         return view('cruds.add_project', compact('pageTitle', 'project', 'users', 'contractors', 'projectContractors'));
     }
+    public function view($id)
+{
+    $pageTitle = "View Project";
+    
+    // Eager load 'client', 'contractors', and 'fileAttachments' relationships
+    $project = Project::with(['client', 'contractors','consultant', 'fileAttachments'])->findOrFail($id);
+    
+    // Prepare contractor data for display (read-only)
+    $projectContractors = $project->contractors->map(function ($contractor) {
+        return [
+            'contractor_id' => $contractor->id,
+            'firstname' => $contractor->firstname,
+            'lastname' => $contractor->lastname,
+            'contractor_rate' => $contractor->pivot->contractor_rate,
+        ];
+    });
+    
+    // Pass data to the view
+    return view('cruds.view_project', compact('project', 'pageTitle', 'projectContractors'));
+}
+
+    
+    
+
+
+   
+
 
     /**
      * Update the specified project in storage.
@@ -165,7 +209,12 @@ class ProjectController extends Controller
     {
         // Validate the form data
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('projects')->ignore($id)->whereNull('deleted_at'),
+            ],
             'type' => 'required|string',
             'client_id' => 'required|exists:users,id',
             'consultant_id' => 'nullable|exists:users,id',
@@ -179,7 +228,6 @@ class ProjectController extends Controller
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
-
         if (
             $validated['status'] === 'in_progress' &&
             (!isset($validated['contractors']) || count($validated['contractors']) < 1)
@@ -188,33 +236,54 @@ class ProjectController extends Controller
                 ->withInput()
                 ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
         }
-
-        // Find the project
-        $project = Project::findOrFail($id);
-
-        // Update project details
-        $project->update($validated);
-
-        // Sync contractors
-        $project->contractors()->detach();
-
-        if (isset($request->contractors)) {
-            foreach ($request->contractors as $contractor) {
-                $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+        try {
+            // Find the project to update
+            $project = Project::findOrFail($id);
+    
+            // Check if the name has changed
+            if ($project->name !== $validated['name']) {
+                // Look for any soft-deleted project with the same name
+                $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
+    
+                if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
+                    // If found, force delete the soft-deleted project
+                    $trashed->forceDelete();
+                }
             }
-        }
+    
+         
+            // Sync the contractors (remove previous and add new ones)
+            if (isset($request->contractors)) {
+                $project->contractors()->detach(); // Remove existing contractors
 
-        // Handle file uploads
-        if ($request->hasFile('attachments')) {
-            MediaController::uploadFile($request, $project->id);
-        }
+                foreach ($request->contractors as $contractor) {
+                    $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+                }
+            }
+
+            // Handle file uploads (attachments)
+            if ($request->hasFile('attachments')) {
+                MediaController::uploadFile($request, $project->id);
+            }
+
+            // Redirect with success message
+            return redirect()->route('project.index')->with('project_updated', true);
+            // Update the project with the new validated data
+            $project->update($validated);
+        
+            // Return a success message
+            return redirect()->route('project.index')->with('project_updated', 'Project updated successfully.');
+    
+       } catch (\Exception $e) {
+           // Handle any errors during the update process
+           return back()->with('error', 'Whoops! Something went wrong, please try again.');
+       }
 
         // ✅ Dispatch the FillTimesheet job
         $this->triggerTimesheetJob($project);
 
         return redirect()->route('project.index')->with('project_updated', true);
     }
-
 
     public function removeContractor($contractorId, Request $request)
     {

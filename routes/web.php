@@ -77,11 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::group(['as' => 'timesheet.', 'prefix' => '/timesheet'], function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
         Route::get('/details', [TimesheetDetailController::class, 'index'])->name('details.index');
-        // Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
-        // Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
         Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
-        // Route::put('/daily-task/{id}', [TimesheetDetailController::class, 'updateDailyTask'])->name('daily-task.update');
-        
     });
     
     // Route::post('/daily-task/store', [TaskController::class, 'storeDailyTask'])->name('daily-task.store');
@@ -104,7 +100,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/download-file/{id}', [MediaController::class, 'downloadFile'])->name('downloadFile');
         Route::delete('/remove-contractor/{contractorId}', [ProjectController::class, 'removeContractor'])->name('removeContractor');
         Route::delete('/destroy/{id}', [ProjectController::class, 'destroy'])->name('destroy');
-        // Route::get('/{projectId}/timesheet-details', [ProjectController::class, 'showTimesheetDetails'])->name('timesheet.details');
+        Route::get('/view/{id}', [ProjectController::class, 'view'])->name('view');
 
 
     });
