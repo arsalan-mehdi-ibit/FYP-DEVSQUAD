@@ -266,10 +266,11 @@ class ProjectController extends Controller
                 MediaController::uploadFile($request, $project->id);
             }
 
-            // Redirect with success message
-            return redirect()->route('project.index')->with('project_updated', true);
             // Update the project with the new validated data
             $project->update($validated);
+             // ✅ Dispatch the FillTimesheet job
+            $this->triggerTimesheetJob($project);
+
         
             // Return a success message
             return redirect()->route('project.index')->with('project_updated', 'Project updated successfully.');
@@ -279,10 +280,6 @@ class ProjectController extends Controller
            return back()->with('error', 'Whoops! Something went wrong, please try again.');
        }
 
-        // ✅ Dispatch the FillTimesheet job
-        $this->triggerTimesheetJob($project);
-
-        return redirect()->route('project.index')->with('project_updated', true);
     }
 
     public function removeContractor($contractorId, Request $request)
