@@ -12,6 +12,8 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\RecentActivity;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\EmailSender;
 
 
 class ProjectController extends Controller
@@ -122,6 +124,52 @@ class ProjectController extends Controller
 
             // Create the project
             $project = Project::create($validated);
+            // Prepare shared email info
+$adminName = Auth::user()->firstname . ' ' . Auth::user()->lastname; // Or any appropriate admin name
+$projectName = $project->name;
+
+// Send email to client
+$client = User::find($validated['client_id']);
+if ($client) {
+    $emailData = [
+        'user_name' => "{$client->firstname} {$client->lastname}",
+        'message' => "A new project \"{$projectName}\" has been created and you are added as a client.",
+        'admin_name' => $adminName,
+        'reset_link' => null,
+    ];
+    Mail::to($client->email)->send(new EmailSender("New Project Created", $emailData, 'emails.welcome_email'));
+}
+
+// Send email to consultant if exists
+if (!empty($validated['consultant_id'])) {
+    $consultant = User::find($validated['consultant_id']);
+    if ($consultant) {
+        $emailData = [
+            'user_name' => "{$consultant->firstname} {$consultant->lastname}",
+            'message' => "You have been assigned as a consultant for the new project \"{$projectName}\".",
+            'admin_name' => $adminName,
+            'reset_link' => null,
+        ];
+        Mail::to($consultant->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.welcome_email'));
+    }
+}
+
+// Send email to each contractor
+if ($request->has('contractors')) {
+    foreach ($request->contractors as $contractor) {
+        $contractorUser = User::find($contractor['contractor_id']);
+        if ($contractorUser) {
+            $emailData = [
+                'user_name' => "{$contractorUser->firstname} {$contractorUser->lastname}",
+                'message' => "You have been assigned as a contractor for the new project \"{$projectName}\".",
+                'admin_name' => $adminName,
+                'reset_link' => null,
+            ];
+            Mail::to($contractorUser->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.welcome_email'));
+        }
+    }
+}
+
 
             // Attach contractors to the project if any
             if ($request->has('contractors')) {
