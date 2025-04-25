@@ -44,9 +44,18 @@ class FillTimesheet implements ShouldQueue
         $startDate = Carbon::parse($this->project->start_date);
         $endDate = Carbon::parse($this->project->end_date);
         $currentStart = $startDate->copy();
+        $firstLoop = true;
 
         while ($currentStart->lte($endDate)) {
-            $currentEnd = $currentStart->copy()->addDays(6);
+            if ($firstLoop) {
+                // First week: from start date to Sunday
+                $currentEnd = $currentStart->copy()->endOfWeek(Carbon::SUNDAY);
+                $firstLoop = false;
+            } else {
+                // Full Monday to Sunday weeks
+                $currentStart = $currentStart->copy()->startOfWeek(Carbon::MONDAY);
+                $currentEnd = $currentStart->copy()->endOfWeek(Carbon::SUNDAY);
+            }
             if ($currentEnd->gt($endDate)) {
                 $currentEnd = $endDate->copy();
             }
@@ -70,7 +79,7 @@ class FillTimesheet implements ShouldQueue
                         'contractor_id'  => $contractor->id,
                         'week_start_date'=> $currentStart->toDateString(),
                         'week_end_date'  => $currentEnd->toDateString(),
-                        'status'         => $this->project->status,
+                        'status'         => 'pending',
                         'total_hours'    => 0,
                         // 'total_ot_hours'    => 0,
                         'total_amount'   => $rate,
@@ -88,7 +97,8 @@ class FillTimesheet implements ShouldQueue
                 }
             }
 
-            $currentStart->addDays(7); // move to next weekly window
+           // Move to next week
+           $currentStart = $currentEnd->copy()->addDay();
         }
     }
 }

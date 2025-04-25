@@ -98,7 +98,7 @@
                                 {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - 
                                 {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}
                             </td>
-                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{$timesheet->project->status ?? 'N/A' }}</td>
+                            <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{$timesheet->status ?? 'N/A' }}</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_hours}}</td>
                             <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_ot_hours }}</td>
                             {{-- @if(Auth::user()->role =='admin' || Auth::user()->role =='consultant' )
