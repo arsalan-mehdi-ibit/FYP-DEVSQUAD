@@ -135,35 +135,43 @@
                                         <div class="inline-flex space-x-1">
                                             <!-- Approve Button -->
                                             <button
-                                                class="px-2 py-1 rounded-lg bg-green-200 hover:bg-green-100 transition-all text-xs"
-                                                id="approve-btn-{{ $timesheet->id }}">
+                                                class="px-2 py-1 rounded-lg transition-all text-xs 
+                                            {{ $timesheet->status == 'submitted' ? 'bg-green-200 hover:bg-green-100' : 'bg-gray-300 cursor-not-allowed' }}"
+                                                id="approve-btn-{{ $timesheet->id }}"
+                                                {{ $timesheet->status != 'submitted' ? 'disabled' : '' }}
+                                                onclick="openApproveModal({{ $timesheet->id }})">
                                                 <span class="text-black">Approve</span>
                                             </button>
 
                                             <!-- Reject Button -->
                                             <button
-                                                class="px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs"
-                                                id="reject-btn-{{ $timesheet->id }}">
+                                                class="px-2 py-1 rounded-lg transition-all text-xs 
+                                            {{ $timesheet->status == 'submitted' ? 'bg-red-100 hover:bg-red-200' : 'bg-gray-300 cursor-not-allowed' }}"
+                                                id="reject-btn-{{ $timesheet->id }}"
+                                                {{ $timesheet->status != 'submitted' ? 'disabled' : '' }}
+                                                onclick="openRejectModal({{ $timesheet->id }})">
                                                 <span class="text-black">Reject</span>
                                             </button>
                                         </div>
+                                        @include('components.approve-timesheet-modal')
+                                        @include('components.reject-timesheet-modal')
                                     @else
                                         <div class="inline-flex space-x-1">
                                             <!-- Submit Button for Contractor -->
                                             <button
-                                                class="px-2 py-1 rounded-lg bg-blue-200 hover:bg-blue-100 transition-all text-xs"
-                                                onclick="openSubmitModal({{ $timesheet->id }})">
+                                                class="px-2 py-1 rounded-lg transition-all text-xs 
+                                                {{ $timesheet->status == 'pending' ? 'bg-blue-200 hover:bg-blue-100' : 'bg-gray-300 cursor-not-allowed' }}"
+                                                onclick="{{ $timesheet->status == 'pending' ? "openSubmitModal({$timesheet->id})" : '' }}"
+                                                {{ $timesheet->status != 'pending' ? 'disabled' : '' }}>
                                                 <span class="text-black">Submit</span>
                                             </button>
                                         </div>
-                                        <!-- Modal includes -->
+                                        <!-- Modals -->
                                         @include('components.submit-timesheet-modal')
-
-                                        @include('components.submitted-success-modal', [
-                                            'timesheetId' => $timesheet->id,
-                                        ])
+                                        @include('components.submitted-success-modal')
                                     @endif
                                 </td>
+
                             </tr>
                         @endforeach
                     </tbody>
@@ -195,15 +203,22 @@
             $(`#submittedSuccessModal-${id}`).modal('hide'); // Use Bootstrap modal function
         }
 
-        $(document).ready(function () {
-        @foreach ($timesheets as $ts)
-            @if ($ts->status === 'submitted' && Auth::user()->role === 'contractor')
-                if (!localStorage.getItem('submittedShown-{{ $ts->id }}')) {
-                    new bootstrap.Modal(document.getElementById('submittedSuccessModal-{{ $ts->id }}')).show();
-                    localStorage.setItem('submittedShown-{{ $ts->id }}', 'true');
-                }
+        function openApproveModal(timesheetId) {
+            $('#approveForm').attr('action', `/timesheet/${timesheetId}/approve`);
+            new bootstrap.Modal(document.getElementById('approveModal')).show();
+        }
+
+        function openRejectModal(timesheetId) {
+            $('#rejectForm').attr('action', `/timesheet/${timesheetId}/reject`);
+            new bootstrap.Modal(document.getElementById('rejectModal')).show();
+        }
+
+
+
+        $(document).ready(function() {
+            @if (session('success'))
+                new bootstrap.Modal(document.getElementById('submittedSuccessModal')).show();
             @endif
-        @endforeach
-    });
+        });
     </script>
 @endsection
