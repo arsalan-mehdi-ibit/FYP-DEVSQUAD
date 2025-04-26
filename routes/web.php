@@ -78,8 +78,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/', [TimesheetController::class, 'index'])->name('index');
         Route::get('/details', [TimesheetDetailController::class, 'index'])->name('details.index');
         Route::get('/details/{id}', [TimesheetDetailController::class, 'show'])->name('details.detail');
+        Route::post('/{id}/submit', [TimesheetController::class, 'submit'])->name('submit');
+        Route::post('/{id}/approve', [TimesheetController::class, 'approve'])->name('approve');
+        Route::post('/{id}/reject', [TimesheetController::class, 'reject'])->name('reject');
+
     });
-    
+
     // Route::post('/daily-task/store', [TaskController::class, 'storeDailyTask'])->name('daily-task.store');
     Route::prefix('timesheet/{timesheetDetailId}/tasks')->group(function () {
         Route::post('/', [TaskController::class, 'store'])->name('tasks.store');
@@ -87,7 +91,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('/{taskId}', [TaskController::class, 'destroy'])->name('tasks.destroy');
         Route::get('/', [TaskController::class, 'getTasks'])->name('tasks.index');
     });
-    
+
 
 
     Route::group(['as' => 'project.', 'prefix' => '/project'], function () {
@@ -104,7 +108,7 @@ Route::middleware('auth')->group(function () {
 
 
     });
-    
+
 
 
     // Route::middleware(['web'])->group(function () {
