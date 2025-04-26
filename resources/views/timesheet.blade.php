@@ -154,17 +154,20 @@
                                             </button>
                                         </div>
                                         @include('components.approve-timesheet-modal')
+                                        @include('components.approval-success-modal')
                                         @include('components.reject-timesheet-modal')
+                                        @include('components.rejection-success-modal')
                                     @else
                                         <div class="inline-flex space-x-1">
                                             <!-- Submit Button for Contractor -->
                                             <button
-                                                class="px-2 py-1 rounded-lg transition-all text-xs 
-                                                {{ $timesheet->status == 'pending' ? 'bg-blue-200 hover:bg-blue-100' : 'bg-gray-300 cursor-not-allowed' }}"
-                                                onclick="{{ $timesheet->status == 'pending' ? "openSubmitModal({$timesheet->id})" : '' }}"
-                                                {{ $timesheet->status != 'pending' ? 'disabled' : '' }}>
-                                                <span class="text-black">Submit</span>
-                                            </button>
+                                            class="px-2 py-1 rounded-lg transition-all text-xs 
+                                            {{ in_array($timesheet->status, ['pending', 'rejected']) ? 'bg-blue-200 hover:bg-blue-100' : 'bg-gray-300 cursor-not-allowed' }}"
+                                            onclick="{{ in_array($timesheet->status, ['pending', 'rejected']) ? "openSubmitModal({$timesheet->id})" : '' }}"
+                                            {{ !in_array($timesheet->status, ['pending', 'rejected']) ? 'disabled' : '' }}>
+                                            <span class="text-black">Submit</span>
+                                        </button>
+                                        
                                         </div>
                                         <!-- Modals -->
                                         @include('components.submit-timesheet-modal')
@@ -190,35 +193,43 @@
 
     <script>
         function openSubmitModal(timesheetId) {
-            console.log(timesheetId);
             $('#submitForm').attr('action', `/timesheet/${timesheetId}/submit`);
-            $('#submitModal').modal('show'); // Use Bootstrap modal function
+            new bootstrap.Modal(document.getElementById('submitModal')).show();
         }
-
+    
         function closeSubmitModal() {
-            $('#submitModal').modal('hide'); // Use Bootstrap modal function
+            $('#submitModal').modal('hide');
         }
-
+    
         function closeSubmittedSuccessModal(id) {
-            $(`#submittedSuccessModal-${id}`).modal('hide'); // Use Bootstrap modal function
+            $(`#submittedSuccessModal-${id}`).modal('hide');
         }
-
+    
         function openApproveModal(timesheetId) {
             $('#approveForm').attr('action', `/timesheet/${timesheetId}/approve`);
             new bootstrap.Modal(document.getElementById('approveModal')).show();
         }
-
+    
         function openRejectModal(timesheetId) {
             $('#rejectForm').attr('action', `/timesheet/${timesheetId}/reject`);
             new bootstrap.Modal(document.getElementById('rejectModal')).show();
         }
-
-
-
-        $(document).ready(function() {
+    
+        $(document).ready(function () {
             @if (session('success'))
-                new bootstrap.Modal(document.getElementById('submittedSuccessModal')).show();
+                @php
+                    $successMessage = session('success');
+                @endphp
+
+                @if (str_contains($successMessage, 'submitted'))
+                    new bootstrap.Modal(document.getElementById('submittedSuccessModal')).show();
+                @elseif ($successMessage == 'Timesheet approved successfully.')
+                    new bootstrap.Modal(document.getElementById('approveSuccessModal')).show();
+                @elseif ($successMessage == 'Timesheet rejected successfully.')
+                    new bootstrap.Modal(document.getElementById('rejectSuccessModal')).show();
+                @endif
             @endif
         });
     </script>
+    
 @endsection
