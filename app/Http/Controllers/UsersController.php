@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Facades\Storage;
 use App\Models\RecentActivity;
+use App\Models\Notifications;
 
 
 class UsersController extends Controller
@@ -93,6 +94,14 @@ class UsersController extends Controller
                     'user_id' => $admin->id, 
                     'created_by' => Auth::id(), 
                 ]);
+                 // Create Notification
+             Notifications::create([
+            'parent_id' => $user->id,
+            'created_for' => 'user',
+            'user_id' => $admin->id,
+            'message' => 'New user ' . $user->firstname . ' ' . $user->lastname . ' has been created.',
+            'is_read' => 0,
+        ]);
             }
             MediaController::uploadFile($request, $user->id);
 
@@ -167,6 +176,14 @@ class UsersController extends Controller
                 'user_id' => $admin->id, // Notify each admin
                 'created_by' => Auth::id(), // Logged-in user
             ]);
+             // Create Notification
+        Notifications::create([
+            'parent_id' => $user->id,
+            'created_for' => 'user',
+            'user_id' => $admin->id,
+            'message' => 'User ' . $user->firstname . ' ' . $user->lastname . ' was updated.',
+            'is_read' => 0,
+        ]);
         }
 
         if ($request->hasFile('attachments')) {

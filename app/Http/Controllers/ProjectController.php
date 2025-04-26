@@ -12,6 +12,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use App\Models\RecentActivity;
+use App\Models\Notifications;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailSender;
 use App\Jobs\FillTimesheet;
@@ -212,6 +213,13 @@ if ($request->has('contractors')) {
                 'user_id' => $admin->id, // Notify each admin
                 'created_by' => Auth::id(), // Logged-in user
             ]);
+            notifications::create([
+                'parent_id' => $project->id,
+                'created_for' => 'project',
+                'user_id' => $admin->id,
+                'message' => 'New project "' . $project->name . '" has been created.',
+                'is_read' => 0, // By default, unread
+            ]);
         }
 
             // Dispatch the FillTimesheet job after project creation
@@ -378,6 +386,14 @@ foreach ($adminUsers as $admin) {
         'created_for' => 'project',
         'user_id' => $admin->id, // Notify each admin
         'created_by' => Auth::id(), // Logged-in user
+    ]);
+
+    Notifications::create([
+        'parent_id' => $project->id,
+        'created_for' => 'project',
+        'user_id' => $admin->id,
+        'message' => 'Project "' . $project->name . '" has been updated.',
+        'is_read' => 0, // unread by default
     ]);
 }
 
