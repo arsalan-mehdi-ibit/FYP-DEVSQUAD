@@ -20,11 +20,18 @@ class TimesheetController extends Controller
 
         if (Auth::user()->role == 'admin') {
             $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->orderByRaw("CASE WHEN status = 'submitted' THEN 0 ELSE 1 END") // Put submitted on top
-                ->orderBy('submitted_at', 'desc') // Most recent submitted first
-                ->orderBy('week_start_date', 'desc') // fallback
+                ->orderByRaw("
+                    CASE 
+                        WHEN status = 'submitted' THEN 1
+                        WHEN status = 'pending' THEN 2
+                        WHEN status = 'approved' THEN 3
+                        WHEN status = 'rejected' THEN 4
+                        ELSE 5
+                    END
+                ") // custom priority sorting
+                ->orderBy('submitted_at', 'desc') // latest submitted first inside each status
+                ->orderBy('week_start_date', 'asc') // fallback
                 ->paginate(10);
-
 
         } elseif (Auth::user()->role == 'client') {
             $projectIds = Project::where('client_id', Auth::id())->pluck('id');
@@ -40,12 +47,23 @@ class TimesheetController extends Controller
                 ->orderBy('week_start_date', 'asc')
                 ->paginate(10);
 
-        } elseif (Auth::user()->role == 'contractor') {
-            $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->where('contractor_id', Auth::id())
-                ->orderBy('week_start_date', 'asc')
-                ->paginate(10);
-        }
+        }elseif (Auth::user()->role == 'contractor') {
+    $timesheets = Timesheet::with(['project.client', 'contractor'])
+        ->where('contractor_id', Auth::id())
+        ->orderByRaw("
+            CASE 
+                WHEN status = 'rejected' THEN 1
+                WHEN status = 'pending' THEN 2
+                WHEN status = 'submitted' THEN 3
+                WHEN status = 'approved' THEN 4
+                ELSE 5
+            END
+        ")
+        ->orderBy('submitted_at', 'desc')
+        ->orderBy('week_start_date', 'asc')
+        ->paginate(10);
+}
+
 
         return view('timesheet', compact('pageTitle', 'timesheets'));
     }
@@ -68,36 +86,36 @@ class TimesheetController extends Controller
     public function approve(Request $request, $id)
     {
         $timesheet = Timesheet::findOrFail($id);
-    
+
         if (!in_array(Auth::user()->role, ['admin', 'client'])) {
             abort(403, 'Unauthorized');
         }
-    
+
         $timesheet->status = 'approved';
         $timesheet->save();
-    
+
         return back()->with('success', 'Timesheet approved successfully.');
     }
-    
+
     public function reject(Request $request, $id)
     {
         $request->validate([
             'rejection_reason' => 'required|string|max:1000',
         ]);
-    
+
         $timesheet = Timesheet::findOrFail($id);
-    
+
         if (!in_array(Auth::user()->role, ['admin', 'client'])) {
             abort(403, 'Unauthorized');
         }
-    
+
         $timesheet->status = 'rejected';
         $timesheet->rejection_reason = $request->rejection_reason;
         $timesheet->save();
-    
+
         return back()->with('success', 'Timesheet rejected successfully.');
     }
-    
+
 
 
     /**
