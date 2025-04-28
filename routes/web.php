@@ -83,6 +83,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/submit', [TimesheetController::class, 'submit'])->name('submit');
         Route::post('/{id}/approve', [TimesheetController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [TimesheetController::class, 'reject'])->name('reject');
+        Route::get('/filter', [TimesheetController::class, 'filter'])->name('filter');
+
 
     });
 

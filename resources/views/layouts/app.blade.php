@@ -358,12 +358,12 @@
                 $(this).find(".toggle-icon").toggleClass("rotate");
             });
 
-        //     // Add Task
-        //     $(document).on("click", ".add-task", function() {
-        //         let taskBody = $(this).closest(".p-3").find(".task-body");
-        //         let nextSr = taskBody.find("tr").length + 1;
+            //     // Add Task
+            //     $(document).on("click", ".add-task", function() {
+            //         let taskBody = $(this).closest(".p-3").find(".task-body");
+            //         let nextSr = taskBody.find("tr").length + 1;
 
-        //         let newRow = `
+            //         let newRow = `
         //     <tr>
         //         <td>${nextSr}</td>
         //         <td><input type="text" class="form-control p-1 task-title" placeholder="Title"></td>
@@ -377,22 +377,22 @@
         //                             <span class="bi bi-trash text-red-500"></span>
         //                         </button>
 
-                   
+
         //         </td>
         //     </tr>
         // `;
 
-        //         taskBody.append(newRow);
-        //     });
+            //         taskBody.append(newRow);
+            //     });
 
-        //     // Save Task
-        //     $(document).on("click", ".save-task", function() {
-        //         let row = $(this).closest("tr");
-        //         let title = row.find(".task-title").val();
-        //         let desc = row.find(".task-desc").val();
-        //         let hours = row.find(".task-hours").val();
+            //     // Save Task
+            //     $(document).on("click", ".save-task", function() {
+            //         let row = $(this).closest("tr");
+            //         let title = row.find(".task-title").val();
+            //         let desc = row.find(".task-desc").val();
+            //         let hours = row.find(".task-hours").val();
 
-        //         row.html(`
+            //         row.html(`
         //     <td>${row.index() + 1}</td>
         //     <td>${title}</td>
         //     <td>${desc}</td>
@@ -405,16 +405,16 @@
         //                         </button>
         //     </td>
         // `);
-        //     });
+            //     });
 
-        //     // Edit Task
-        //     $(document).on("click", ".edit-task", function() {
-        //         let row = $(this).closest("tr");
-        //         let title = row.find("td:nth-child(2)").text();
-        //         let desc = row.find("td:nth-child(3)").text();
-        //         let hours = row.find("td:nth-child(4)").text();
+            //     // Edit Task
+            //     $(document).on("click", ".edit-task", function() {
+            //         let row = $(this).closest("tr");
+            //         let title = row.find("td:nth-child(2)").text();
+            //         let desc = row.find("td:nth-child(3)").text();
+            //         let hours = row.find("td:nth-child(4)").text();
 
-        //         row.html(`
+            //         row.html(`
         //     <td>${row.index() + 1}</td>
         //     <td><input type="text" class="form-control p-1 task-title" value="${title}"></td>
         //     <td><input type="text" class="form-control p-1 task-desc" value="${desc}"></td>
@@ -426,20 +426,37 @@
         //                         </button>
         //     </td>
         // `);
-        //     });
-        //     // remove
-        //     $(document).on("click", ".remove-task", function() {
-        //         let row = $(this).closest("tr");
-        //         let taskBody = row.closest(".task-body");
+            //     });
+            //     // remove
+            //     $(document).on("click", ".remove-task", function() {
+            //         let row = $(this).closest("tr");
+            //         let taskBody = row.closest(".task-body");
 
-        //         row.remove();
+            //         row.remove();
 
-        //         // Recalculate SR numbers
-        //         taskBody.find("tr").each(function(index) {
-        //             $(this).find("td:first").text(index + 1);
-        //         });
+            //         // Recalculate SR numbers
+            //         taskBody.find("tr").each(function(index) {
+            //             $(this).find("td:first").text(index + 1);
+            //         });
 
-        //     });
+            //     });
+
+            // Handle clicking the filter button
+            $('.filter-button').on('click', function(e) {
+                e.stopPropagation(); // Prevent closing immediately
+                var $dropdown = $(this).next('.filter-options');
+
+                // Hide all other dropdowns
+                $('.filter-options').not($dropdown).addClass('hidden');
+
+                // Toggle this one
+                $dropdown.toggleClass('hidden');
+            });
+
+            // Close all dropdowns if clicking anywhere else
+            $(document).on('click', function() {
+                $('.filter-options').addClass('hidden');
+            });
 
         });
     </script>

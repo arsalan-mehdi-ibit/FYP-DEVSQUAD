@@ -64,11 +64,139 @@
             </div>
         </div>
 
+        <!-- Filters Wrapper -->
+        <div class="flex flex-wrap items-center mb-5 mt-3 space-x-4 bg-white p-4 rounded-lg shadow-sm">
+
+            <div class="text-gray-800 font-semibold mr-4">
+                Filter By
+            </div>
+
+            <!-- Date Filter -->
+            <div class="relative filter-dropdown">
+                <button type="button"
+                    class="filter-button bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-4 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                    Date ▾
+                </button>
+                <div
+                    class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2 max-h-60 overflow-y-auto">
+                        @foreach ($timesheets->unique(function ($item) {
+            return $item->week_start_date . $item->week_end_date;
+        }) as $timesheet)
+                            <div class="flex items-center px-4 py-2 hover:bg-gray-50">
+                                <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600" name="dates[]"
+                                    value="{{ $timesheet->week_start_date }} - {{ $timesheet->week_end_date }}">
+                                <label class="ml-3 text-sm text-gray-700">
+                                    {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }}
+                                    -
+                                    {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Filter -->
+            <div class="relative filter-dropdown">
+                <button type="button"
+                    class="filter-button bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-4 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                    Project ▾
+                </button>
+                <div
+                    class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2 max-h-60 overflow-y-auto">
+                        @foreach ($timesheets->unique('project_id') as $timesheet)
+                            @if ($timesheet->project)
+                                <div class="flex items-center px-4 py-2 hover:bg-gray-50">
+                                    <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                        name="projects[]" value="{{ $timesheet->project->id }}">
+                                    <label class="ml-3 text-sm text-gray-700">{{ $timesheet->project->name }}</label>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Client Filter -->
+            <div class="relative filter-dropdown">
+                <button type="button"
+                    class="filter-button bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-4 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                    Client ▾
+                </button>
+                <div
+                    class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2 max-h-60 overflow-y-auto">
+                        @foreach ($timesheets->unique(function ($item) {
+            return $item->project ? $item->project->client_id : null;
+        }) as $timesheet)
+                            @if ($timesheet->project && $timesheet->project->client)
+                                <div class="flex items-center px-4 py-2 hover:bg-gray-50">
+                                    <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                        name="clients[]" value="{{ $timesheet->project->client->id }}">
+                                    <label
+                                        class="ml-3 text-sm text-gray-700">{{ $timesheet->project->client->firstname }}</label>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contractor Filter -->
+            <div class="relative filter-dropdown">
+                <button type="button"
+                    class="filter-button bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-4 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                    Contractor ▾
+                </button>
+                <div
+                    class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2 max-h-60 overflow-y-auto">
+                        @foreach ($timesheets->unique('contractor_id') as $timesheet)
+                            @if ($timesheet->contractor)
+                                <div class="flex items-center px-4 py-2 hover:bg-gray-50">
+                                    <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                        name="contractors[]" value="{{ $timesheet->contractor->id }}">
+                                    <label
+                                        class="ml-3 text-sm text-gray-700">{{ $timesheet->contractor->firstname }}</label>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Filter -->
+            <div class="relative filter-dropdown">
+                <button type="button"
+                    class="filter-button bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-4 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                    Status ▾
+                </button>
+                <div
+                    class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2 max-h-60 overflow-y-auto">
+                        @foreach (['pending', 'submitted', 'approved', 'rejected', 'in_progress', 'not_started', 'pending_approval'] as $status)
+                            <div class="flex items-center px-4 py-2 hover:bg-gray-50">
+                                <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600" name="statuses[]"
+                                    value="{{ $status }}">
+                                <label class="ml-3 text-sm text-gray-700 capitalize">
+                                    {{ str_replace('_', ' ', $status) }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- End Filters Wrapper -->
 
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
             <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Timesheets</h2>
 
-            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 460px">
+            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 460px"
+                id="timesheet-table-wrapper">
                 <table class="w-full min-w-full text-center">
                     <thead class="sticky top-0 bg-gray-100 z-10 text-center">
                         <tr class="border-b">
@@ -98,29 +226,40 @@
                                 Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="timesheet-table-body">
                         @foreach ($timesheets as $timesheet)
-                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}">
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
-                                    {{ ($timesheets->currentPage() - 1) * $timesheets->perPage() + $loop->iteration }}</td>
+                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}"
+                                data-date="{{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}"
+                                data-project="{{ $timesheet->project->name ?? '' }}"
+                                data-client="{{ $timesheet->project->client->firstname ?? '' }}"
+                                data-contractor="{{ $timesheet->contractor->firstname ?? '' }}"
+                                data-status="{{ $timesheet->status ?? '' }}">
+                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
+                                    {{ ($timesheets->currentPage() - 1) * $timesheets->perPage() + $loop->iteration }}
+                                </td>
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
                                     {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} -
                                     {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}
                                 </td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->status ?? 'N/A' }}
+                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
+                                    {{ $timesheet->status ?? 'N/A' }}
                                 </td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_hours }}</td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->total_ot_hours }}</td>
-
-                                {{-- <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">{{ $timesheet->client->firstname ?? 'N/A' }}</td> --}}
-
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
-                                    {{ $timesheet->project->name ?? 'N/A' }}</td>
+                                    {{ $timesheet->total_hours }}
+                                </td>
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
-                                    {{ $timesheet->contractor->firstname ?? 'N/A' }}</td>
+                                    {{ $timesheet->total_ot_hours }}
+                                </td>
+                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
+                                    {{ $timesheet->project->name ?? 'N/A' }}
+                                </td>
+                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
+                                    {{ $timesheet->contractor->firstname ?? 'N/A' }}
+                                </td>
                                 @if (Auth::user()->role == 'admin' || Auth::user()->role == 'consultant')
-                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
-                                        {{ $timesheet->project->client->firstname ?? 'N/A' }}</td>
+                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
+                                        {{ $timesheet->project->client->firstname ?? 'N/A' }}
+                                    </td>
                                 @endif
                                 <td class="p-2 sm:p-3 text-center">
                                     <button class="text-gray-600 hover:text-gray-900 transition-all">
@@ -136,7 +275,7 @@
                                             <!-- Approve Button -->
                                             <button
                                                 class="px-2 py-1 rounded-lg transition-all text-xs 
-                                            {{ $timesheet->status == 'submitted' ? 'bg-green-200 hover:bg-green-100' : 'bg-gray-300 cursor-not-allowed' }}"
+                                                {{ $timesheet->status == 'submitted' ? 'bg-green-200 hover:bg-green-100' : 'bg-gray-300 cursor-not-allowed' }}"
                                                 id="approve-btn-{{ $timesheet->id }}"
                                                 {{ $timesheet->status != 'submitted' ? 'disabled' : '' }}
                                                 onclick="openApproveModal({{ $timesheet->id }})">
@@ -146,7 +285,7 @@
                                             <!-- Reject Button -->
                                             <button
                                                 class="px-2 py-1 rounded-lg transition-all text-xs 
-                                            {{ $timesheet->status == 'submitted' ? 'bg-red-100 hover:bg-red-200' : 'bg-gray-300 cursor-not-allowed' }}"
+                                                {{ $timesheet->status == 'submitted' ? 'bg-red-100 hover:bg-red-200' : 'bg-gray-300 cursor-not-allowed' }}"
                                                 id="reject-btn-{{ $timesheet->id }}"
                                                 {{ $timesheet->status != 'submitted' ? 'disabled' : '' }}
                                                 onclick="openRejectModal({{ $timesheet->id }})">
@@ -162,11 +301,11 @@
                                             <!-- Submit Button for Contractor -->
                                             <button
                                                 class="px-2 py-1 rounded-lg transition-all text-xs 
-                                            @if ($timesheet->status == 'pending') bg-blue-200 hover:bg-blue-100
-                                            @elseif($timesheet->status == 'rejected')
-                                                bg-red-200 hover:bg-red-100
-                                            @else
-                                                bg-gray-300 cursor-not-allowed @endif"
+                                                @if ($timesheet->status == 'pending') bg-blue-200 hover:bg-blue-100
+                                                @elseif($timesheet->status == 'rejected')
+                                                    bg-red-200 hover:bg-red-100
+                                                @else
+                                                    bg-gray-300 cursor-not-allowed @endif"
                                                 onclick="{{ in_array($timesheet->status, ['pending', 'rejected']) ? "openSubmitModal({$timesheet->id})" : '' }}"
                                                 {{ !in_array($timesheet->status, ['pending', 'rejected']) ? 'disabled' : '' }}>
                                                 <span class="text-black">
@@ -177,20 +316,17 @@
                                                     @endif
                                                 </span>
                                             </button>
-
-
                                         </div>
                                         <!-- Modals -->
                                         @include('components.submit-timesheet-modal')
                                         @include('components.submitted-success-modal')
                                     @endif
                                 </td>
-
                             </tr>
                         @endforeach
                     </tbody>
-                </table>
 
+                </table>
             </div>
             <div class="mt-0 flex justify-end">
                 <div class="bg-transparent dark:bg-gray-800  rounded-lg px-3 py-0">
@@ -199,9 +335,6 @@
             </div>
         </div>
     </div>
-
-
-
     <script>
         function openSubmitModal(timesheetId) {
             $('#submitForm').attr('action', `/timesheet/${timesheetId}/submit`);
@@ -240,6 +373,61 @@
                     new bootstrap.Modal(document.getElementById('rejectSuccessModal')).show();
                 @endif
             @endif
+
+
+            $('.filter-checkbox').on('change', function() {
+                filterTimesheets();
+            });
+
+            function filterTimesheets() {
+                let dates = [];
+                $('input[name="dates[]"]:checked').each(function() {
+                    dates.push($(this).val());
+                });
+
+                let projects = [];
+                $('input[name="projects[]"]:checked').each(function() {
+                    projects.push($(this).val());
+                });
+
+                let clients = [];
+                $('input[name="clients[]"]:checked').each(function() {
+                    clients.push($(this).val());
+                });
+
+                let contractors = [];
+                $('input[name="contractors[]"]:checked').each(function() {
+                    contractors.push($(this).val());
+                });
+
+                let statuses = [];
+                $('input[name="statuses[]"]:checked').each(function() {
+                    statuses.push($(this).val());
+                });
+
+                $.ajax({
+                    url: "{{ route('timesheet.filter') }}",
+                    method: "GET",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        dates: dates,
+                        projects: projects,
+                        clients: clients,
+                        contractors: contractors,
+                        statuses: statuses,
+                    },
+                    // beforeSend: function() {
+                    //     $('#timesheet-table-body').html(
+                    //         '<tr><td colspan="10" class="text-center">Loading...</td></tr>');
+                    // },
+                    success: function(response) {
+                        $('#timesheet-table-wrapper').html(response.html);
+                    },
+                    // error: function(xhr) {
+                    //     alert('Something went wrong');
+                    // }
+                });
+            }
         });
     </script>
 @endsection

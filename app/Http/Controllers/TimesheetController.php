@@ -8,6 +8,7 @@ use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\InvoiceJob;
+use Carbon\Carbon;
 
 
 class TimesheetController extends Controller
@@ -18,6 +19,10 @@ class TimesheetController extends Controller
     public function index()
     {
         $pageTitle = "Timesheet";
+        $dates = Timesheet::select('week_start_date')
+            ->distinct()
+            ->orderBy('week_start_date', 'desc')
+            ->get();
 
         if (Auth::user()->role == 'admin') {
             $timesheets = Timesheet::with(['project.client', 'contractor'])
@@ -48,10 +53,10 @@ class TimesheetController extends Controller
                 ->orderBy('week_start_date', 'asc')
                 ->paginate(10);
 
-        }elseif (Auth::user()->role == 'contractor') {
-    $timesheets = Timesheet::with(['project.client', 'contractor'])
-        ->where('contractor_id', Auth::id())
-        ->orderByRaw("
+        } elseif (Auth::user()->role == 'contractor') {
+            $timesheets = Timesheet::with(['project.client', 'contractor'])
+                ->where('contractor_id', Auth::id())
+                ->orderByRaw("
             CASE 
                 WHEN status = 'rejected' THEN 1
                 WHEN status = 'pending' THEN 2
@@ -60,13 +65,13 @@ class TimesheetController extends Controller
                 ELSE 5
             END
         ")
-        ->orderBy('submitted_at', 'desc')
-        ->orderBy('week_start_date', 'asc')
-        ->paginate(10);
-}
+                ->orderBy('submitted_at', 'desc')
+                ->orderBy('week_start_date', 'asc')
+                ->paginate(10);
+        }
 
 
-        return view('timesheet', compact('pageTitle', 'timesheets'));
+        return view('timesheet', compact('pageTitle', 'timesheets', 'dates'));
     }
 
     public function submit($id)
@@ -95,10 +100,10 @@ class TimesheetController extends Controller
         $timesheet->status = 'approved';
         $timesheet->save();
         InvoiceJob::dispatch($timesheet);
-       
+
         return back()->with('success', 'Timesheet approved successfully.');
     }
-   
+
 
     public function reject(Request $request, $id)
     {
@@ -120,6 +125,57 @@ class TimesheetController extends Controller
     }
 
 
+    public function filter(Request $request)
+    {
+        $timesheets = Timesheet::query();
+        
+
+        if ($request->dates) {
+            $timesheets->where(function ($query) use ($request) {
+                foreach ($request->dates as $date) {
+                    $range = explode(' - ', $date);
+                    $start = Carbon::parse($range[0])->format('Y-m-d');
+                    $end = Carbon::parse($range[1])->format('Y-m-d');
+        
+                    $query->orWhere(function ($q) use ($start, $end) {
+                        $q->whereDate('week_start_date', $start)
+                          ->whereDate('week_end_date', $end);
+                    });
+                }
+            });
+        }
+        // dd($timesheets->get());
+
+
+        if ($request->projects) {
+            $timesheets->whereHas('project', function ($query) use ($request) {
+                $query->whereIn('name', $request->projects);
+            });
+        }
+
+        if ($request->clients) {
+            $timesheets->whereHas('project.client', function ($query) use ($request) {
+                $query->whereIn('firstname', $request->clients);
+            });
+        }
+
+        if ($request->contractors) {
+            $timesheets->whereHas('contractor', function ($query) use ($request) {
+                $query->whereIn('firstname', $request->contractors);
+            });
+        }
+
+        if ($request->statuses) {
+            $timesheets->whereIn('status', $request->statuses);
+        }
+
+        // $timesheets = Timesheet::paginate(10);
+$pageTitle = 'hi';
+       // Now return only the table HTML for AJAX
+    return response()->json([
+        'html' => view('partials._timesheet_table', compact('timesheets', 'pageTitle'))->render(),
+    ]);
+    }
 
     /**
      * Show the form for creating a new resource.
