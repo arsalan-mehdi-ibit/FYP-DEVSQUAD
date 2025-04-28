@@ -100,7 +100,7 @@
                     </thead>
                     <tbody>
                         @foreach ($timesheets as $timesheet)
-                            <tr class="border-b hover:bg-gray-50">
+                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}">
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
                                     {{ ($timesheets->currentPage() - 1) * $timesheets->perPage() + $loop->iteration }}</td>
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
@@ -161,13 +161,24 @@
                                         <div class="inline-flex space-x-1">
                                             <!-- Submit Button for Contractor -->
                                             <button
-                                            class="px-2 py-1 rounded-lg transition-all text-xs 
-                                            {{ in_array($timesheet->status, ['pending', 'rejected']) ? 'bg-blue-200 hover:bg-blue-100' : 'bg-gray-300 cursor-not-allowed' }}"
-                                            onclick="{{ in_array($timesheet->status, ['pending', 'rejected']) ? "openSubmitModal({$timesheet->id})" : '' }}"
-                                            {{ !in_array($timesheet->status, ['pending', 'rejected']) ? 'disabled' : '' }}>
-                                            <span class="text-black">Submit</span>
-                                        </button>
-                                        
+                                                class="px-2 py-1 rounded-lg transition-all text-xs 
+                                            @if ($timesheet->status == 'pending') bg-blue-200 hover:bg-blue-100
+                                            @elseif($timesheet->status == 'rejected')
+                                                bg-red-200 hover:bg-red-100
+                                            @else
+                                                bg-gray-300 cursor-not-allowed @endif"
+                                                onclick="{{ in_array($timesheet->status, ['pending', 'rejected']) ? "openSubmitModal({$timesheet->id})" : '' }}"
+                                                {{ !in_array($timesheet->status, ['pending', 'rejected']) ? 'disabled' : '' }}>
+                                                <span class="text-black">
+                                                    @if ($timesheet->status == 'rejected')
+                                                        Resubmit
+                                                    @else
+                                                        Submit
+                                                    @endif
+                                                </span>
+                                            </button>
+
+
                                         </div>
                                         <!-- Modals -->
                                         @include('components.submit-timesheet-modal')
@@ -196,26 +207,26 @@
             $('#submitForm').attr('action', `/timesheet/${timesheetId}/submit`);
             new bootstrap.Modal(document.getElementById('submitModal')).show();
         }
-    
+
         function closeSubmitModal() {
             $('#submitModal').modal('hide');
         }
-    
+
         function closeSubmittedSuccessModal(id) {
             $(`#submittedSuccessModal-${id}`).modal('hide');
         }
-    
+
         function openApproveModal(timesheetId) {
             $('#approveForm').attr('action', `/timesheet/${timesheetId}/approve`);
             new bootstrap.Modal(document.getElementById('approveModal')).show();
         }
-    
+
         function openRejectModal(timesheetId) {
             $('#rejectForm').attr('action', `/timesheet/${timesheetId}/reject`);
             new bootstrap.Modal(document.getElementById('rejectModal')).show();
         }
-    
-        $(document).ready(function () {
+
+        $(document).ready(function() {
             @if (session('success'))
                 @php
                     $successMessage = session('success');
@@ -231,5 +242,4 @@
             @endif
         });
     </script>
-    
 @endsection

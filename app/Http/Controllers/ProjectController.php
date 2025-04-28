@@ -27,41 +27,34 @@ class ProjectController extends Controller
     public function index()
     {
         $pageTitle = "Projects";
-    
-        if(Auth::user()->role == 'admin')
-        {
+
+        if (Auth::user()->role == 'admin') {
             //ADMIN CAN SEE ALL THE PROJECTS
             $projects = Project::orderBy('id', 'desc')->get();
 
-        }
-        elseif(Auth::user()->role == 'client')
-        {
-           
+        } elseif (Auth::user()->role == 'client') {
+
             //Client CAN SEE only his PROJECTS
             $projects = Project::where('client_id', Auth::id())
-            ->orderBy('id', 'desc')
-            ->get();
+                ->orderBy('id', 'desc')
+                ->get();
 
-        }
-        elseif(Auth::user()->role == 'consultant')
-        {
-          
+        } elseif (Auth::user()->role == 'consultant') {
+
             //Consultant CAN SEE only his PROJECTS
             $projects = Project::where('consultant_id', Auth::id())
-            ->orderBy('id', 'desc')
-            ->get();
+                ->orderBy('id', 'desc')
+                ->get();
 
-        }
-        elseif(Auth::user()->role == 'contractor')
-        {
-        //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
+        } elseif (Auth::user()->role == 'contractor') {
+            //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
 
             $contractorId = Auth::id();
 
             // Fetch projects where contractor_id matches
-           $projects = Project::whereHas('contractors', function($query) use ($contractorId) {
-    $query->where('users.id', $contractorId);
-})->orderBy('id', 'desc')->get();
+            $projects = Project::whereHas('contractors', function ($query) use ($contractorId) {
+                $query->where('users.id', $contractorId);
+            })->orderBy('id', 'desc')->get();
 
         }
         return view('project', compact('pageTitle', 'projects'));
@@ -94,12 +87,12 @@ class ProjectController extends Controller
     {
         // Validate the form data
         $validated = $request->validate([
-             'name' => [
-            'required',
-            'string',
-            'max:255',
-            Rule::unique('projects')->whereNull('deleted_at')  // <-- main part
-        ],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('projects')->whereNull('deleted_at')  // <-- main part
+            ],
             'type' => 'required|string',
             'client_id' => 'required|exists:users,id',
             'consultant_id' => 'nullable|exists:users,id',
@@ -113,7 +106,7 @@ class ProjectController extends Controller
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
-   if (
+        if (
             $validated['status'] === 'in_progress' &&
             (!isset($validated['contractors']) || count($validated['contractors']) < 1)
         ) {
@@ -121,14 +114,14 @@ class ProjectController extends Controller
                 ->withInput()
                 ->withErrors(['contractors' => 'At least one contractor is required when the project status is "in progress".']);
         }
-    try {
-       
+        try {
 
-        // Check for a soft-deleted project with the same name
-        $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
-        if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
-            $trashed->forceDelete(); // Hard delete the old project
-        }
+
+            // Check for a soft-deleted project with the same name
+            $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
+            if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
+                $trashed->forceDelete(); // Hard delete the old project
+            }
 
 
             // Set client_rate, default to 0.00 if not provided
@@ -137,58 +130,57 @@ class ProjectController extends Controller
             // Create the project
             $project = Project::create($validated);
             // Prepare shared email info
-$adminName = Auth::user()->firstname . ' ' . Auth::user()->lastname; // Or any appropriate admin name
-$projectName = $project->name;
+            $adminName = Auth::user()->firstname . ' ' . Auth::user()->lastname; // Or any appropriate admin name
+            $projectName = $project->name;
 
-// Send email to client
-$client = User::find($validated['client_id']);
-if ($client) {
-    $emailData = [
-        'project_name' => $projectName,
-        'user_name' => "{$client->firstname} {$client->lastname}",
-        'message' => "A new project \"{$projectName}\" has been created and you are added as a client.",
-        'admin_name' => $adminName,
-        'role' => 'client',
-        'reset_link' => null,
-    ];
-    Mail::to($client->email)->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
-    // Mail::to("haishamfaizan@gmail.com")->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
-}
+            // Send email to client
+            $client = User::find($validated['client_id']);
+            if ($client) {
+                $emailData = [
+                    'project_name' => $projectName,
+                    'user_name' => "{$client->firstname} {$client->lastname}",
+                    'message' => "A new project \"{$projectName}\" has been created and you are added as a client.",
+                    'admin_name' => $adminName,
+                    'role' => 'client',
+                    'reset_link' => null,
+                ];
+                Mail::to($client->email)->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
+                // Mail::to("haishamfaizan@gmail.com")->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
+            }
 
-// Send email to consultant if exists
-if (!empty($validated['consultant_id'])) {
-    $consultant = User::find($validated['consultant_id']);
-    if ($consultant) {
-        $emailData = [
-            'project_name' => $projectName,
+            // Send email to consultant if exists
+            if (!empty($validated['consultant_id'])) {
+                $consultant = User::find($validated['consultant_id']);
+                if ($consultant) {
+                    $emailData = [
+                        'project_name' => $projectName,
+                        'user_name' => "{$consultant->firstname} {$consultant->lastname}",
+                        'message' => "You have been assigned as a consultant for the new project \"{$projectName}\".",
+                        'admin_name' => $adminName,
+                        'role' => 'consultant',
+                        'reset_link' => null,
+                    ];
+                    Mail::to($consultant->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.project_created_email'));
+                }
+            }
 
-            'user_name' => "{$consultant->firstname} {$consultant->lastname}",
-            'message' => "You have been assigned as a consultant for the new project \"{$projectName}\".",
-            'admin_name' => $adminName,
-            'role' => 'consultant',
-            'reset_link' => null,
-        ];
-        Mail::to($consultant->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.project_created_email'));
-    }
-}
-
-// Send email to each contractor
-if ($request->has('contractors')) {
-    foreach ($request->contractors as $contractor) {
-        $contractorUser = User::find($contractor['contractor_id']);
-        if ($contractorUser) {
-            $emailData = [
-                'project_name' => $projectName,
-                'user_name' => "{$contractorUser->firstname} {$contractorUser->lastname}",
-                'message' => "You have been assigned as a contractor for the new project \"{$projectName}\".",
-                'admin_name' => $adminName,
-                'role' => 'contractor',
-                'reset_link' => null,
-            ];
-            Mail::to($contractorUser->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.project_created_email'));
-        }
-    }
-}
+            // Send email to each contractor
+            if ($request->has('contractors')) {
+                foreach ($request->contractors as $contractor) {
+                    $contractorUser = User::find($contractor['contractor_id']);
+                    if ($contractorUser) {
+                        $emailData = [
+                            'project_name' => $projectName,
+                            'user_name' => "{$contractorUser->firstname} {$contractorUser->lastname}",
+                            'message' => "You have been assigned as a contractor for the new project \"{$projectName}\".",
+                            'admin_name' => $adminName,
+                            'role' => 'contractor',
+                            'reset_link' => null,
+                        ];
+                        Mail::to($contractorUser->email)->send(new EmailSender("New Project Assignment", $emailData, 'emails.project_created_email'));
+                    }
+                }
+            }
 
 
             // Attach contractors to the project if any
@@ -203,24 +195,24 @@ if ($request->has('contractors')) {
             }
             $adminUsers = User::where('role', 'admin')->get(); // Modify this if you're using a roles table or package
 
-        // Step 2: Create recent activity for each admin
-        foreach ($adminUsers as $admin) {
-            RecentActivity::create([
-                'title' => 'Project Created',
-                'description' => 'New project "' . $project->name . '" has been created.',
-                'parent_id' => $project->id,
-                'created_for' => 'project',
-                'user_id' => $admin->id, // Notify each admin
-                'created_by' => Auth::id(), // Logged-in user
-            ]);
-            notifications::create([
-                'parent_id' => $project->id,
-                'created_for' => 'project',
-                'user_id' => $admin->id,
-                'message' => 'New project "' . $project->name . '" has been created.',
-                'is_read' => 0, // By default, unread
-            ]);
-        }
+            // Step 2: Create recent activity for each admin
+            foreach ($adminUsers as $admin) {
+                RecentActivity::create([
+                    'title' => 'Project Created',
+                    'description' => 'New project "' . $project->name . '" has been created.',
+                    'parent_id' => $project->id,
+                    'created_for' => 'project',
+                    'user_id' => $admin->id, // Notify each admin
+                    'created_by' => Auth::id(), // Logged-in user
+                ]);
+                notifications::create([
+                    'parent_id' => $project->id,
+                    'created_for' => 'project',
+                    'user_id' => $admin->id,
+                    'message' => 'New project "' . $project->name . '" has been created.',
+                    'is_read' => 0, // By default, unread
+                ]);
+            }
 
             // Dispatch the FillTimesheet job after project creation
             $this->triggerTimesheetJob($project);
@@ -253,32 +245,25 @@ if ($request->has('contractors')) {
         return view('cruds.add_project', compact('pageTitle', 'project', 'users', 'contractors', 'projectContractors'));
     }
     public function view($id)
-{
-    $pageTitle = "View Project";
-    
-    // Eager load 'client', 'contractors', and 'fileAttachments' relationships
-    $project = Project::with(['client', 'contractors','consultant', 'fileAttachments'])->findOrFail($id);
-    
-    // Prepare contractor data for display (read-only)
-    $projectContractors = $project->contractors->map(function ($contractor) {
-        return [
-            'contractor_id' => $contractor->id,
-            'firstname' => $contractor->firstname,
-            'lastname' => $contractor->lastname,
-            'contractor_rate' => $contractor->pivot->contractor_rate,
-        ];
-    });
-    
-    // Pass data to the view
-    return view('cruds.view_project', compact('project', 'pageTitle', 'projectContractors'));
-}
+    {
+        $pageTitle = "View Project";
 
-    
-    
+        // Eager load 'client', 'contractors', and 'fileAttachments' relationships
+        $project = Project::with(['client', 'contractors', 'consultant', 'fileAttachments'])->findOrFail($id);
 
+        // Prepare contractor data for display (read-only)
+        $projectContractors = $project->contractors->map(function ($contractor) {
+            return [
+                'contractor_id' => $contractor->id,
+                'firstname' => $contractor->firstname,
+                'lastname' => $contractor->lastname,
+                'contractor_rate' => $contractor->pivot->contractor_rate,
+            ];
+        });
 
-   
-
+        // Pass data to the view
+        return view('cruds.view_project', compact('project', 'pageTitle', 'projectContractors'));
+    }
 
     /**
      * Update the specified project in storage.
@@ -317,19 +302,19 @@ if ($request->has('contractors')) {
         try {
             // Find the project to update
             $project = Project::findOrFail($id);
-    
+
             // Check if the name has changed
             if ($project->name !== $validated['name']) {
                 // Look for any soft-deleted project with the same name
                 $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
-    
+
                 if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
                     // If found, force delete the soft-deleted project
                     $trashed->forceDelete();
                 }
             }
-    
-         
+
+
             // Sync the contractors (remove previous and add new ones)
             if (isset($request->contractors)) {
                 $project->contractors()->detach(); // Remove existing contractors
@@ -346,17 +331,17 @@ if ($request->has('contractors')) {
 
             // Update the project with the new validated data
             $project->update($validated);
-             // ✅ Dispatch the FillTimesheet job
+            // ✅ Dispatch the FillTimesheet job
             $this->triggerTimesheetJob($project);
 
-        
+
             // Return a success message
             return redirect()->route('project.index')->with('project_updated', 'Project updated successfully.');
-    
-       } catch (\Exception $e) {
-           // Handle any errors during the update process
-           return back()->with('error', 'Whoops! Something went wrong, please try again.');
-       }
+
+        } catch (\Exception $e) {
+            // Handle any errors during the update process
+            return back()->with('error', 'Whoops! Something went wrong, please try again.');
+        }
 
         // Update the project
         $project->update($validated);
@@ -375,27 +360,27 @@ if ($request->has('contractors')) {
             MediaController::uploadFile($request, $project->id);
         }
         // Step 1: Get all admin users
-$adminUsers = User::where('role', 'admin')->get(); // Modify this if you're using a roles table or package
+        $adminUsers = User::where('role', 'admin')->get(); // Modify this if you're using a roles table or package
 
-// Step 2: Create recent activity for each admin
-foreach ($adminUsers as $admin) {
-    RecentActivity::create([
-        'title' => 'Project Updated',
-        'description' => 'Project "' . $project->name . '" has been updated.',
-        'parent_id' => $project->id,
-        'created_for' => 'project',
-        'user_id' => $admin->id, // Notify each admin
-        'created_by' => Auth::id(), // Logged-in user
-    ]);
+        // Step 2: Create recent activity for each admin
+        foreach ($adminUsers as $admin) {
+            RecentActivity::create([
+                'title' => 'Project Updated',
+                'description' => 'Project "' . $project->name . '" has been updated.',
+                'parent_id' => $project->id,
+                'created_for' => 'project',
+                'user_id' => $admin->id, // Notify each admin
+                'created_by' => Auth::id(), // Logged-in user
+            ]);
 
-    Notifications::create([
-        'parent_id' => $project->id,
-        'created_for' => 'project',
-        'user_id' => $admin->id,
-        'message' => 'Project "' . $project->name . '" has been updated.',
-        'is_read' => 0, // unread by default
-    ]);
-}
+            Notifications::create([
+                'parent_id' => $project->id,
+                'created_for' => 'project',
+                'user_id' => $admin->id,
+                'message' => 'Project "' . $project->name . '" has been updated.',
+                'is_read' => 0, // unread by default
+            ]);
+        }
 
 
         // Redirect with success message

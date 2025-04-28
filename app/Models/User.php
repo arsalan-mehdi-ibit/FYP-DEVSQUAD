@@ -45,6 +45,12 @@ class User extends Authenticatable
             ->withPivot('contractor_rate');
     }
 
+    public function profilePicture()
+{
+    return $this->hasOne(\App\Models\FileAttachment::class, 'parent_id')->where('file_for', 'profile')->latest();
+}
+
+
 // public function clientProjects()
 // {
 //     return $this->hasMany(Project::class, 'client_id');

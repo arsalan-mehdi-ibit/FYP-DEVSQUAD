@@ -58,8 +58,10 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
+    
+        Route::patch('/{payment}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])->name('markAsPaid');
     });
-
+    
     Route::group(['as' => 'users.', 'prefix' => '/users'], function () {
         Route::get('/', [UsersController::class, 'index'])->name('index');
         Route::get('/add', [UsersController::class, 'add'])->name('add');
@@ -108,6 +110,7 @@ Route::middleware('auth')->group(function () {
 
 
     });
+
 
 
 

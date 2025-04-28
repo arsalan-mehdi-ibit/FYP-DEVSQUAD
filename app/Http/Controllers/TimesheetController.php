@@ -7,6 +7,7 @@ use App\Models\Timesheet;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Jobs\InvoiceJob;
 
 
 class TimesheetController extends Controller
@@ -93,9 +94,11 @@ class TimesheetController extends Controller
 
         $timesheet->status = 'approved';
         $timesheet->save();
-
+        InvoiceJob::dispatch($timesheet);
+       
         return back()->with('success', 'Timesheet approved successfully.');
     }
+   
 
     public function reject(Request $request, $id)
     {

@@ -7,6 +7,13 @@
         {{-- Debugging step --}}
         {{-- {{ dd($timesheetDetails) }} --}}
         <!-- Parent Table -->
+        @if ($timesheet->status == 'rejected' && $timesheet->rejection_reason)
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">Timesheet Rejected!</strong>
+                <span class="block sm:inline">Reason: {{ $timesheet->rejection_reason }}</span>
+            </div>
+        @endif
+
         <div class="table-responsive">
             <table class="table table-striped text-center border border-gray-300 text-sm">
                 <thead class="bg-gray-700 text-white">
@@ -247,7 +254,7 @@
                             // Reindex the remaining rows
                             taskBody.find("tr").each(function(index) {
                                 $(this).find("td:first").text(index +
-                                1); // Update the SR column
+                                    1); // Update the SR column
                             });
                         } else {
                             alert("Error deleting task!");

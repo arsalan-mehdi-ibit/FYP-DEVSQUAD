@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Payments;
-
+use Illuminate\Support\Carbon;
 class InvoiceController extends Controller
 {
     /**
@@ -12,10 +12,29 @@ class InvoiceController extends Controller
      */
     public function index()
     {
-        $pageTitle = "Invoice LIst";
-        $invoices = payments::all();
+        $pageTitle = "Invoice List";
+    
+        $invoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet'])
+            ->orderBy('created_at', 'desc') // Most recent invoices on top
+            ->paginate(10); // Pagination: 10 invoices per page
+    
         return view('invoice', compact('pageTitle', 'invoices'));
     }
+    
+
+    public function markAsPaid($id)
+    {
+        $payment = Payments::findOrFail($id);
+
+        if (is_null($payment->payment_date)) {
+            $payment->update([
+                'payment_date' => Carbon::now(),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Invoice marked as paid successfully.');
+    }
+
 
     /**
      * Show the form for creating a new resource.
