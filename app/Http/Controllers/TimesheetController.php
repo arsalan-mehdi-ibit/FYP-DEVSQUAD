@@ -16,63 +16,98 @@ class TimesheetController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $pageTitle = "Timesheet";
         $dates = Timesheet::select('week_start_date')
             ->distinct()
             ->orderBy('week_start_date', 'desc')
             ->get();
-
+    
+        $timesheets = Timesheet::with(['project.client', 'contractor']);
+    
+        // Apply role-based restrictions
         if (Auth::user()->role == 'admin') {
-            $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->orderByRaw("
-                    CASE 
-                        WHEN status = 'submitted' THEN 1
-                        WHEN status = 'pending' THEN 2
-                        WHEN status = 'approved' THEN 3
-                        WHEN status = 'rejected' THEN 4
-                        ELSE 5
-                    END
-                ") // custom priority sorting
-                ->orderBy('submitted_at', 'desc') // latest submitted first inside each status
-                ->orderBy('week_start_date', 'asc') // fallback
-                ->paginate(10);
-
+            // No restrictions
         } elseif (Auth::user()->role == 'client') {
             $projectIds = Project::where('client_id', Auth::id())->pluck('id');
-            $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->whereIn('project_id', $projectIds)
-                ->orderBy('week_start_date', 'asc')
-                ->paginate(10);
-
+            $timesheets->whereIn('project_id', $projectIds);
         } elseif (Auth::user()->role == 'consultant') {
             $projectIds = Project::where('consultant_id', Auth::id())->pluck('id');
-            $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->whereIn('project_id', $projectIds)
-                ->orderBy('week_start_date', 'asc')
-                ->paginate(10);
-
+            $timesheets->whereIn('project_id', $projectIds);
         } elseif (Auth::user()->role == 'contractor') {
-            $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->where('contractor_id', Auth::id())
-                ->orderByRaw("
-            CASE 
-                WHEN status = 'rejected' THEN 1
-                WHEN status = 'pending' THEN 2
-                WHEN status = 'submitted' THEN 3
-                WHEN status = 'approved' THEN 4
-                ELSE 5
-            END
-        ")
-                ->orderBy('submitted_at', 'desc')
-                ->orderBy('week_start_date', 'asc')
-                ->paginate(10);
+            $timesheets->where('contractor_id', Auth::id());
         }
-
-
+    
+        // Now Apply Filters if any (dates, projects, clients, contractors, statuses)
+        if ($request->dates) {
+            $timesheets->where(function ($query) use ($request) {
+                foreach ($request->dates as $date) {
+                    $range = explode(' - ', $date);
+                    $start = Carbon::parse($range[0])->format('Y-m-d');
+                    $end = Carbon::parse($range[1])->format('Y-m-d');
+    
+                    $query->orWhere(function ($q) use ($start, $end) {
+                        $q->whereDate('week_start_date', $start)
+                            ->whereDate('week_end_date', $end);
+                    });
+                }
+            });
+        }
+    
+        if ($request->projects) {
+            $timesheets->whereHas('project', function ($query) use ($request) {
+                $query->whereIn('id', $request->projects);
+            });
+        }
+    
+        if ($request->clients) {
+            $timesheets->whereHas('project.client', function ($query) use ($request) {
+                $query->whereIn('id', $request->clients);
+            });
+        }
+    
+        if ($request->contractors) {
+            $timesheets->whereHas('contractor', function ($query) use ($request) {
+                $query->whereIn('id', $request->contractors);
+            });
+        }
+    
+        if ($request->statuses) {
+            $timesheets->whereIn('status', $request->statuses);
+        }
+    
+        // Sorting (custom based on role)
+        if (Auth::user()->role == 'admin' || Auth::user()->role == 'contractor') {
+            $timesheets->orderByRaw("
+                CASE 
+                    WHEN status = 'submitted' THEN 1
+                    WHEN status = 'pending' THEN 2
+                    WHEN status = 'approved' THEN 3
+                    WHEN status = 'rejected' THEN 4
+                    ELSE 5
+                END
+            ")->orderBy('submitted_at', 'desc')
+              ->orderBy('week_start_date', 'asc');
+        } else {
+            $timesheets->orderBy('week_start_date', 'asc');
+        }
+    
+        // Pagination
+        $timesheets = $timesheets->paginate(10);
+    
+        // Check if it's an AJAX request (comes from your filter script)
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('timesheet', compact('timesheets', 'pageTitle'))->render(),
+            ]);
+        }
+    
+        // Normal request (full page load)
         return view('timesheet', compact('pageTitle', 'timesheets', 'dates'));
     }
+    
+
 
     public function submit($id)
     {
@@ -125,57 +160,55 @@ class TimesheetController extends Controller
     }
 
 
-    public function filter(Request $request)
-    {
-        $timesheets = Timesheet::query();
-        
+    // public function filter(Request $request)
+    // {
+    //     $timesheets = Timesheet::query();
 
-        if ($request->dates) {
-            $timesheets->where(function ($query) use ($request) {
-                foreach ($request->dates as $date) {
-                    $range = explode(' - ', $date);
-                    $start = Carbon::parse($range[0])->format('Y-m-d');
-                    $end = Carbon::parse($range[1])->format('Y-m-d');
-        
-                    $query->orWhere(function ($q) use ($start, $end) {
-                        $q->whereDate('week_start_date', $start)
-                          ->whereDate('week_end_date', $end);
-                    });
-                }
-            });
-        }
-        // dd($timesheets->get());
+    //     if ($request->dates) {
+    //         $timesheets->where(function ($query) use ($request) {
+    //             foreach ($request->dates as $date) {
+    //                 $range = explode(' - ', $date);
+    //                 $start = Carbon::parse($range[0])->format('Y-m-d');
+    //                 $end = Carbon::parse($range[1])->format('Y-m-d');
 
+    //                 $query->orWhere(function ($q) use ($start, $end) {
+    //                     $q->whereDate('week_start_date', $start)
+    //                         ->whereDate('week_end_date', $end);
+    //                 });
+    //             }
+    //         });
+    //     }
+    //     // dd($timesheets->get());
 
-        if ($request->projects) {
-            $timesheets->whereHas('project', function ($query) use ($request) {
-                $query->whereIn('name', $request->projects);
-            });
-        }
+    //     if ($request->projects) {
+    //         $timesheets->whereHas('project', function ($query) use ($request) {
+    //             $query->whereIn('name', $request->projects);
+    //         });
+    //     }
 
-        if ($request->clients) {
-            $timesheets->whereHas('project.client', function ($query) use ($request) {
-                $query->whereIn('firstname', $request->clients);
-            });
-        }
+    //     if ($request->clients) {
+    //         $timesheets->whereHas('project.client', function ($query) use ($request) {
+    //             $query->whereIn('firstname', $request->clients);
+    //         });
+    //     }
 
-        if ($request->contractors) {
-            $timesheets->whereHas('contractor', function ($query) use ($request) {
-                $query->whereIn('firstname', $request->contractors);
-            });
-        }
+    //     if ($request->contractors) {
+    //         $timesheets->whereHas('contractor', function ($query) use ($request) {
+    //             $query->whereIn('firstname', $request->contractors);
+    //         });
+    //     }
 
-        if ($request->statuses) {
-            $timesheets->whereIn('status', $request->statuses);
-        }
+    //     if ($request->statuses) {
+    //         $timesheets->whereIn('status', $request->statuses);
+    //     }
 
-        // $timesheets = Timesheet::paginate(10);
-$pageTitle = 'hi';
-       // Now return only the table HTML for AJAX
-    return response()->json([
-        'html' => view('partials._timesheet_table', compact('timesheets', 'pageTitle'))->render(),
-    ]);
-    }
+    //     // $timesheets = Timesheet::paginate(10);
+    //     $pageTitle = 'hi';
+    //     // Now return only the table HTML for AJAX
+    //     return response()->json([
+    //         'html' => view('timesheet', compact('timesheets', 'pageTitle'))->render(),
+    //     ]);
+    // }
 
     /**
      * Show the form for creating a new resource.

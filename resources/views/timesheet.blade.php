@@ -195,8 +195,7 @@
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
             <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Timesheets</h2>
 
-            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 460px"
-                id="timesheet-table-wrapper">
+            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 460px">
                 <table class="w-full min-w-full text-center">
                     <thead class="sticky top-0 bg-gray-100 z-10 text-center">
                         <tr class="border-b">
@@ -406,7 +405,7 @@
                 });
 
                 $.ajax({
-                    url: "{{ route('timesheet.filter') }}",
+                    url: "{{ route('timesheet.index') }}", // <-- call 'index', not 'filter'
                     method: "GET",
                     data: {
                         _token: "{{ csrf_token() }}",
@@ -416,16 +415,16 @@
                         contractors: contractors,
                         statuses: statuses,
                     },
-                    // beforeSend: function() {
-                    //     $('#timesheet-table-body').html(
-                    //         '<tr><td colspan="10" class="text-center">Loading...</td></tr>');
-                    // },
                     success: function(response) {
-                        $('#timesheet-table-wrapper').html(response.html);
-                    },
-                    // error: function(xhr) {
-                    //     alert('Something went wrong');
-                    // }
+                        // Create a temporary DOM element to hold the response
+                        var tempDiv = $('<div>').html(response.html);
+
+                        // Find the tbody inside that response
+                        var newTbody = tempDiv.find('#timesheet-table-body').html();
+
+                        // Replace your current tbody content
+                        $('#timesheet-table-body').html(newTbody);
+                    }
                 });
             }
         });
