@@ -67,19 +67,23 @@
         <!-- Filters Wrapper -->
         <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between mb-4 mt-4 ">
             <!-- Left side: Filter label and active filters -->
-            <div class="flex flex-col " style="max-width: 450px !important;">
+            <div class="flex flex-col " style="max-width: 365px !important;">
                 <span class="text-gray-500 font-semibold text-xs mb-2">Filters:</span>
                 <div id="applied-filters" class="flex flex-wrap gap-2">
                     <!-- Dynamically generated badges will appear here -->
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-2 bg-white p-3 rounded-md shadow-sm">
+            <div class="flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm">
+                <div class="flex items-center text-gray-700 text-sm font-semibold mr-2">
+                    <i class="bi bi-funnel-fill mr-1 text-gray-600"></i>
+                    Filter By
+                </div>
                 <!-- Date Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
                         class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
-                        Date  <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        Date <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
                     </button>
                     <div
                         class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
@@ -116,7 +120,8 @@
                                     <div class="flex items-center px-3 py-0 hover:bg-gray-50">
                                         <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
                                             name="projects[]" value="{{ $timesheet->project->id }}">
-                                        <label class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->project->name }}</label>
+                                        <label
+                                            class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->project->name }}</label>
                                     </div>
                                 @endif
                             @endforeach
@@ -176,12 +181,12 @@
                 <div class="relative filter-dropdown">
                     <button type="button"
                         class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
-                        Status  <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        Status <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
                     </button>
                     <div
                         class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                         <div class="py-2 max-h-60 overflow-y-auto">
-                            @foreach (['pending', 'submitted', 'approved', 'rejected', 'in_progress', 'not_started', 'pending_approval'] as $status)
+                            @foreach (['pending', 'submitted', 'approved', 'rejected', 'in_progress'] as $status)
                                 <div class="flex items-center px-3 py-0 hover:bg-gray-50">
                                     <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
                                         name="statuses[]" value="{{ $status }}">

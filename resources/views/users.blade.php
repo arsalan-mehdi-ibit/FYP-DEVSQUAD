@@ -92,9 +92,12 @@
             </div>
 
             <!-- Right side: Filter dropdown -->
-            <div class="flex flex-wrap gap-2 bg-white p-3 rounded-md shadow-sm" style="margin-right: 130px">
+            <div class="flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm" style="margin-right: 130px">
 
-
+                <div class="flex items-center text-gray-700 text-sm font-semibold mr-2">
+                    <i class="bi bi-funnel-fill mr-1 text-gray-600"></i>
+                    Filter By
+                </div>
 
                 <div class="relative filter-dropdown">
                     <button type="button"

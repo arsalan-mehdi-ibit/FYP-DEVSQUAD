@@ -10,17 +10,51 @@ class InvoiceController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $pageTitle = "Invoice List";
-    
-        $invoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet'])
-            ->orderBy('created_at', 'desc') // Most recent invoices on top
-            ->paginate(10); // Pagination: 10 invoices per page
-    
+
+        $invoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet.project']);
+
+        // Apply Filters
+        if ($request->timesheets) {
+            $invoices->whereIn('timesheet_id', $request->timesheets);
+        }
+
+        if ($request->clients) {
+            $invoices->whereIn('client_id', $request->clients);
+        }
+
+        if ($request->projects) {
+            $invoices->whereHas('timesheet.project', function ($query) use ($request) {
+                $query->whereIn('id', $request->projects);
+            });
+        }
+
+        if ($request->statuses) {
+            $invoices->where(function ($query) use ($request) {
+                foreach ($request->statuses as $status) {
+                    if ($status == 'paid') {
+                        $query->orWhereNotNull('payment_date');
+                    } elseif ($status == 'unpaid') {
+                        $query->orWhereNull('payment_date');
+                    }
+                }
+            });
+        }
+
+        $invoices = $invoices->orderBy('created_at', 'desc')->paginate(10);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('invoice', compact('pageTitle', 'invoices'))->render(),
+            ]);
+        }
+
         return view('invoice', compact('pageTitle', 'invoices'));
     }
-    
+
+
 
     public function markAsPaid($id)
     {

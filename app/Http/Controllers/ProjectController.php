@@ -24,41 +24,41 @@ class ProjectController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $pageTitle = "Projects";
-
+    
+        $projects = Project::with('client'); // Eager load client relation
+    
         if (Auth::user()->role == 'admin') {
-            //ADMIN CAN SEE ALL THE PROJECTS
-            $projects = Project::orderBy('id', 'desc')->get();
-
+            // ADMIN CAN SEE ALL PROJECTS
         } elseif (Auth::user()->role == 'client') {
-
-            //Client CAN SEE only his PROJECTS
-            $projects = Project::where('client_id', Auth::id())
-                ->orderBy('id', 'desc')
-                ->get();
-
+            $projects->where('client_id', Auth::id());
         } elseif (Auth::user()->role == 'consultant') {
-
-            //Consultant CAN SEE only his PROJECTS
-            $projects = Project::where('consultant_id', Auth::id())
-                ->orderBy('id', 'desc')
-                ->get();
-
+            $projects->where('consultant_id', Auth::id());
         } elseif (Auth::user()->role == 'contractor') {
-            //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
-
             $contractorId = Auth::id();
-
-            // Fetch projects where contractor_id matches
-            $projects = Project::whereHas('contractors', function ($query) use ($contractorId) {
+            $projects->whereHas('contractors', function ($query) use ($contractorId) {
                 $query->where('users.id', $contractorId);
-            })->orderBy('id', 'desc')->get();
-
+            });
         }
+    
+        // Apply Client Filter if selected
+        if ($request->clients) {
+            $projects->whereIn('client_id', $request->clients);
+        }
+    
+        $projects = $projects->orderBy('id', 'desc')->get();
+    
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('project', compact('pageTitle', 'projects'))->render(),
+            ]);
+        }
+    
         return view('project', compact('pageTitle', 'projects'));
     }
+    
 
     /**
      * Show the form for creating a new project.
