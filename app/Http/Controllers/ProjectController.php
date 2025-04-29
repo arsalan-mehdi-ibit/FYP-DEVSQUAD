@@ -27,6 +27,18 @@ class ProjectController extends Controller
     public function index()
     {
         $pageTitle = "Projects";
+
+        // Initialize counts
+    $activeProjectsCount = 0;
+    $adminsCount = 0;
+    $clientsCount = 0;
+    $contractorsCount = 0;
+
+    // Calculate counts for all roles
+    $activeProjectsCount = Project::whereIn('status', ['pending', 'in-progress'])->count();
+    $adminsCount = User::where('role', 'admin')->count();
+    $clientsCount = User::where('role', 'client')->count();
+    $contractorsCount = User::where('role', 'contractor')->count();
     
         if(Auth::user()->role == 'admin')
         {
@@ -41,6 +53,9 @@ class ProjectController extends Controller
             $projects = Project::where('client_id', Auth::id())
             ->orderBy('id', 'desc')
             ->get();
+
+           
+        
 
         }
         elseif(Auth::user()->role == 'consultant')
@@ -64,7 +79,8 @@ class ProjectController extends Controller
 })->orderBy('id', 'desc')->get();
 
         }
-        return view('project', compact('pageTitle', 'projects'));
+        return view('project', compact('pageTitle', 'projects', 'activeProjectsCount', 'adminsCount', 'clientsCount', 'contractorsCount'));
+
     }
 
     /**

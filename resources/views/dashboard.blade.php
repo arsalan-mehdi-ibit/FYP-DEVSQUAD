@@ -7,21 +7,21 @@
             <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                     <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Admins</h3>
-                    <p class="text-2xl font-bold text-gray-900 m-0">9</p>
+                    <p class="text-2xl font-bold text-gray-900 m-0">{{ $adminCount }}</p>
                 </div>
                 <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                     <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Consultants</h3>
-                    <p class="text-2xl font-bold text-gray-900 m-0">21</p>
+                    <p class="text-2xl font-bold text-gray-900 m-0">{{ $consultantCount }}</p>
                 </div>
                 <div
                     class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                     <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Clients</h3>
-                    <p class="text-2xl font-bold text-gray-900 m-0">10</p>
+                    <p class="text-2xl font-bold text-gray-900 m-0">{{ $clientCount }}</p>
                 </div>
                 <div
                     class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                     <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Contractors</h3>
-                    <p class="text-2xl font-bold text-gray-900 m-0">9</p>
+                    <p class="text-2xl font-bold text-gray-900 m-0">{{ $contractorCount }}</p>
                 </div>
             </div>
 

@@ -29,7 +29,7 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">All Users </h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+22.63k</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $adminCount + $clientCount + $contractorCount + $consultantCount }} Users</p>
                     <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
                         34.4%</span>
                 </div>
@@ -44,7 +44,7 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">Admins</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+4.5k</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $adminCount }} Admins</p>
                     <span class="text-xs sm:text-sm text-red-600 bg-red-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↓
                         8.1%</span>
                 </div>
@@ -59,7 +59,7 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">Clients</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+1.03k</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $clientCount }} Clients</p>
                     <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
                         12.6%</span>
                 </div>
@@ -74,7 +74,7 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">Contractors</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">38,908.00</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $contractorCount }} Contractors</p>
                     <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
                         45.9%</span>
                 </div>

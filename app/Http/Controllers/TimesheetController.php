@@ -23,6 +23,30 @@ class TimesheetController extends Controller
     {
         $pageTitle = "Timesheet";
 
+        $currentMonth = now()->month;
+        $currentYear = now()->year;
+    
+        // Initialize the counts
+        $thisMonthCount = 0;
+        $approvedCount = 0;
+        $rejectedCount = 0;
+        $pendingApprovalCount = 0;
+    
+        // Calculate counts for each category
+        $thisMonthCount = Timesheet::whereYear('submitted_at', $currentYear)
+            ->whereMonth('submitted_at', $currentMonth)
+            ->count();
+    
+        $approvedCount = Timesheet::where('status', 'approved')
+            ->count(); // Count for all-time approved timesheets
+    
+        $rejectedCount = Timesheet::where('status', 'rejected')
+            ->count(); // Count for all-time rejected timesheets
+    
+        $pendingApprovalCount = Timesheet::where('status', 'pending')
+            ->count(); // Count for all-time pending approval timesheets
+    
+
         if (Auth::user()->role == 'admin') {
             $timesheets = Timesheet::with(['project.client', 'contractor'])
                 ->orderByRaw("
@@ -69,311 +93,224 @@ class TimesheetController extends Controller
         ->paginate(10);
 }
 
+return view('timesheet', compact('pageTitle', 'timesheets', 'thisMonthCount', 'approvedCount', 'rejectedCount', 'pendingApprovalCount'));
 
-        return view('timesheet', compact('pageTitle', 'timesheets'));
     }
 
-    public function submit($id)
-    {
-        $timesheet = Timesheet::findOrFail($id);
+   public function submit($id)
+{
+    $timesheet = Timesheet::findOrFail($id);
 
-        if (Auth::id() !== $timesheet->contractor_id) {
-            abort(403, 'Unauthorized');
-        }
+    if (Auth::id() !== $timesheet->contractor_id) {
+        abort(403, 'Unauthorized');
+    }
 
-        $timesheet->status = 'submitted';
-        $timesheet->submitted_at = now(); // Save current time!
-        $timesheet->save();
-        // Fetch the associated client and admin users to send the email
-    $client = User::find($timesheet->project->client_id); // Assuming the timesheet is linked to a project with a client_id
-    $admins = User::where('role', 'admin')->get(); // Get all admins
+    $timesheet->status = 'submitted';
+    $timesheet->submitted_at = now();
+    $timesheet->save();
 
-    // Prepare the email data
-    $contractor_name = "{$timesheet->contractor->firstname} {$timesheet->contractor->lastname}"; // Assuming 'contractor' relationship
-    $project_name = $timesheet->project->name; // Assuming timesheet is related to a project
-    $timesheet_date = $timesheet->date; // Assuming the date field is on the timesheet
-
-    // Send email to client
-$client = $timesheet->client;
-
-if ($client) {
-    
-    $emailData = [
-        'contractor_name' => $contractor_name,
-        'project_name' => $project_name,
-        'timesheet_date' => $timesheet_date,
-        'timesheet_id' => $timesheet->id,
-        'role' => 'client', 
-    ];
-
-    // Timesheet submitted 
-    Mail::to($client->email)->send(new EmailSender(
-        "Timesheet Submitted for Approval", // Subject
-        $emailData,                         // Email data
-        'emails.timesheet_submitted'        // Email view 
-    ));
-}
-
-    
-foreach ($admins as $admin) {
-    
-    $emailData = [
-        'contractor_name' => $contractor_name,
-        'project_name' => $project_name,
-        'timesheet_date' => $timesheet_date,
-        'timesheet_id' => $timesheet->id,
-        'role' => 'admin', 
-    ];
-
-    // Timesheet submitted 
-    Mail::to($admin->email)->send(new EmailSender(
-        "Timesheet Submitted for Approval", // Subject
-        $emailData,                         // Email data
-        'emails.timesheet_submitted'        // Email view 
-    ));
-}
-
-
-         // Fetch the related project and users
+    // Prepare common data
     $project = $timesheet->project;
-    $contractor = $timesheet->contractor; // Assuming the timesheet has a contractor relation
-    $client = $project->client; // Assuming the project has a client relation
-    $consultant = $project->consultant; // Assuming the project has a consultant relation
+    $contractor = $timesheet->contractor;
+    $client = $project->client;
+    $consultant = $project->consultant;
+    $admins = User::where('role', 'admin')->get();
 
-    // 1. Create Recent Activity and Notifications for the Contractor who Submitted the Timesheet
-    if ($contractor) {
-        // Create recent activity for the contractor
+    $contractor_name = "{$contractor->firstname} {$contractor->lastname}";
+    $project_name = $project->name;
+    $timesheet_date = $timesheet->date;
+
+    // Helper method to log activity and notification
+    $logActivity = function ($user, $title, $description, $withNotification = false) use ($timesheet) {
         RecentActivity::create([
-            'title' => 'Timesheet Submitted',
-            'description' => 'You have submitted a timesheet for the project "' . $project->name . '".',
+            'title' => $title,
+            'description' => $description,
             'parent_id' => $timesheet->id,
             'created_for' => 'timesheet',
-            'user_id' => $contractor->id, // Notify the contractor who submitted
-            'created_by' => Auth::id(), // The user who submitted the timesheet
+            'user_id' => $user->id,
+            'created_by' => Auth::id(),
         ]);
 
-       
-    }
-
-    // 2. Create Recent Activity and Notifications for All Admins
-    $adminUsers = User::where('role', 'admin')->get(); // Modify based on how your admins are stored
-    foreach ($adminUsers as $admin) {
-        // Create recent activity for the admin
-        RecentActivity::create([
-            'title' => 'Timesheet Submitted',
-            'description' => 'A contractor has submitted a timesheet for the project "' . $project->name . '".',
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $admin->id, // Notify each admin
-            'created_by' => Auth::id(), // The admin who created the timesheet
-        ]);
-
-        // Create notification for the admin
-        notifications::create([
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $admin->id, // Notify the admin
-            'message' => 'A contractor has submitted a timesheet for the project "' . $project->name . '".',
-            'is_read' => 0, // By default, unread
-        ]);
-    }
-
-    // 3. Create Recent Activity and Notifications for the Project's Client
-    if ($client) {
-        // Create recent activity for the client
-        RecentActivity::create([
-            'title' => 'Timesheet Submitted',
-            'description' => 'A contractor has submitted a timesheet for the project "' . $project->name . '".',
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $client->id, // Notify the client of the project
-            'created_by' => Auth::id(), // The user who submitted
-        ]);
-
-        // Create notification for the client
-        notifications::create([
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $client->id, // Notify the client
-            'message' => 'A contractor has submitted a timesheet for the project "' . $project->name . '".',
-            'is_read' => 0, // By default, unread
-        ]);
-    }
-
-    // 4. Create Recent Activity 
-    if ($consultant) {
-        // Create recent activity for the consultant
-        RecentActivity::create([
-            'title' => 'Timesheet Submitted',
-            'description' => 'A contractor has submitted a timesheet for the project "' . $project->name . '".',
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $consultant->id, // Notify the consultant of the project
-            'created_by' => Auth::id(), // The user who submitted
-        ]);
-
-    
-      
-    }
-
-
-        return back()->with('success', 'Timesheet submitted successfully.');
-    }
-
-    public function approve(Request $request, $id)
-    {
-        $timesheet = Timesheet::findOrFail($id);
-
-        if (!in_array(Auth::user()->role, ['admin', 'client'])) {
-            abort(403, 'Unauthorized');
+        if ($withNotification) {
+            notifications::create([
+                'parent_id' => $timesheet->id,
+                'created_for' => 'timesheet',
+                'user_id' => $user->id,
+                'message' => $description,
+                'is_read' => 0,
+            ]);
         }
+    };
 
-        $timesheet->status = 'approved';
-        $timesheet->save();
+    // Helper method to send email
+    $sendEmail = function ($user, $role) use ($contractor_name, $project_name, $timesheet_date, $timesheet) {
+        $emailData = [
+            'contractor_name' => $contractor_name,
+            'project_name' => $project_name,
+            'timesheet_date' => $timesheet_date,
+            'timesheet_id' => $timesheet->id,
+            'role' => $role,
+        ];
 
-        
+        Mail::to($user->email)->send(new EmailSender(
+            "Timesheet Submitted for Approval",
+            $emailData,
+            'emails.timesheet_submitted'
+        ));
+    };
+
+    // Contractor activity (no email or notification needed)
+    if ($contractor) {
+        $logActivity($contractor, 'Timesheet Submitted', 'You have submitted a timesheet for the project "' . $project_name . '".');
+    }
+
+    // Client
+    if ($client) {
+        $sendEmail($client, 'client');
+        $logActivity($client, 'Timesheet Submitted', 'A contractor has submitted a timesheet for the project "' . $project_name . '".', true);
+    }
+
+    // Consultant (activity only)
+    if ($consultant) {
+        $logActivity($consultant, 'Timesheet Submitted', 'A contractor has submitted a timesheet for the project "' . $project_name . '".');
+    }
+
+    // Admins
+    foreach ($admins as $admin) {
+        $sendEmail($admin, 'admin');
+        $logActivity($admin, 'Timesheet Submitted', 'A contractor has submitted a timesheet for the project "' . $project_name . '".', true);
+    }
+
+    return back()->with('success', 'Timesheet submitted successfully.');
+}
+
+
+public function approve(Request $request, $id)
+{
+    $timesheet = Timesheet::findOrFail($id);
+
+    if (!in_array(Auth::user()->role, ['admin', 'client'])) {
+        abort(403, 'Unauthorized');
+    }
+
+    $timesheet->status = 'approved';
+    $timesheet->save();
+
     // Send email to contractor
-    $contractor = User::find($timesheet->contractor_id); // Get the contractor who submitted the timesheet
+    $contractor = $timesheet->contractor;
+    $project = $timesheet->project;
+    $client = $project->client;
+    $approver = Auth::user();
+
     $emailData = [
         'contractor_name' => "{$contractor->firstname} {$contractor->lastname}",
-        'approver_name' => Auth::user()->name,
-        'project_name' => $timesheet->project->name,
+        'approver_name' => $approver->name,
+        'project_name' => $project->name,
         'status' => 'approved',
     ];
-    Mail::to($contractor->email)->send(new EmailSender("Timesheet Approved", $emailData, 'emails.timesheet_status_email'));
-         // Get related project, contractor, and client
+
+    Mail::to($contractor->email)->send(new EmailSender(
+        "Timesheet Approved",
+        $emailData,
+        'emails.timesheet_status_email'
+    ));
+
+    // 🎯 Define all users to notify (contractor, client, all admins)
+    $usersToNotify = collect([$contractor, $client])
+        ->merge(User::where('role', 'admin')->get())
+        ->filter(); // removes null users like missing client
+
+    foreach ($usersToNotify as $user) {
+        // Dynamic description based on role
+        $description = $user->id === $contractor->id
+            ? 'Your timesheet for the project "' . $project->name . '" has been approved.'
+            : 'A contractor\'s timesheet for the project "' . $project->name . '" has been approved.';
+
+        RecentActivity::create([
+            'title' => 'Timesheet Approved',
+            'description' => $description,
+            'parent_id' => $timesheet->id,
+            'created_for' => 'timesheet',
+            'user_id' => $user->id,
+            'created_by' => $approver->id,
+        ]);
+    }
+
+    return back()->with('success', 'Timesheet approved successfully.');
+}
+
+
+public function reject(Request $request, $id)
+{
+    $request->validate([
+        'rejection_reason' => 'required|string|max:1000',
+    ]);
+
+    $timesheet = Timesheet::findOrFail($id);
+
+    if (!in_array(Auth::user()->role, ['admin', 'client'])) {
+        abort(403, 'Unauthorized');
+    }
+
+    $timesheet->status = 'rejected';
+    $timesheet->rejection_reason = $request->rejection_reason;
+    $timesheet->save();
+
+    // Related data
+    $contractor = $timesheet->contractor;
     $project = $timesheet->project;
-    $contractor = $timesheet->contractor; // Assuming the timesheet has a contractor relation
-    $client = $project->client; // Assuming the project has a client relation
-    $admin = Auth::user(); // The user who approved the timesheet (admin or client)
+    $client = $project->client;
+    $admin = Auth::user();
 
-    // 1. Create recent activity 
-    if ($contractor) {
-        RecentActivity::create([
-            'title' => 'Timesheet Approved',
-            'description' => 'Your timesheet for the project "' . $project->name . '" has been approved.',
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $contractor->id, // Notify the contractor
-            'created_by' => $admin->id, // The user who approved the timesheet
-        ]);
-
-      
-    }
-
-    // 2. Create recent activity and notifications for the client of the project
-    if ($client) {
-        RecentActivity::create([
-            'title' => 'Timesheet Approved',
-            'description' => 'The contractor\'s timesheet for the project "' . $project->name . '" has been approved.',
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $client->id, // Notify the client
-            'created_by' => $admin->id, // The user who approved the timesheet
-        ]);
-
-      
-    }
-
-    // 3. Create recent activity 
-    $adminUsers = User::where('role', 'admin')->get(); // Modify based on how your admins are stored
-    foreach ($adminUsers as $adminUser) {
-        RecentActivity::create([
-            'title' => 'Timesheet Approved',
-            'description' => 'A contractor\'s timesheet for the project "' . $project->name . '" has been approved.',
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $adminUser->id, // Notify each admin
-            'created_by' => $admin->id, // The user who approved the timesheet
-        ]);
-
-       
-    }
-
-        return back()->with('success', 'Timesheet approved successfully.');
-    }
-
-    public function reject(Request $request, $id)
-    {
-        $request->validate([
-            'rejection_reason' => 'required|string|max:1000',
-        ]);
-
-        $timesheet = Timesheet::findOrFail($id);
-
-        if (!in_array(Auth::user()->role, ['admin', 'client'])) {
-            abort(403, 'Unauthorized');
-        }
-
-        $timesheet->status = 'rejected';
-        $timesheet->rejection_reason = $request->rejection_reason;
-        $timesheet->save();
-
-
-  // Send email to contractor
-    $contractor = User::find($timesheet->contractor_id); // Get the contractor who submitted the timesheet
+    // Send rejection email to contractor
     $emailData = [
         'contractor_name' => "{$contractor->firstname} {$contractor->lastname}",
-        'approver_name' => Auth::user()->name,
-        'project_name' => $timesheet->project->name,
+        'approver_name' => $admin->name,
+        'project_name' => $project->name,
         'status' => 'rejected',
         'rejection_reason' => $request->rejection_reason,
     ];
-    Mail::to($contractor->email)->send(new EmailSender("Timesheet Rejected", $emailData, 'emails.timesheet_status_email'));
+    Mail::to("hafsafarman.221@gmail.com")->send(new EmailSender(
+        "Timesheet Rejected",
+        $emailData,
+        'emails.timesheet_status_email'
+    ));
 
-         // Update the timesheet status to 'rejected'
-    $timesheet->status = 'rejected';
-    $timesheet->rejection_reason = $request->rejection_reason; // Save the rejection reason
-    $timesheet->save();
+    // All users to notify
+    $usersToNotify = collect([$contractor, $client])
+        ->merge(User::where('role', 'admin')->get())
+        ->filter(); // Remove null if any
 
-    // Get related project, contractor, and client
-    $project = $timesheet->project;
-    $contractor = $timesheet->contractor; // Assuming the timesheet has a contractor relation
-    $client = $project->client; // Assuming the project has a client relation
-    $admin = Auth::user(); // The user who rejected the timesheet (admin or client)
+    foreach ($usersToNotify as $user) {
+        $isContractor = $user->id === $contractor->id;
+        $description = $isContractor
+            ? 'Your timesheet for the project "' . $project->name . '" has been rejected. Reason: ' . $request->rejection_reason
+            : 'A contractor\'s timesheet for the project "' . $project->name . '" has been rejected. Reason: ' . $request->rejection_reason;
 
-    // 1. Create recent activity and notifications for the contractor whose timesheet was rejected
-    if ($contractor) {
         RecentActivity::create([
             'title' => 'Timesheet Rejected',
-            'description' => 'Your timesheet for the project "' . $project->name . '" has been rejected. Reason: ' . $request->rejection_reason,
+            'description' => $description,
             'parent_id' => $timesheet->id,
             'created_for' => 'timesheet',
-            'user_id' => $contractor->id, // Notify the contractor
-            'created_by' => $admin->id, // The user who rejected the timesheet
+            'user_id' => $user->id,
+            'created_by' => $admin->id,
         ]);
-        notifications::create([
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $contractor->id, // Notify the contractor
-            'message' => 'Your timesheet for the project "' . $project->name . '" has been rejected. Reason: ' . $request->rejection_reason,
-            'is_read' => 0, // By default, unread
-        ]);
-    }
-    if ($client) {
-        RecentActivity::create([
-            'title' => 'Timesheet Rejected',
-            'description' => 'The contractor\'s timesheet for the project "' . $project->name . '" has been rejected. Reason: ' . $request->rejection_reason,
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $client->id, // Notify the client
-            'created_by' => $admin->id, // The user who rejected the timesheet
-        ]);
-    }
-    $adminUsers = User::where('role', 'admin')->get(); // Modify based on how your admins are stored
-    foreach ($adminUsers as $adminUser) {
-        RecentActivity::create([
-            'title' => 'Timesheet Rejected',
-            'description' => 'A contractor\'s timesheet for the project "' . $project->name . '" has been rejected. Reason: ' . $request->rejection_reason,
-            'parent_id' => $timesheet->id,
-            'created_for' => 'timesheet',
-            'user_id' => $adminUser->id, // Notify each admin
-            'created_by' => $admin->id, // The user who rejected the timesheet
-        ]);
+
+        // Notification only for contractor
+        if ($isContractor) {
+            notifications::create([
+                'parent_id' => $timesheet->id,
+                'created_for' => 'timesheet',
+                'user_id' => $contractor->id,
+                'message' => $description,
+                'is_read' => 0,
+            ]);
+        }
     }
 
-        return back()->with('success', 'Timesheet rejected successfully.');
-    }
+    return back()->with('success', 'Timesheet rejected successfully.');
+}
+
 
 
 

@@ -26,10 +26,16 @@ class UsersController extends Controller
         {
             $pageTitle = "Users List";
 
+            // Get counts for each user role
+        $adminCount = User::where('role', 'admin')->count();
+        $clientCount = User::where('role', 'client')->count();
+        $contractorCount = User::where('role', 'contractor')->count();
+        $consultantCount = User::where('role', 'consultant')->count();
+
        // Get all projects ordered by ID (serial number) descending
        $users = User::orderBy('id', 'desc')->get();
      // All users + related projects
-        return view('users', compact('pageTitle', 'users'));
+     return view('users', compact('pageTitle', 'users', 'adminCount', 'clientCount', 'contractorCount', 'consultantCount'));
         }
         else{
             return redirect('/dashboard');
