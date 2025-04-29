@@ -84,6 +84,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/approve', [TimesheetController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [TimesheetController::class, 'reject'])->name('reject');
         // Route::get('/filter', [TimesheetController::class, 'filter'])->name('filter');
+        Route::get('/{timesheetDetailId}/total-actual-hours', [TimesheetController::class, 'getTotalActualHours']);
 
 
     });

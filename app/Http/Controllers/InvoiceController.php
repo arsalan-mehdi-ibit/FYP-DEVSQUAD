@@ -13,13 +13,38 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $pageTitle = "Invoice List";
+        // dd($request);
 
-        $invoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet.project']);
+        $invoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet.project' , 'timesheet']);
 
-        // Apply Filters
-        if ($request->timesheets) {
-            $invoices->whereIn('timesheet_id', $request->timesheets);
-        }
+        // // Apply Filters
+        // if ($request->timesheets) {
+        //     $invoices->whereIn('timesheet_name', $request->timesheets);
+        // }
+
+
+    // Now Apply Filters if any (dates, projects, clients, contractors, statuses)
+    if ($request->timesheets) {
+        $invoices->whereHas('timesheet', function ($query) use ($request) {
+            $query->where(function ($q) use ($request) {
+                foreach ($request->timesheets as $timesheet) {
+                    $range = explode(' - ', $timesheet);
+                    if (count($range) == 2) {
+                        $start = Carbon::parse(trim($range[0]))->format('Y-m-d');
+                        $end = Carbon::parse(trim($range[1]))->format('Y-m-d');
+    
+                        $q->orWhere(function ($subQ) use ($start, $end) {
+                            $subQ->whereDate('week_start_date', $start)
+                                 ->whereDate('week_end_date', $end);
+                        });
+                    }
+                }
+            });
+        });
+    }
+
+
+
 
         if ($request->clients) {
             $invoices->whereIn('client_id', $request->clients);

@@ -37,7 +37,12 @@
                                     </div>
                                 </th>
                                 <td>{{ \Carbon\Carbon::parse($detail->date)->format('Y-m-d') }}</td>
-                                <td>{{ $detail->actual_hours ?? 0 }}</td>
+                                <td data-detail-id="{{ $detail->id }}">
+                                    {{ $detail->actual_hours ?? 0 }} 
+                                    <span class="total-actual-hours"
+                                        style="display: none;">{{ $detail->actual_hours ?? 0 }}</span>
+                                </td>
+
                                 <td>{{ $detail->ot_hours ?? 0 }}</td>
                                 <td>{{ $detail->memo ?? '-' }}</td>
                             </tr>
@@ -107,11 +112,25 @@
                                 </tr>`;
                                 taskBody.append(row);
                             });
+                            updateTotalActualHours(
+                                timesheetDetailId); // Update total hours after loading tasks
                         }
                     }
                 });
             }
 
+            function updateTotalActualHours(timesheetDetailId) {
+                $.ajax({
+                    url: `/timesheet/${timesheetDetailId}/total-actual-hours`, // Create this route in backend
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $(`[data-detail-id="${timesheetDetailId}"]`).find(".total-actual-hours")
+                                .text(response.total_hours);
+                        }
+                    }
+                });
+            }
             // Load all existing tasks on page load
             $(".task-body").each(function() {
                 const taskBody = $(this);
@@ -198,6 +217,17 @@
 
                             // Remove task ID after update to avoid conflicts
                             row.removeAttr('data-task-id');
+                            let totalActualHours = 0;
+                            row.closest(".task-body").find("tr").each(function() {
+                                totalActualHours += parseFloat($(this).find(
+                                    "td:nth-child(4)").text()) || 0;
+                            });
+
+                            // Update the actual hours for the timesheet in the UI (you might want to update this value on the backend as well)
+                            const timesheetRow = $(`tr[data-detail-id="${timesheetDetailId}"]`);
+                            timesheetRow.find("td:nth-child(3)").text(
+                                totalActualHours
+                                ); // Assuming the actual hours are in the 3rd column
                         } else {
                             alert("Error saving task!");
                         }
@@ -229,6 +259,7 @@
 
                 // Reattach task ID to the modified row
                 row.attr("data-task-id", taskId);
+
             });
 
             // Remove Task (from UI and backend)
@@ -256,6 +287,20 @@
                                 $(this).find("td:first").text(index +
                                     1); // Update the SR column
                             });
+
+                            // Update the actual hours after task removal
+                            let totalActualHours = 0;
+                            taskBody.find("tr").each(function() {
+                                totalActualHours += parseFloat($(this).find(
+                                    "td:nth-child(4)").text()) || 0;
+                            });
+
+                            // Update the actual hours for the timesheet in the UI (you might want to update this value on the backend as well)
+                            const timesheetRow = $(
+                                `tr[data-detail-id="${taskBody.closest(".nested-table").prev().data("detail-id")}"]`
+                                );
+                            timesheetRow.find("td:nth-child(3)").text(
+                            totalActualHours); // Assuming the actual hours are in the 3rd column
                         } else {
                             alert("Error deleting task!");
                         }

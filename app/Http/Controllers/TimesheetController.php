@@ -159,7 +159,24 @@ class TimesheetController extends Controller
         return back()->with('success', 'Timesheet rejected successfully.');
     }
 
+    // public function getTotalActualHours($timesheetDetailId)
+    // {
+    //     $timesheetDetail = TimesheetDetail::find($timesheetDetailId);
+        
+    //     if ($timesheetDetail) {
+    //         // Sum up the actual hours of tasks related to this timesheet detail
+    //         $totalHours = $timesheetDetail->tasks()->sum('actual_hours');
+    //         return response()->json([
+    //             'status' => 'success',
+    //             'total_hours' => $totalHours,
+    //         ]);
+    //     }
 
+    //     return response()->json([
+    //         'status' => 'error',
+    //         'message' => 'Timesheet detail not found',
+    //     ]);
+    // }
     // public function filter(Request $request)
     // {
     //     $timesheets = Timesheet::query();

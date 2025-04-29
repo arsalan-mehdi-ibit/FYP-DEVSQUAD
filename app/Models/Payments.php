@@ -34,6 +34,6 @@ class payments extends Model
 
     public function timesheet()
     {
-        return $this->belongsTo(timesheet::class, 'timesheet_id');
+        return $this->belongsTo(Timesheet::class, 'timesheet_id');
     }
 }
