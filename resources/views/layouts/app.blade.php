@@ -358,12 +358,12 @@
                 $(this).find(".toggle-icon").toggleClass("rotate");
             });
 
-        //     // Add Task
-        //     $(document).on("click", ".add-task", function() {
-        //         let taskBody = $(this).closest(".p-3").find(".task-body");
-        //         let nextSr = taskBody.find("tr").length + 1;
+            //     // Add Task
+            //     $(document).on("click", ".add-task", function() {
+            //         let taskBody = $(this).closest(".p-3").find(".task-body");
+            //         let nextSr = taskBody.find("tr").length + 1;
 
-        //         let newRow = `
+            //         let newRow = `
         //     <tr>
         //         <td>${nextSr}</td>
         //         <td><input type="text" class="form-control p-1 task-title" placeholder="Title"></td>
@@ -377,22 +377,22 @@
         //                             <span class="bi bi-trash text-red-500"></span>
         //                         </button>
 
-                   
+
         //         </td>
         //     </tr>
         // `;
 
-        //         taskBody.append(newRow);
-        //     });
+            //         taskBody.append(newRow);
+            //     });
 
-        //     // Save Task
-        //     $(document).on("click", ".save-task", function() {
-        //         let row = $(this).closest("tr");
-        //         let title = row.find(".task-title").val();
-        //         let desc = row.find(".task-desc").val();
-        //         let hours = row.find(".task-hours").val();
+            //     // Save Task
+            //     $(document).on("click", ".save-task", function() {
+            //         let row = $(this).closest("tr");
+            //         let title = row.find(".task-title").val();
+            //         let desc = row.find(".task-desc").val();
+            //         let hours = row.find(".task-hours").val();
 
-        //         row.html(`
+            //         row.html(`
         //     <td>${row.index() + 1}</td>
         //     <td>${title}</td>
         //     <td>${desc}</td>
@@ -405,16 +405,16 @@
         //                         </button>
         //     </td>
         // `);
-        //     });
+            //     });
 
-        //     // Edit Task
-        //     $(document).on("click", ".edit-task", function() {
-        //         let row = $(this).closest("tr");
-        //         let title = row.find("td:nth-child(2)").text();
-        //         let desc = row.find("td:nth-child(3)").text();
-        //         let hours = row.find("td:nth-child(4)").text();
+            //     // Edit Task
+            //     $(document).on("click", ".edit-task", function() {
+            //         let row = $(this).closest("tr");
+            //         let title = row.find("td:nth-child(2)").text();
+            //         let desc = row.find("td:nth-child(3)").text();
+            //         let hours = row.find("td:nth-child(4)").text();
 
-        //         row.html(`
+            //         row.html(`
         //     <td>${row.index() + 1}</td>
         //     <td><input type="text" class="form-control p-1 task-title" value="${title}"></td>
         //     <td><input type="text" class="form-control p-1 task-desc" value="${desc}"></td>
@@ -426,21 +426,88 @@
         //                         </button>
         //     </td>
         // `);
-        //     });
-        //     // remove
-        //     $(document).on("click", ".remove-task", function() {
-        //         let row = $(this).closest("tr");
-        //         let taskBody = row.closest(".task-body");
+            //     });
+            //     // remove
+            //     $(document).on("click", ".remove-task", function() {
+            //         let row = $(this).closest("tr");
+            //         let taskBody = row.closest(".task-body");
 
-        //         row.remove();
+            //         row.remove();
 
-        //         // Recalculate SR numbers
-        //         taskBody.find("tr").each(function(index) {
-        //             $(this).find("td:first").text(index + 1);
-        //         });
+            //         // Recalculate SR numbers
+            //         taskBody.find("tr").each(function(index) {
+            //             $(this).find("td:first").text(index + 1);
+            //         });
 
-        //     });
+            //     });
 
+            // Toggle filter dropdowns
+            // 1. Load previously selected filters from localStorage
+            var storedFilters = JSON.parse(localStorage.getItem('selectedFilters')) || [];
+
+            storedFilters.forEach(function(value) {
+                $('.filter-checkbox[value="' + value + '"]').prop('checked', true);
+            });
+
+            generateAppliedFilters();
+
+            // 2. Toggle filter dropdowns
+            $('.filter-button').click(function(e) {
+                e.stopPropagation();
+                var $this = $(this);
+                var options = $this.next('.filter-options');
+                var icon = $this.find('i');
+
+                var isVisible = options.is(':visible'); // Check BEFORE toggling
+
+                // Close all other dropdowns
+                $('.filter-options').slideUp();
+                $('.filter-button i').removeClass('bi-caret-up-fill').addClass('bi-caret-down-fill');
+
+                if (!isVisible) {
+                    options.slideDown();
+                    icon.removeClass('bi-caret-down-fill').addClass('bi-caret-up-fill');
+                } else {
+                    options.slideUp();
+                    icon.removeClass('bi-caret-up-fill').addClass('bi-caret-down-fill');
+                }
+            });
+
+            // 3. Close dropdown if clicked outside
+            $(document).click(function() {
+                $('.filter-options').slideUp();
+                $('.filter-button i').removeClass('bi-caret-up-fill').addClass('bi-caret-down-fill');
+            });
+
+            // 4. Handle checkbox filter changes
+            $('.filter-checkbox').change(function() {
+                saveSelectedFilters();
+                generateAppliedFilters();
+            });
+
+            // Save selected checkboxes to localStorage
+            function saveSelectedFilters() {
+                var selected = [];
+                $('.filter-checkbox:checked').each(function() {
+                    selected.push($(this).val());
+                });
+                localStorage.setItem('selectedFilters', JSON.stringify(selected));
+            }
+
+            // Generate applied filters badges
+            function generateAppliedFilters() {
+                var appliedFilters = $('#applied-filters');
+                appliedFilters.html(''); // Clear previous
+
+                $('.filter-checkbox:checked').each(function() {
+                    var label = $(this).closest('div').find('label').text().trim();
+                    appliedFilters.append(
+                        '<span style="display:inline-flex;align-items:center;padding:2px 6px;border-radius:9999px;font-size:9px;background-color:#e5e7eb;color:#4b5563;margin-right:4px;margin-bottom:4px;">' +
+                        label +
+                        '</span>'
+                    );
+                });
+            }
         });
     </script>
 </body>

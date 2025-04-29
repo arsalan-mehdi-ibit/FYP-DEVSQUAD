@@ -7,6 +7,13 @@
         {{-- Debugging step --}}
         {{-- {{ dd($timesheetDetails) }} --}}
         <!-- Parent Table -->
+        @if ($timesheet->status == 'rejected' && $timesheet->rejection_reason)
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
+                <strong class="font-bold">Timesheet Rejected!</strong>
+                <span class="block sm:inline">Reason: {{ $timesheet->rejection_reason }}</span>
+            </div>
+        @endif
+
         <div class="table-responsive">
             <table class="table table-striped text-center border border-gray-300 text-sm">
                 <thead class="bg-gray-700 text-white">
@@ -30,7 +37,12 @@
                                     </div>
                                 </th>
                                 <td>{{ \Carbon\Carbon::parse($detail->date)->format('Y-m-d') }}</td>
-                                <td>{{ $detail->actual_hours ?? 0 }}</td>
+                                <td data-detail-id="{{ $detail->id }}">
+                                    {{ $detail->actual_hours ?? 0 }}
+                                    <span class="total-actual-hours"
+                                        style="display: none;">{{ $detail->actual_hours ?? 0 }}</span>
+                                </td>
+
                                 <td>{{ $detail->ot_hours ?? 0 }}</td>
                                 <td>{{ $detail->memo ?? '-' }}</td>
                             </tr>
@@ -100,6 +112,33 @@
                                 </tr>`;
                                 taskBody.append(row);
                             });
+                            updateTotalActualHours(
+                                timesheetDetailId); // Update total hours after loading tasks
+                        }
+                    }
+                });
+            }
+
+            function updateTotalActualHours(timesheetDetailId) {
+                $.ajax({
+                    url: `/timesheet/${timesheetDetailId}/total-actual-hours`, // Create this route in backend
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $(`[data-detail-id="${timesheetDetailId}"]`).find(".total-actual-hours")
+                                .text(response.total_hours);
+                        }
+                    }
+                });
+            }
+
+            function updateGrandTotal(timesheetId) {
+                $.ajax({
+                    url: `/timesheet/${timesheetId}/total-hours`,
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $(`#grand-total-hours-${timesheetId}`).text(response.total_hours);
                         }
                     }
                 });
@@ -191,6 +230,17 @@
 
                             // Remove task ID after update to avoid conflicts
                             row.removeAttr('data-task-id');
+                            let totalActualHours = 0;
+                            row.closest(".task-body").find("tr").each(function() {
+                                totalActualHours += parseFloat($(this).find(
+                                    "td:nth-child(4)").text()) || 0;
+                            });
+
+                            // Update the actual hours for the timesheet in the UI (you might want to update this value on the backend as well)
+                            const timesheetRow = $(`tr[data-detail-id="${timesheetDetailId}"]`);
+                            timesheetRow.find("td:nth-child(3)").text(
+                                totalActualHours
+                            ); // Assuming the actual hours are in the 3rd column
                         } else {
                             alert("Error saving task!");
                         }
@@ -222,6 +272,7 @@
 
                 // Reattach task ID to the modified row
                 row.attr("data-task-id", taskId);
+
             });
 
             // Remove Task (from UI and backend)
@@ -247,8 +298,23 @@
                             // Reindex the remaining rows
                             taskBody.find("tr").each(function(index) {
                                 $(this).find("td:first").text(index +
-                                1); // Update the SR column
+                                    1); // Update the SR column
                             });
+
+                            // Update the actual hours after task removal
+                            let totalActualHours = 0;
+                            taskBody.find("tr").each(function() {
+                                totalActualHours += parseFloat($(this).find(
+                                    "td:nth-child(4)").text()) || 0;
+                            });
+
+                            // Update the actual hours for the timesheet in the UI (you might want to update this value on the backend as well)
+                            const timesheetRow = $(
+                                `tr[data-detail-id="${taskBody.closest(".nested-table").prev().data("detail-id")}"]`
+                            );
+                            timesheetRow.find("td:nth-child(3)").text(
+                                totalActualHours
+                            ); // Assuming the actual hours are in the 3rd column
                         } else {
                             alert("Error deleting task!");
                         }
@@ -257,6 +323,11 @@
                         alert("An error occurred while deleting the task.");
                     }
                 });
+            });
+
+            $('#timesheet-table-body tr').each(function() {
+                const timesheetId = $(this).data('timesheet-id');
+                updateGrandTotal(timesheetId);
             });
 
         });

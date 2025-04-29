@@ -18,8 +18,8 @@ class UserSeeder extends Seeder
             'role' => 'admin', // if you have a 'role' column
         ]);
 
-          // Client User
-          User::create([
+        // Client User
+        User::create([
             'firstname' => 'Trackpoint',
             'lastname' => 'Client',
             'email' => 'client@user.com',
@@ -44,6 +44,6 @@ class UserSeeder extends Seeder
             'password' => Hash::make('12345678'),
             'role' => 'consultant',
         ]);
-        
+
     }
 }

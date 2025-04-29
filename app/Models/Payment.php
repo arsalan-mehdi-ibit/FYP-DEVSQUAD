@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class payments extends Model
+class Payment extends Model
 {
     use HasFactory;
-
-    protected $table = 'payments';
 
     protected $fillable = [
         'timesheet_id',
@@ -18,10 +16,13 @@ class payments extends Model
         'admin_received',
         'contractor_paid',
         'payment_date',
-        'created_at',
-        'updated_at',
     ];
 
+    protected $casts = [
+        'payment_date' => 'datetime', // important! just 'datetime'
+    ];
+
+    // Relationships (optional but good)
     public function client()
     {
         return $this->belongsTo(User::class, 'client_id');

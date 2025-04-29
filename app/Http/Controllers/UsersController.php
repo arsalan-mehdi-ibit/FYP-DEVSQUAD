@@ -20,28 +20,34 @@ class UsersController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if(Auth::user()->role =='admin')
-        {
-            $pageTitle = "Users List";
-
-            // Get counts for each user role
-        $adminCount = User::where('role', 'admin')->count();
-        $clientCount = User::where('role', 'client')->count();
-        $contractorCount = User::where('role', 'contractor')->count();
-        $consultantCount = User::where('role', 'consultant')->count();
-
-       // Get all projects ordered by ID (serial number) descending
-       $users = User::orderBy('id', 'desc')->get();
-     // All users + related projects
-     return view('users', compact('pageTitle', 'users', 'adminCount', 'clientCount', 'contractorCount', 'consultantCount'));
-        }
-        else{
+        if (Auth::user()->role != 'admin') {
             return redirect('/dashboard');
-
         }
+    
+        $pageTitle = "Users List";
+    
+        $users = User::query(); // Start building the query
+    
+        // Apply Role Filter if roles[] are selected
+        if ($request->roles) {
+            $users->whereIn('role', $request->roles);
+        }
+    
+        $users = $users->orderBy('id', 'desc')->get(); // Execute query
+    
+        // Check if it's an AJAX request (comes from filter)
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('users', compact('pageTitle', 'users'))->render(),
+            ]);
+        }
+    
+        // Normal full page load
+        return view('users', compact('pageTitle', 'users'));
     }
+    
 
     public function add()
     {
@@ -68,15 +74,15 @@ class UsersController extends Controller
             ]);
 
             // ✅ Check for existing soft-deleted user with same email
-        $softDeletedUser = User::onlyTrashed()->where('email', $validated['email'])->first();
-        if ($softDeletedUser) {
-            $softDeletedUser->forceDelete(); // Hard delete the previous soft-deleted user
-        }
+            $softDeletedUser = User::onlyTrashed()->where('email', $validated['email'])->first();
+            if ($softDeletedUser) {
+                $softDeletedUser->forceDelete(); // Hard delete the previous soft-deleted user
+            }
 
-        // Now validate uniqueness after deleting
-        $request->validate([
-            'email' => 'unique:users,email',
-        ]);
+            // Now validate uniqueness after deleting
+            $request->validate([
+                'email' => 'unique:users,email',
+            ]);
 
             // Set additional attributes
             $validated['email_verified_at'] = now();
@@ -87,7 +93,7 @@ class UsersController extends Controller
 
             // Create the user
             $user = User::create($validated);
-            
+
             $adminUsers = User::where('role', 'admin')->get(); // adjust this if your roles are stored differently
 
             // Step 2: Loop through each admin user
@@ -97,17 +103,17 @@ class UsersController extends Controller
                     'description' => 'New user ' . $user->firstname . ' ' . $user->lastname . ' has been created.',
                     'parent_id' => $user->id,
                     'created_for' => 'user',
-                    'user_id' => $admin->id, 
-                    'created_by' => Auth::id(), 
+                    'user_id' => $admin->id,
+                    'created_by' => Auth::id(),
                 ]);
-                 // Create Notification
-             Notifications::create([
-            'parent_id' => $user->id,
-            'created_for' => 'user',
-            'user_id' => $admin->id,
-            'message' => 'New user ' . $user->firstname . ' ' . $user->lastname . ' has been created.',
-            'is_read' => 0,
-        ]);
+                // Create Notification
+                Notifications::create([
+                    'parent_id' => $user->id,
+                    'created_for' => 'user',
+                    'user_id' => $admin->id,
+                    'message' => 'New user ' . $user->firstname . ' ' . $user->lastname . ' has been created.',
+                    'is_read' => 0,
+                ]);
             }
             MediaController::uploadFile($request, $user->id);
 
@@ -144,7 +150,7 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
 
-        
+
         // dd($user);
         $pageTitle = "Edit User"; // Define the page title for edit
         return view('cruds.add_user', compact('pageTitle', 'user')); // Pass both variables to the view
@@ -164,7 +170,7 @@ class UsersController extends Controller
             'send_emails' => 'nullable|boolean',
             'attachments.*' => 'nullable|file|max:2048', // For multiple files
         ]);
-        
+
         $validated['is_active'] = $request->has('is_active') ? 1 : 0;
 
 
@@ -182,14 +188,14 @@ class UsersController extends Controller
                 'user_id' => $admin->id, // Notify each admin
                 'created_by' => Auth::id(), // Logged-in user
             ]);
-             // Create Notification
-        Notifications::create([
-            'parent_id' => $user->id,
-            'created_for' => 'user',
-            'user_id' => $admin->id,
-            'message' => 'User ' . $user->firstname . ' ' . $user->lastname . ' was updated.',
-            'is_read' => 0,
-        ]);
+            // Create Notification
+            Notifications::create([
+                'parent_id' => $user->id,
+                'created_for' => 'user',
+                'user_id' => $admin->id,
+                'message' => 'User ' . $user->firstname . ' ' . $user->lastname . ' was updated.',
+                'is_read' => 0,
+            ]);
         }
 
         if ($request->hasFile('attachments')) {
@@ -223,19 +229,19 @@ class UsersController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-{
-    try {
-        $user = User::findOrFail($id);
+    {
+        try {
+            $user = User::findOrFail($id);
 
-        // Optional: Soft delete logic (if using SoftDeletes trait)
-        $user->delete();
+            // Optional: Soft delete logic (if using SoftDeletes trait)
+            $user->delete();
 
-        return redirect()->route('users.index')->with('success', 'User deleted successfully.');
-    } catch (\Exception $e) {
-        \Log::error('User deletion failed: ' . $e->getMessage());
-        return redirect()->back()->with('error', 'Something went wrong while deleting the user.');
+            return redirect()->route('users.index')->with('success', 'User deleted successfully.');
+        } catch (\Exception $e) {
+            \Log::error('User deletion failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Something went wrong while deleting the user.');
+        }
     }
-}
 
-    
+
 }

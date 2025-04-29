@@ -58,8 +58,10 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
+    
+        Route::patch('/{payment}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])->name('markAsPaid');
     });
-
+    
     Route::group(['as' => 'users.', 'prefix' => '/users'], function () {
         Route::get('/', [UsersController::class, 'index'])->name('index');
         Route::get('/add', [UsersController::class, 'add'])->name('add');
@@ -81,6 +83,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/submit', [TimesheetController::class, 'submit'])->name('submit');
         Route::post('/{id}/approve', [TimesheetController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [TimesheetController::class, 'reject'])->name('reject');
+        // Route::get('/filter', [TimesheetController::class, 'filter'])->name('filter');
+        Route::get('/{timesheetDetailId}/total-actual-hours', [TimesheetController::class, 'getTotalActualHours']);
+
 
     });
 
@@ -108,6 +113,7 @@ Route::middleware('auth')->group(function () {
 
 
     });
+
 
 
 

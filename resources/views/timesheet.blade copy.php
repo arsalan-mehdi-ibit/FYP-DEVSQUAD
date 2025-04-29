@@ -12,7 +12,7 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">This Month's</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $thisMonthCount }}</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+22.63k</p>
                     <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
                         34.4%</span>
                 </div>
@@ -27,7 +27,7 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">APPROVED</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $approvedCount }}</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+4.5k</p>
                     <span class="text-xs sm:text-sm text-red-600 bg-red-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↓
                         8.1%</span>
                 </div>
@@ -42,7 +42,7 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">REJECTED</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $rejectedCount }}</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">+1.03k</p>
                     <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
                         12.6%</span>
                 </div>
@@ -57,7 +57,7 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">PENDING APPROVAL</h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $pendingApprovalCount }}</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">$38,908.00</p>
                     <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
                         45.9%</span>
                 </div>
@@ -67,37 +67,37 @@
         <!-- Filters Wrapper -->
         <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between mb-4 mt-4 ">
             <!-- Left side: Filter label and active filters -->
-            <div class="flex flex-col " style="max-width: 365px !important;">
+            <div class="flex flex-col " style="max-width: 500px !important;">
                 <span class="text-gray-500 font-semibold text-xs mb-2">Filters:</span>
                 <div id="applied-filters" class="flex flex-wrap gap-2">
                     <!-- Dynamically generated badges will appear here -->
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm">
-                <div class="flex items-center text-gray-700 text-sm font-semibold mr-2">
-                    <i class="bi bi-funnel-fill mr-1 text-gray-600"></i>
-                    Filter By
-                </div>
+
+            <!-- Right side: Filter dropdowns -->
+            <div class="flex flex-wrap gap-2 bg-white p-3 rounded-md shadow-sm">
+
                 <!-- Date Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
-                        Date <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        class="filter-button flex items-center text-bold bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
+                        Date
+                        <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
                     </button>
+
                     <div
                         class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                         <div class="py-2 max-h-60 overflow-y-auto">
                             @foreach ($timesheets->unique(function ($item) {
             return $item->week_start_date . $item->week_end_date;
         }) as $timesheet)
-                                <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                <div class="flex items-center px-3 pt-0 pb-0 hover:bg-gray-50">
                                     <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
                                         name="dates[]"
-                                        value="{{ $timesheet->week_start_date }} - {{ $timesheet->week_end_date }}">
+                                        value="Date: {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}">
                                     <label class="ml-3 mt-1 text-sm text-gray-700">
-                                        {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }}
-                                        -
+                                        {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} -
                                         {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}
                                     </label>
                                 </div>
@@ -109,7 +109,7 @@
                 <!-- Project Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
                         Project <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
                     </button>
                     <div
@@ -117,9 +117,9 @@
                         <div class="py-2 max-h-60 overflow-y-auto">
                             @foreach ($timesheets->unique('project_id') as $timesheet)
                                 @if ($timesheet->project)
-                                    <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                    <div class="flex items-center px-3 pt-0 pb-0 hover:bg-gray-50">
                                         <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                            name="projects[]" value="{{ $timesheet->project->id }}">
+                                            name="projects[]" value="Project: {{ $timesheet->project->name }}">
                                         <label
                                             class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->project->name }}</label>
                                     </div>
@@ -132,8 +132,8 @@
                 <!-- Client Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
-                        Client <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
+                        Client  <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
                     </button>
                     <div
                         class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
@@ -142,9 +142,9 @@
             return $item->project ? $item->project->client_id : null;
         }) as $timesheet)
                                 @if ($timesheet->project && $timesheet->project->client)
-                                    <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                    <div class="flex items-center px-3 pt-0 pb-0 hover:bg-gray-50">
                                         <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                            name="clients[]" value="{{ $timesheet->project->client->id }}">
+                                            name="clients[]" value="Client: {{ $timesheet->project->client->firstname }}">
                                         <label
                                             class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->project->client->firstname }}</label>
                                     </div>
@@ -157,17 +157,18 @@
                 <!-- Contractor Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
-                        Contractor <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
+                        Contractor  <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
                     </button>
                     <div
                         class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                         <div class="py-2 max-h-60 overflow-y-auto">
                             @foreach ($timesheets->unique('contractor_id') as $timesheet)
                                 @if ($timesheet->contractor)
-                                    <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                    <div class="flex items-center px-3 pt-0 pb-0 hover:bg-gray-50">
                                         <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                            name="contractors[]" value="{{ $timesheet->contractor->id }}">
+                                            name="contractors[]"
+                                            value="Contractor: {{ $timesheet->contractor->firstname }}">
                                         <label
                                             class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->contractor->firstname }}</label>
                                     </div>
@@ -180,33 +181,33 @@
                 <!-- Status Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
                         Status <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
                     </button>
                     <div
                         class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                         <div class="py-2 max-h-60 overflow-y-auto">
-                            @foreach (['pending', 'submitted', 'approved', 'rejected', 'in_progress'] as $status)
-                                <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                            @foreach (['pending', 'submitted', 'approved', 'rejected', 'in_progress', 'not_started', 'pending_approval'] as $status)
+                                <div class="flex items-center px-3 pt-0 pb-0 hover:bg-gray-50">
                                     <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                        name="statuses[]" value="{{ $status }}">
-                                    <label class="ml-3 mt-1 text-sm text-gray-700 capitalize">
-                                        {{ str_replace('_', ' ', $status) }}
-                                    </label>
+                                        name="statuses[]" value="Status: {{ ucfirst(str_replace('_', ' ', $status)) }}">
+                                    <label
+                                        class="ml-3 mt-1 text-sm text-gray-700">{{ ucfirst(str_replace('_', ' ', $status)) }}</label>
                                 </div>
                             @endforeach
                         </div>
                     </div>
                 </div>
+
             </div>
         </div>
         <!-- End Filters Wrapper -->
 
+
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
             <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Timesheets</h2>
 
-            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 460px"
-                id="timesheet-table-wrapper">
+            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 460px">
                 <table class="w-full min-w-full text-center">
                     <thead class="sticky top-0 bg-gray-100 z-10 text-center">
                         <tr class="border-b">
@@ -218,8 +219,8 @@
                                 Status</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Total Hours</th>
-                            {{-- <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Total OT Hours </th> --}}
+                            <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                                Total OT Hours </th>
                             {{-- <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Approver</th> --}}
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
@@ -238,7 +239,7 @@
                     </thead>
                     <tbody id="timesheet-table-body">
                         @foreach ($timesheets as $timesheet)
-                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}" data-timesheet-id="{{ $timesheet->id }}"
+                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}"
                                 data-date="{{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}"
                                 data-project="{{ $timesheet->project->name ?? '' }}"
                                 data-client="{{ $timesheet->project->client->firstname ?? '' }}"
@@ -254,13 +255,12 @@
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                     {{ $timesheet->status ?? 'N/A' }}
                                 </td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base" id="grand-total-hours-{{ $timesheet->id }}">
+                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
                                     {{ $timesheet->total_hours }}
                                 </td>
-                                
-                                {{-- <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
+                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
                                     {{ $timesheet->total_ot_hours }}
-                                </td> --}}
+                                </td>
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                     {{ $timesheet->project->name ?? 'N/A' }}
                                 </td>
