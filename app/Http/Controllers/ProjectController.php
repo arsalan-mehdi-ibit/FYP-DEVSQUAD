@@ -27,76 +27,52 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $pageTitle = "Projects";
-
+    
         // Initialize counts
-    $activeProjectsCount = 0;
-    $adminsCount = 0;
-    $clientsCount = 0;
-    $contractorsCount = 0;
-
-    // Calculate counts for all roles
-    $activeProjectsCount = Project::whereIn('status', ['pending', 'in-progress'])->count();
-    $adminsCount = User::where('role', 'admin')->count();
-    $clientsCount = User::where('role', 'client')->count();
-    $contractorsCount = User::where('role', 'contractor')->count();
+        $activeProjectsCount = Project::whereIn('status', ['pending', 'in-progress'])->count();
+        $adminsCount = User::where('role', 'admin')->count();
+        $clientsCount = User::where('role', 'client')->count();
+        $contractorsCount = User::where('role', 'contractor')->count();
     
-        $projects = Project::with('client'); // Eager load client relation
+        // Start query
+        $projectsQuery = Project::with('client');
     
-       if(Auth::user()->role == 'admin')
-        {
-            //ADMIN CAN SEE ALL THE PROJECTS
-            $projects = Project::orderBy('id', 'desc')->get();
-
-        }
-        elseif(Auth::user()->role == 'client')
-        {
-           
-            //Client CAN SEE only his PROJECTS
-            $projects = Project::where('client_id', Auth::id())
-            ->orderBy('id', 'desc')
-            ->get();
-
-           
-        
-
-        }
-        elseif(Auth::user()->role == 'consultant')
-        {
-          
-            //Consultant CAN SEE only his PROJECTS
-            $projects = Project::where('consultant_id', Auth::id())
-            ->orderBy('id', 'desc')
-            ->get();
-
-        }
-        elseif(Auth::user()->role == 'contractor')
-        {
-        //CONTRACTOR SHOULD ONLY SEE THE PROJECTS IN WHICH HE IS WORKING
-
+        // Role-based filtering
+        if (Auth::user()->role == 'admin') {
+            // Admin sees all projects
+            // No changes needed
+        } elseif (Auth::user()->role == 'client') {
+            // Client sees only their projects
+            $projectsQuery->where('client_id', Auth::id());
+        } elseif (Auth::user()->role == 'consultant') {
+            // Consultant sees only their projects
+            $projectsQuery->where('consultant_id', Auth::id());
+        } elseif (Auth::user()->role == 'contractor') {
+            // Contractor sees only assigned projects
             $contractorId = Auth::id();
-
-            // Fetch projects where contractor_id matches
-           $projects = Project::whereHas('contractors', function($query) use ($contractorId) {
-    $query->where('users.id', $contractorId);
-})->orderBy('id', 'desc')->get();
-
+            $projectsQuery->whereHas('contractors', function ($query) use ($contractorId) {
+                $query->where('users.id', $contractorId);
+            });
         }
     
-        // Apply Client Filter if selected
+        // Apply client filter if selected
         if ($request->clients) {
-            $projects->whereIn('client_id', $request->clients);
+            $projectsQuery->whereIn('client_id', $request->clients);
         }
     
-        $projects = $projects->orderBy('id', 'desc')->get();
+        // Apply ordering and execute query
+        $projects = $projectsQuery->orderBy('id', 'desc')->get();
     
+        // Handle AJAX
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('project', compact('pageTitle', 'projects'))->render(),
             ]);
         }
     
-        return view('project', compact('pageTitle', 'projects'));
+        return view('project', compact('pageTitle', 'projects', 'activeProjectsCount', 'adminsCount', 'clientsCount', 'contractorsCount'));
     }
+    
     
 
     /**
