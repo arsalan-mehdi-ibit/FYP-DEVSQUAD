@@ -11,7 +11,7 @@ use App\Mail\EmailSender;
 use App\Models\RecentActivity;
 use App\Models\Notifications;
 use Illuminate\Support\Facades\Mail;
-
+use Carbon\Carbon;
 
 
 class TimesheetController extends Controller
@@ -118,7 +118,10 @@ return view('timesheet', compact('pageTitle', 'timesheets', 'thisMonthCount', 'a
 
     $contractor_name = "{$contractor->firstname} {$contractor->lastname}";
     $project_name = $project->name;
-    $timesheet_date = $timesheet->date;
+    $week_start = Carbon::parse($timesheet->week_start_date)->format('M d, Y');
+    $week_end = Carbon::parse($timesheet->week_end_date)->format('M d, Y');
+
+    $timesheet_date = $week_start . ' - ' . $week_end;
 
     // Helper method to log activity and notification
     $logActivity = function ($user, $title, $description, $withNotification = false) use ($timesheet) {
@@ -204,7 +207,7 @@ public function approve(Request $request, $id)
 
     $emailData = [
         'contractor_name' => "{$contractor->firstname} {$contractor->lastname}",
-        'approver_name' => $approver->name,
+        'approver_name' => "{$approver->firstname} {$approver->lastname}",
         'project_name' => $project->name,
         'status' => 'approved',
     ];
@@ -270,7 +273,7 @@ public function reject(Request $request, $id)
         'status' => 'rejected',
         'rejection_reason' => $request->rejection_reason,
     ];
-    Mail::to("hafsafarman.221@gmail.com")->send(new EmailSender(
+    Mail::to($contractor->email)->send(new EmailSender(
         "Timesheet Rejected",
         $emailData,
         'emails.timesheet_status_email'
