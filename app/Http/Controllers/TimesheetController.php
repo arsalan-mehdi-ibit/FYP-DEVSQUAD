@@ -23,93 +23,47 @@ class TimesheetController extends Controller
     public function index(Request $request)
     {
         $pageTitle = "Timesheet";
-
-
+    
         $currentMonth = now()->month;
         $currentYear = now()->year;
     
-        // Initialize the counts
-        $thisMonthCount = 0;
-        $approvedCount = 0;
-        $rejectedCount = 0;
-        $pendingApprovalCount = 0;
-    
-        // Calculate counts for each category
+        // Counts
         $thisMonthCount = Timesheet::whereYear('submitted_at', $currentYear)
             ->whereMonth('submitted_at', $currentMonth)
             ->count();
     
-        $approvedCount = Timesheet::where('status', 'approved')
-            ->count(); // Count for all-time approved timesheets
+        $approvedCount = Timesheet::where('status', 'approved')->count();
+        $rejectedCount = Timesheet::where('status', 'rejected')->count();
+        $pendingApprovalCount = Timesheet::where('status', 'pending')->count();
     
-        $rejectedCount = Timesheet::where('status', 'rejected')
-            ->count(); // Count for all-time rejected timesheets
-    
-        $pendingApprovalCount = Timesheet::where('status', 'pending')
-            ->count(); // Count for all-time pending approval timesheets
-    
-
         $dates = Timesheet::select('week_start_date')
             ->distinct()
             ->orderBy('week_start_date', 'desc')
             ->get();
     
-        $timesheets = Timesheet::with(['project.client', 'contractor']);
+        // Start base query
+        $query = Timesheet::with(['project.client', 'contractor']);
     
-        // Apply role-based restrictions
-     if (Auth::user()->role == 'admin') {
-            $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->orderByRaw("
-                    CASE 
-                        WHEN status = 'submitted' THEN 1
-                        WHEN status = 'pending' THEN 2
-                        WHEN status = 'approved' THEN 3
-                        WHEN status = 'rejected' THEN 4
-                        ELSE 5
-                    END
-                ") // custom priority sorting
-                ->orderBy('submitted_at', 'desc') // latest submitted first inside each status
-                ->orderBy('week_start_date', 'asc') // fallback
-                ->paginate(10);
-
+        // Role-based restrictions
+        if (Auth::user()->role == 'admin') {
+            // admin sees all
         } elseif (Auth::user()->role == 'client') {
             $projectIds = Project::where('client_id', Auth::id())->pluck('id');
-            $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->whereIn('project_id', $projectIds)
-                ->orderBy('week_start_date', 'asc')
-                ->paginate(10);
-
+            $query->whereIn('project_id', $projectIds);
         } elseif (Auth::user()->role == 'consultant') {
             $projectIds = Project::where('consultant_id', Auth::id())->pluck('id');
-            $timesheets = Timesheet::with(['project.client', 'contractor'])
-                ->whereIn('project_id', $projectIds)
-                ->orderBy('week_start_date', 'asc')
-                ->paginate(10);
-
-        }elseif (Auth::user()->role == 'contractor') {
-    $timesheets = Timesheet::with(['project.client', 'contractor'])
-        ->where('contractor_id', Auth::id())
-        ->orderByRaw("
-            CASE 
-                WHEN status = 'rejected' THEN 1
-                WHEN status = 'pending' THEN 2
-                WHEN status = 'submitted' THEN 3
-                WHEN status = 'approved' THEN 4
-                ELSE 5
-            END
-        ")
-        ->orderBy('submitted_at', 'desc')
-        ->orderBy('week_start_date', 'asc')
-        ->paginate(10);
-}
-
-        // Now Apply Filters if any (dates, projects, clients, contractors, statuses)
+            $query->whereIn('project_id', $projectIds);
+        } elseif (Auth::user()->role == 'contractor') {
+            $query->where('contractor_id', Auth::id());
+        }
+    
+        // Filters
         if ($request->dates) {
-            $timesheets->where(function ($query) use ($request) {
+            $query->where(function ($query) use ($request) {
                 foreach ($request->dates as $date) {
                     $range = explode(' - ', $date);
-                    $start = Carbon::parse($range[0])->format('Y-m-d');
-                    $end = Carbon::parse($range[1])->format('Y-m-d');
+                    $start = \Carbon\Carbon::parse($range[0])->format('Y-m-d');
+                    $end = \Carbon\Carbon::parse($range[1])->format('Y-m-d');
     
                     $query->orWhere(function ($q) use ($start, $end) {
                         $q->whereDate('week_start_date', $start)
@@ -120,30 +74,28 @@ class TimesheetController extends Controller
         }
     
         if ($request->projects) {
-            $timesheets->whereHas('project', function ($query) use ($request) {
-                $query->whereIn('id', $request->projects);
-            });
+            $query->whereIn('project_id', $request->projects);
         }
     
         if ($request->clients) {
-            $timesheets->whereHas('project.client', function ($query) use ($request) {
-                $query->whereIn('id', $request->clients);
+            $query->whereHas('project.client', function ($q) use ($request) {
+                $q->whereIn('id', $request->clients);
             });
         }
     
         if ($request->contractors) {
-            $timesheets->whereHas('contractor', function ($query) use ($request) {
-                $query->whereIn('id', $request->contractors);
+            $query->whereHas('contractor', function ($q) use ($request) {
+                $q->whereIn('id', $request->contractors);
             });
         }
     
         if ($request->statuses) {
-            $timesheets->whereIn('status', $request->statuses);
+            $query->whereIn('status', $request->statuses);
         }
     
-        // Sorting (custom based on role)
-        if (Auth::user()->role == 'admin' || Auth::user()->role == 'contractor') {
-            $timesheets->orderByRaw("
+        // Sorting
+        if (in_array(Auth::user()->role, ['admin', 'contractor'])) {
+            $query->orderByRaw("
                 CASE 
                     WHEN status = 'submitted' THEN 1
                     WHEN status = 'pending' THEN 2
@@ -154,23 +106,21 @@ class TimesheetController extends Controller
             ")->orderBy('submitted_at', 'desc')
               ->orderBy('week_start_date', 'asc');
         } else {
-            $timesheets->orderBy('week_start_date', 'asc');
+            $query->orderBy('week_start_date', 'asc');
         }
     
-        // Pagination
-        $timesheets = $timesheets->paginate(10);
+        // Final pagination
+        $timesheets = $query->paginate(10);
     
-        // Check if it's an AJAX request (comes from your filter script)
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('timesheet', compact('timesheets', 'pageTitle'))->render(),
+                'html' => view('timesheet', compact('timesheets', 'pageTitle', 'thisMonthCount', 'approvedCount', 'rejectedCount', 'pendingApprovalCount', 'dates'))->render(),
             ]);
         }
     
-        // Normal request (full page load)
         return view('timesheet', compact('pageTitle', 'timesheets', 'thisMonthCount', 'approvedCount', 'rejectedCount', 'pendingApprovalCount', 'dates'));
-
     }
+    
     
 
 

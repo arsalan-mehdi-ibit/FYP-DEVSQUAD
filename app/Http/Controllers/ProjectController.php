@@ -66,7 +66,7 @@ class ProjectController extends Controller
         // Handle AJAX
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('project', compact('pageTitle', 'projects'))->render(),
+                'html' => view('project', compact('pageTitle', 'projects', 'activeProjectsCount', 'adminsCount', 'clientsCount', 'contractorsCount'))->render(),
             ]);
         }
     
