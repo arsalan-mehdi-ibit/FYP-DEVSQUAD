@@ -27,7 +27,11 @@ class UsersController extends Controller
         }
     
         $pageTitle = "Users List";
-    
+         // Get counts for each user role
+        $adminCount = User::where('role', 'admin')->count();
+        $clientCount = User::where('role', 'client')->count();
+        $contractorCount = User::where('role', 'contractor')->count();
+        $consultantCount = User::where('role', 'consultant')->count();
         $users = User::query(); // Start building the query
     
         // Apply Role Filter if roles[] are selected
@@ -40,12 +44,12 @@ class UsersController extends Controller
         // Check if it's an AJAX request (comes from filter)
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('users', compact('pageTitle', 'users'))->render(),
+                'html' => view('users', compact('pageTitle', 'users', 'adminCount', 'clientCount', 'contractorCount', 'consultantCount'))->render(),
             ]);
         }
     
         // Normal full page load
-        return view('users', compact('pageTitle', 'users'));
+        return view('users', compact('pageTitle', 'users', 'adminCount', 'clientCount', 'contractorCount', 'consultantCount'));
     }
     
 
