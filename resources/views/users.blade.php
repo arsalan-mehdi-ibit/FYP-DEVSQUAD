@@ -81,16 +81,56 @@
             </div>
         </div>
 
+        <!-- Filters Wrapper -->
+        <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between mb-4 mt-4 ">
+            <!-- Left side: Filter label and active filters -->
+            <div class="flex flex-col" style="max-width: 550px !important;">
+                <span class="text-gray-500 font-semibold text-xs mb-2">Filters:</span>
+                <div id="applied-filters" class="flex flex-wrap gap-2">
+                    <!-- Dynamically generated badges will appear here -->
+                </div>
+            </div>
+
+            <!-- Right side: Filter dropdown -->
+            <div class="flex flex-wrap gap-2 bg-white p-3 rounded-md shadow-sm" style="margin-right: 130px">
+
+
+
+                <div class="relative filter-dropdown">
+                    <button type="button"
+                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
+                        Role <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                    </button>
+                    <div
+                        class="filter-options hidden absolute mt-2 w-44 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                        <div class="py-2 max-h-60 overflow-y-auto">
+                            @foreach (['admin', 'client', 'consultant', 'contractor'] as $role)
+                                <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                    <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                        name="roles[]"  value="{{ $role }}">
+                                    <label
+                                        class="ml-3 mt-1 text-sm text-gray-700 capitalize"> {{ str_replace('_', ' ', $role) }}</label>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- End Filters Wrapper -->
+
+
 
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
             <div class="mx-2 flex justify-between items-center mb-1 sm:mb-4">
-                @if(Auth::user()->role == 'admin')
-                <h2 class="text-lg sm:text-xl font-bold">All Users List</h2>
-                <a href="{{ route('users.add') }}"
-                    class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
+                @if (Auth::user()->role == 'admin')
+                    <h2 class="text-lg sm:text-xl font-bold">All Users List</h2>
+                    <a href="{{ route('users.add') }}"
+                        class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-yellow-400 to-red-400 
           hover:from-red-400 hover:to-yellow-400 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
-                    <i class="bi bi-person-plus text-sm"></i> Add
-                </a>
+                        <i class="bi bi-person-plus text-sm"></i> Add
+                    </a>
                 @endif
             </div>
             <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
@@ -113,7 +153,7 @@
                                 Action</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="user-table-body">
                         @foreach ($users as $user)
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="p-2 sm:p-3 text-left text-xs sm:text-sm md:text-base">{{ $loop->iteration }}</td>
@@ -184,4 +224,40 @@
             }, 3000); // Hide after 3 seconds
         </script>
     @endif
+
+    <script>
+        $(document).ready(function() {
+            // Trigger filtering when any checkbox changes
+            $('.filter-checkbox').on('change', function() {
+                filterUsers();
+            });
+
+            function filterUsers() {
+                let roles = [];
+                $('input[name="roles[]"]:checked').each(function() {
+                    roles.push($(this).val());
+                });
+
+                $.ajax({
+                    url: "{{ route('users.index') }}", // <-- Adjust route for user page
+                    method: "GET",
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        roles: roles,
+                    },
+                    success: function(response) {
+                        // Create a temporary DOM element to hold the response
+                        var tempDiv = $('<div>').html(response.html);
+
+                        // Find the tbody inside that response
+                        var newTbody = tempDiv.find('#user-table-body').html();
+
+                        // Replace your current tbody content
+                        $('#user-table-body').html(newTbody);
+                    }
+                });
+            }
+
+        });
+    </script>
 @endsection

@@ -441,23 +441,73 @@
 
             //     });
 
-            // Handle clicking the filter button
-            $('.filter-button').on('click', function(e) {
-                e.stopPropagation(); // Prevent closing immediately
-                var $dropdown = $(this).next('.filter-options');
+            // Toggle filter dropdowns
+            // 1. Load previously selected filters from localStorage
+            var storedFilters = JSON.parse(localStorage.getItem('selectedFilters')) || [];
 
-                // Hide all other dropdowns
-                $('.filter-options').not($dropdown).addClass('hidden');
-
-                // Toggle this one
-                $dropdown.toggleClass('hidden');
+            storedFilters.forEach(function(value) {
+                $('.filter-checkbox[value="' + value + '"]').prop('checked', true);
             });
 
-            // Close all dropdowns if clicking anywhere else
-            $(document).on('click', function() {
-                $('.filter-options').addClass('hidden');
+            generateAppliedFilters();
+
+            // 2. Toggle filter dropdowns
+            $('.filter-button').click(function(e) {
+                e.stopPropagation();
+                var $this = $(this);
+                var options = $this.next('.filter-options');
+                var icon = $this.find('i');
+
+                var isVisible = options.is(':visible'); // Check BEFORE toggling
+
+                // Close all other dropdowns
+                $('.filter-options').slideUp();
+                $('.filter-button i').removeClass('bi-caret-up-fill').addClass('bi-caret-down-fill');
+
+                if (!isVisible) {
+                    options.slideDown();
+                    icon.removeClass('bi-caret-down-fill').addClass('bi-caret-up-fill');
+                } else {
+                    options.slideUp();
+                    icon.removeClass('bi-caret-up-fill').addClass('bi-caret-down-fill');
+                }
             });
 
+            // 3. Close dropdown if clicked outside
+            $(document).click(function() {
+                $('.filter-options').slideUp();
+                $('.filter-button i').removeClass('bi-caret-up-fill').addClass('bi-caret-down-fill');
+            });
+
+            // 4. Handle checkbox filter changes
+            $('.filter-checkbox').change(function() {
+                saveSelectedFilters();
+                generateAppliedFilters();
+            });
+
+            // Save selected checkboxes to localStorage
+            function saveSelectedFilters() {
+                var selected = [];
+                $('.filter-checkbox:checked').each(function() {
+                    selected.push($(this).val());
+                });
+                localStorage.setItem('selectedFilters', JSON.stringify(selected));
+            }
+
+            // Generate applied filters badges
+            function generateAppliedFilters() {
+                var appliedFilters = $('#applied-filters');
+                appliedFilters.html(''); // Clear previous
+
+                $('.filter-checkbox:checked').each(function() {
+                    var label = $(this).closest('div').find('label').text().trim();
+                    appliedFilters.append(
+                        '<span style="display:inline-flex;align-items:center;padding:2px 6px;border-radius:9999px;font-size:9px;background-color:#e5e7eb;color:#4b5563;margin-right:4px;margin-bottom:4px;">' +
+                        label +
+                        '</span>'
+                    );
+                });
+            }
         });
     </script>
 </body>

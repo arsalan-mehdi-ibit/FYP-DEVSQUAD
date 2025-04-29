@@ -20,20 +20,34 @@ class UsersController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if (Auth::user()->role == 'admin') {
-            $pageTitle = "Users List";
-
-            // Get all projects ordered by ID (serial number) descending
-            $users = User::orderBy('id', 'desc')->get();
-            // All users + related projects
-            return view('users', compact('pageTitle', 'users'));
-        } else {
+        if (Auth::user()->role != 'admin') {
             return redirect('/dashboard');
-
         }
+    
+        $pageTitle = "Users List";
+    
+        $users = User::query(); // Start building the query
+    
+        // Apply Role Filter if roles[] are selected
+        if ($request->roles) {
+            $users->whereIn('role', $request->roles);
+        }
+    
+        $users = $users->orderBy('id', 'desc')->get(); // Execute query
+    
+        // Check if it's an AJAX request (comes from filter)
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('users', compact('pageTitle', 'users'))->render(),
+            ]);
+        }
+    
+        // Normal full page load
+        return view('users', compact('pageTitle', 'users'));
     }
+    
 
     public function add()
     {
