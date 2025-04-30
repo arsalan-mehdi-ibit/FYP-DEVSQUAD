@@ -24,9 +24,14 @@
         .header {
             text-align: center;
             padding: 20px;
-            background-color: #28a745;
             color: #ffffff;
             border-radius: 10px 10px 0 0;
+        }
+        .header-approved {
+            background-color: #28a745;
+        }
+        .header-rejected {
+            background-color: #dc3545;
         }
         .header h1 {
             margin: 0;
@@ -51,20 +56,6 @@
             padding-top: 15px;
             border-top: 1px solid #ddd;
         }
-        .button {
-            display: inline-block;
-            padding: 12px 25px;
-            background-color: #007bff;
-            color: #fff;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 5px;
-            margin-top: 25px;
-            text-align: center;
-        }
-        .button:hover {
-            background-color: #0056b3;
-        }
         .rejection-message {
             color: #dc3545;
             font-weight: bold;
@@ -74,7 +65,7 @@
 <body>
 
     <div class="container">
-        <div class="header">
+        <div class="header {{ $status == 'rejected' ? 'header-rejected' : 'header-approved' }}">
             <h1>Timesheet Status Update</h1>
         </div>
 
@@ -88,8 +79,6 @@
             @endif
 
             <p>If you have any questions or concerns, please don't hesitate to reach out to the project manager.</p>
-
-           
         </div>
 
         <div class="footer">

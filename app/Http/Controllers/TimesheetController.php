@@ -34,7 +34,9 @@ class TimesheetController extends Controller
 
         $approvedCount = Timesheet::where('status', 'approved')->count();
         $rejectedCount = Timesheet::where('status', 'rejected')->count();
-        $pendingApprovalCount = Timesheet::where('status', 'pending')->count();
+        $pendingApprovalCount = Timesheet::where('status', 'pending')
+        ->whereNotNull('submitted_at')
+        ->count();
 
         $dates = Timesheet::select('week_start_date')
             ->distinct()

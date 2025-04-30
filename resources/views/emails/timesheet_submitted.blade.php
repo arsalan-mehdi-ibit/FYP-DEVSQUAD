@@ -37,25 +37,6 @@
         .content strong {
             color: #333;
         }
-        .button {
-            display: inline-block;
-            margin-top: 20px;
-            background-color: #273c75;
-            color: #ffffff !important;
-            text-decoration: none;
-            padding: 12px 20px;
-            border-radius: 5px;
-            font-weight: bold;
-        }
-        .button:hover {
-            background-color: #1f2e5a;
-        }
-        .button-reject {
-            background-color: #c0392b;
-        }
-        .button-reject:hover {
-            background-color: #922b21;
-        }
         .footer {
             margin-top: 30px;
             text-align: center;
@@ -76,10 +57,7 @@
 
             <p><strong>Timesheet:</strong> {{ $timesheet_date }}</p>
             
-            <p>Please review the timesheet and take appropriate action. You can approve or reject the timesheet based on your assessment.</p>
-            
-            <a href="{{ route('timesheet.approve', $timesheet_id) }}" class="button">Approve Timesheet</a>
-            <a href="{{ route('timesheet.reject', $timesheet_id) }}" class="button button-reject">Reject Timesheet</a>
+            <p>Please review the timesheet and take appropriate action.</p>
         </div>
 
         <div class="footer">
