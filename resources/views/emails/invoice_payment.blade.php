@@ -64,9 +64,7 @@
                 <p>There is an update regarding invoice payment for <strong>{{ $timesheet_name }}</strong>.</p>
             @endif
 
-            @if(!empty($invoice_file_url))
-                <a href="{{ $invoice_file_url }}" class="btn" target="_blank">Download Invoice</a>
-            @endif
+           
 
             <p>Thank you for using <strong>TrackPoint</strong>.<br>Best regards,<br><strong>{{ $admin_name }}</strong><br>TrackPoint Team</p>
         </div>

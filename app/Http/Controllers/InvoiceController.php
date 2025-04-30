@@ -93,10 +93,10 @@ class InvoiceController extends Controller
     public function markAsPaid($id)
     {
         $payment = Payments::findOrFail($id);
-        
-        $usersToNotify = collect([$payment->contractor, $payment->client])
-        ->merge(User::where('role', 'admin')->get())
-        ->filter(); // Removes null users like missing client
+        // $usersToNotify = collect([$payment->contractor, $payment->client])
+        // ->merge(User::where('role', 'admin')->get())
+        // ->filter(); // Removes null users like missing client
+        $usersToNotify = collect([$payment->contractor, $payment->client]);
     
         foreach ($usersToNotify as $user) {
             $projectName = $payment->timesheet->project->name;
@@ -111,14 +111,19 @@ class InvoiceController extends Controller
             default      => "Invoice update for {$timesheetName}.",
             };
 
-            RecentActivity::create([
-                'title' => 'Invoice Paid',
-                'description' => $description,
-                'parent_id' => $payment->timesheet_id,
-                'created_for' => 'invoice',
-                'user_id' => $user->id,
-                'created_by' => Auth::user()->id,
-            ]);
+            // RecentActivity::create([
+            //     'title' => 'Invoice Paid',
+            //     'description' => $description,
+            //     'parent_id' => $payment->timesheet_id,
+            //     'created_for' => 'invoice',
+            //     'user_id' => $user->id,
+            //     'created_by' => Auth::user()->id,
+            // ]);
+
+            $view = 'pdf.invoice'; // same for both roles
+            $pdf = Pdf::loadView($view, ['payment' => $payment, 'role' => $user->role]);
+            $pdfContent = $pdf->output(); // binary string
+            $pdfFilename = 'Invoice_' . $payment->id . '.pdf';
             $emailData = [
                 'user_name' => $user->name,
                 'role' => $user->role,
@@ -129,13 +134,13 @@ class InvoiceController extends Controller
                 'admin_name' => $adminName,
                 'contractor_name' =>$payment->contractor->firstname ,
                 'client_name' =>$payment->client->firstname,
-                'invoice_file_url' => route('invoice.download', ['id' => $payment->id]), 
             ];
 
             Mail::to("haishamfaizan@gmail.com")->send(new EmailSender(
                 "INVOICE STATUS UPDATE",
                 $emailData,
-                'emails.invoice_payment'
+                'emails.invoice_payment',$pdfContent,
+                $pdfFilename
             ));
         }
 
@@ -148,17 +153,6 @@ class InvoiceController extends Controller
         return redirect()->back()->with('success', 'Invoice marked as paid successfully.');
     }
 
-    public function download($id)
-    {
-        $payment = Payments::with(['timesheet.project', 'contractor', 'client'])->findOrFail($id);
-
-        $pdf = Pdf::loadView('pdf.invoice', ['payment' => $payment]);
-        
-        $filename = 'Invoice_' . $payment->id . '.pdf';
-
-        return $pdf->download($filename); // Forces download
-        // return $pdf->stream($filename); // Shows in browser
-    }
 
     /**
      * Show the form for creating a new resource.

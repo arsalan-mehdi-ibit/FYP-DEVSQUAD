@@ -15,16 +15,21 @@ class EmailSender extends Mailable
     public $subject;
     public $data;
     public $bladeTemplate;
+    public $pdfContent;     // ✅ added
+    public $pdfFilename;
+  
 
     /**
      * Create a new message instance.
      */
-    public function __construct( $subject, $data, $bladeTemplate)
+    public function __construct( $subject, $data, $bladeTemplate,  $pdfContent = null, $pdfFilename = null)
     {
         
         $this->subject = $subject;
         $this->data = $data;
         $this->bladeTemplate = $bladeTemplate;
+        $this->pdfContent = $pdfContent;
+        $this->pdfFilename = $pdfFilename;
     }
 
     /**
@@ -32,9 +37,15 @@ class EmailSender extends Mailable
      */
     public function build()
     {
-        return $this->to($this->receiverEmail)
+        $email =  $this->to($this->receiverEmail)
                     ->subject($this->subject)
                     ->view($this->bladeTemplate)
                     ->with($this->data);
+                    if ($this->pdfContent && $this->pdfFilename) {
+                        $email->attachData($this->pdfContent, $this->pdfFilename, [
+                            'mime' => 'application/pdf',
+                        ]);
+                    }
+                    return $email;
     }
 }
