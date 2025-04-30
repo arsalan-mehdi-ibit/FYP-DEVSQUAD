@@ -97,6 +97,7 @@
                     <i class="bi bi-funnel-fill mr-1 text-gray-600"></i>
                     Filter By
                 </div>
+                @if (in_array(Auth::user()->role, ['admin', 'consultant']))
                 <!-- Client Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
@@ -117,6 +118,28 @@
                                             {{ $project->client->firstname }}
                                     </div>
                                 @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+                @endif
+                 <!-- Status Filter -->
+                 <div class="relative filter-dropdown">
+                    <button type="button"
+                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
+                        Status <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                    </button>
+                    <div
+                        class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                        <div class="py-2 max-h-60 overflow-y-auto">
+                            @foreach (['pending', 'in_progress', 'completed', 'cancelled'] as $status)
+                                <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                    <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                        name="statuses[]" value="{{ $status }}">
+                                    <label class="ml-3 mt-1 text-sm text-gray-700 capitalize">
+                                        {{ str_replace('_', ' ', $status) }}
+                                    </label>
+                                </div>
                             @endforeach
                         </div>
                     </div>
@@ -277,6 +300,10 @@
                 $('input[name="clients[]"]:checked').each(function() {
                     clients.push($(this).val());
                 });
+                let statuses = [];
+                $('input[name="statuses[]"]:checked').each(function() {
+                    statuses.push($(this).val());
+                });
 
                 $.ajax({
                     url: "{{ route('project.index') }}",
@@ -284,6 +311,7 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         clients: clients,
+                        statuses: statuses,
                     },
                     success: function(response) {
                         var tempDiv = $('<div>').html(response.html);

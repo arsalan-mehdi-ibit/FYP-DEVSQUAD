@@ -128,55 +128,55 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Client Filter -->
-                <div class="relative filter-dropdown">
-                    <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
-                        Client <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                    </button>
-                    <div
-                        class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                        <div class="py-2 max-h-60 overflow-y-auto">
-                            @foreach ($timesheets->unique(function ($item) {
-            return $item->project ? $item->project->client_id : null;
-        }) as $timesheet)
-                                @if ($timesheet->project && $timesheet->project->client)
-                                    <div class="flex items-center px-3 py-0 hover:bg-gray-50">
-                                        <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                            name="clients[]" value="{{ $timesheet->project->client->id }}">
-                                        <label
-                                            class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->project->client->firstname }}</label>
-                                    </div>
-                                @endif
-                            @endforeach
+                @if (in_array(Auth::user()->role, ['admin', 'consultant']))
+                    <!-- Client Filter -->
+                    <div class="relative filter-dropdown">
+                        <button type="button"
+                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                            Client <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        </button>
+                        <div
+                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-2 max-h-60 overflow-y-auto">
+                                @foreach ($timesheets->unique(function ($item) {
+                            return $item->project ? $item->project->client_id : null;
+                        }) as $timesheet)
+                                    @if ($timesheet->project && $timesheet->project->client)
+                                        <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                            <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                                name="clients[]" value="{{ $timesheet->project->client->id }}">
+                                            <label
+                                                class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->project->client->firstname }}</label>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Contractor Filter -->
-                <div class="relative filter-dropdown">
-                    <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
-                        Contractor <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                    </button>
-                    <div
-                        class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                        <div class="py-2 max-h-60 overflow-y-auto">
-                            @foreach ($timesheets->unique('contractor_id') as $timesheet)
-                                @if ($timesheet->contractor)
-                                    <div class="flex items-center px-3 py-0 hover:bg-gray-50">
-                                        <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                            name="contractors[]" value="{{ $timesheet->contractor->id }}">
-                                        <label
-                                            class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->contractor->firstname }}</label>
-                                    </div>
-                                @endif
-                            @endforeach
+                    <!-- Contractor Filter -->
+                    <div class="relative filter-dropdown">
+                        <button type="button"
+                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                            Contractor <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        </button>
+                        <div
+                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-2 max-h-60 overflow-y-auto">
+                                @foreach ($timesheets->unique('contractor_id') as $timesheet)
+                                    @if ($timesheet->contractor)
+                                        <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                            <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                                name="contractors[]" value="{{ $timesheet->contractor->id }}">
+                                            <label
+                                                class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->contractor->firstname }}</label>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-                </div>
-
+                @endif
                 <!-- Status Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"

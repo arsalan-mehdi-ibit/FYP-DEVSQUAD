@@ -59,7 +59,9 @@ class ProjectController extends Controller
         if ($request->clients) {
             $projectsQuery->whereIn('client_id', $request->clients);
         }
-
+        if ($request->statuses) {
+            $projectsQuery->whereIn('status', $request->statuses);
+        }
         // Apply ordering and execute query
         $projects = $projectsQuery->orderBy('id', 'desc')->get();
 

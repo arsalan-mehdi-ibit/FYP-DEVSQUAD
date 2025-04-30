@@ -110,32 +110,56 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Client Filter -->
-                <div class="relative filter-dropdown">
-                    <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
-                        Client
-                        <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                    </button>
-                    <div
-                        class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                        <div class="py-2 max-h-60 overflow-y-auto">
-                            @foreach ($invoices->unique('client_id') as $invoice)
-                                @if ($invoice->client)
-                                    <div class="flex items-center px-3 py-1 hover:bg-gray-50">
-                                        <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                            name="clients[]" value="{{ $invoice->client->id }}">
-                                        <label class="ml-3 mt-1 text-sm text-gray-700">
-                                            {{ $invoice->client->firstname }}
-                                        </label>
-                                    </div>
-                                @endif
-                            @endforeach
+                @if(Auth::user()->role =='admin')
+                    <!-- Client Filter -->
+                    <div class="relative filter-dropdown">
+                        <button type="button"
+                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
+                            Client
+                            <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        </button>
+                        <div
+                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-2 max-h-60 overflow-y-auto">
+                                @foreach ($invoices->unique('client_id') as $invoice)
+                                    @if ($invoice->client)
+                                        <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                            <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                                name="clients[]" value="{{ $invoice->client->id }}">
+                                            <label class="ml-3 mt-1 text-sm text-gray-700">
+                                                {{ $invoice->client->firstname }}
+                                            </label>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-                </div>
-
+                    <!-- Contractor Filter -->
+                    <div class="relative filter-dropdown">
+                        <button type="button"
+                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
+                            Contractor
+                            <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        </button>
+                        <div
+                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-2 max-h-60 overflow-y-auto">
+                                @foreach ($invoices->unique('contractor_id') as $invoice)
+                                    @if ($invoice->contractor)
+                                        <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                            <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                                name="contractors[]" value="{{ $invoice->contractor->id }}">
+                                            <label class="ml-3 mt-1 text-sm text-gray-700">
+                                                {{ $invoice->contractor->firstname }}  {{ $invoice->contractor->lastname }}
+                                            </label>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                @endif
                 <!-- Project Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
@@ -207,6 +231,10 @@
                                     class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
                                     Client Name</th>
                                 <th
+                                <th
+                                    class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
+                                    Contractor Name</th>
+                                <th
                                     class="p-2 sm:p-3 font-semibold text-center text-gray-700 text-xs sm:text-sm md:text-base">
                                     Project Name</th>
                                 <th
@@ -256,6 +284,20 @@
                                             @endif
                                             <span class="hidden sm:block text-xs sm:text-sm md:text-base">
                                                 {{ $invoice->client->firstname ?? 'N/A' }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="p-2 sm:p-3 text-left">
+                                        <div class="flex items-center">
+                                            @if ($invoice->contractor && $invoice->contractor->profilePicture && $invoice->contractor->profilePicture->file_path)
+                                                <img src="{{ asset($invoice->contractor->profilePicture->file_path) }}"
+                                                    alt="contractor Image" class="h-8 sm:h-10 rounded-full mr-2 object-cover">
+                                            @else
+                                                <img src="{{ asset('assets/profile.jpeg') }}" alt="Default Image"
+                                                    class="h-8 sm:h-10 rounded-full mr-2 object-cover">
+                                            @endif
+                                            <span class="hidden sm:block text-xs sm:text-sm md:text-base">
+                                                {{ $invoice->contractor->firstname ?? 'N/A' }}
                                             </span>
                                         </div>
                                     </td>
@@ -364,6 +406,10 @@
                 $('input[name="clients[]"]:checked').each(function() {
                     clients.push($(this).val());
                 });
+                let contractor = [];
+                $('input[name="contractor[]"]:checked').each(function() {
+                    contractor.push($(this).val());
+                });
 
                 let projects = [];
                 $('input[name="projects[]"]:checked').each(function() {
@@ -382,6 +428,7 @@
                         _token: "{{ csrf_token() }}",
                         timesheets: timesheets,
                         clients: clients,
+                        contractor: contractor,
                         projects: projects,
                         statuses: statuses,
                     },

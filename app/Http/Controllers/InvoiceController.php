@@ -52,8 +52,9 @@ class InvoiceController extends Controller
         });
     }
 
-
-
+        if ($request->contraactor) {
+            $invoices->whereIn('contractor_id', $request->contraactor);
+        }
 
         if ($request->clients) {
             $invoices->whereIn('client_id', $request->clients);
@@ -93,10 +94,9 @@ class InvoiceController extends Controller
     public function markAsPaid($id)
     {
         $payment = Payments::findOrFail($id);
-        // $usersToNotify = collect([$payment->contractor, $payment->client])
-        // ->merge(User::where('role', 'admin')->get())
-        // ->filter(); // Removes null users like missing client
-        $usersToNotify = collect([$payment->contractor, $payment->client]);
+        $usersToNotify = collect([$payment->contractor, $payment->client])
+        ->merge(User::where('role', 'admin')->get())
+        ->filter(); // Removes null users like missing client
     
         foreach ($usersToNotify as $user) {
             $projectName = $payment->timesheet->project->name;
@@ -111,14 +111,14 @@ class InvoiceController extends Controller
             default      => "Invoice update for {$timesheetName}.",
             };
 
-            // RecentActivity::create([
-            //     'title' => 'Invoice Paid',
-            //     'description' => $description,
-            //     'parent_id' => $payment->timesheet_id,
-            //     'created_for' => 'invoice',
-            //     'user_id' => $user->id,
-            //     'created_by' => Auth::user()->id,
-            // ]);
+            RecentActivity::create([
+                'title' => 'Invoice Paid',
+                'description' => $description,
+                'parent_id' => $payment->timesheet_id,
+                'created_for' => 'invoice',
+                'user_id' => $user->id,
+                'created_by' => Auth::user()->id,
+            ]);
 
             $view = 'pdf.invoice'; // same for both roles
             $pdf = Pdf::loadView($view, ['payment' => $payment, 'role' => $user->role]);

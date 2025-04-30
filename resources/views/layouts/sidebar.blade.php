@@ -29,11 +29,13 @@
                     <i class="bi bi-clock-history mr-2"></i> Timesheets
                 </a>
             </li>
+            @if(Auth::user()->role !=='consultant')
             <li class="mb-4">
                 <a href="{{ route('invoice.index') }}" class="flex items-center text-gray-300 hover:text-white">
                     <i class="bi bi-receipt mr-2"></i> Invoices
                 </a>
             </li>
+            @endif
         </ul>
 
         <!-- Logout Button -->
