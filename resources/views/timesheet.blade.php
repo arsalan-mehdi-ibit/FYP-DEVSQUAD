@@ -218,10 +218,7 @@
                                 Status</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Total Hours</th>
-                            {{-- <th class="p-2 sm:p-3 font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Total OT Hours </th> --}}
-                            {{-- <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Approver</th> --}}
+                           
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Project</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
@@ -255,12 +252,9 @@
                                     {{ $timesheet->status ?? 'N/A' }}
                                 </td>
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
-                                    {{ $timesheet->total_actual_hours }}
+                                   {{ $timesheet->total_actual_hours }}
                                 </td>
                                 
-                                {{-- <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
-                                    {{ $timesheet->total_ot_hours }}
-                                </td> --}}
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                     {{ $timesheet->project->name ?? 'N/A' }}
                                 </td>

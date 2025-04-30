@@ -214,7 +214,10 @@
                                     Total Hours</th>
                                 <th
                                     class="p-2 sm:p-3 font-semibold text-center text-gray-700 text-xs sm:text-sm md:text-base">
-                                    Total Amount</th>
+                                    Total Billable</th>
+                                <th
+                                    class="p-2 sm:p-3 font-semibold text-center text-gray-700 text-xs sm:text-sm md:text-base">
+                                    Total Payable</th>
                             @else
                                 <th
                                     class="p-2 sm:p-3 font-semibold text-center text-gray-700 text-xs sm:text-sm md:text-base">
@@ -263,14 +266,27 @@
                                         {{ $invoice->timesheet->total_hours ?? 'N/A' }}
                                     </td>
                                     <td class="p-2 sm:p-3 text-center text-xs sm:text-sm">
-                                        ${{ number_format($invoice->admin_received, 2) }}
+                                       ${{ number_format($invoice->admin_received, 2) }}
+                                    </td>
+                                    <td class="p-2 sm:p-3 text-center text-xs sm:text-sm">
+                                       ${{ number_format($invoice->contractor_paid, 2) }}
+                                    </td>
+                                @elseif(Auth::user()->role == 'client')
+                                    <td class="p-2 sm:p-3 text-center text-xs sm:text-sm">
+                                        {{ $invoice->timesheet->total_hours ?? 'N/A' }}
+                                    </td>
+                                    <td class="p-2 sm:p-3 text-center text-xs sm:text-sm">
+                                    ${{ number_format($invoice->admin_received, 2) }}
+                                    </td>
+                                    <td class="p-2 sm:p-3 text-center text-xs sm:text-sm">
+                                        {{ $invoice->timesheet->project->name ?? 'N/A' }}
                                     </td>
                                 @else
                                     <td class="p-2 sm:p-3 text-center text-xs sm:text-sm">
                                         {{ $invoice->timesheet->total_hours ?? 'N/A' }}
                                     </td>
                                     <td class="p-2 sm:p-3 text-center text-xs sm:text-sm">
-                                        ${{ number_format($invoice->contractor_paid, 2) }}
+                                    ${{ number_format($invoice->contractor_paid, 2) }}
                                     </td>
                                     <td class="p-2 sm:p-3 text-center text-xs sm:text-sm">
                                         {{ $invoice->timesheet->project->name ?? 'N/A' }}

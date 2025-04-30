@@ -58,7 +58,7 @@ Route::middleware('auth')->group(function () {
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
         Route::get('/', [InvoiceController::class, 'index'])->name('index');
-    
+        Route::get('/download/{id}', [InvoiceController::class, 'download'])->name('download');
         Route::patch('/{payment}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])->name('markAsPaid');
     });
     

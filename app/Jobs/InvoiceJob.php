@@ -23,10 +23,10 @@ class InvoiceJob implements ShouldQueue
     public function handle()
     {
         // Ensure relationships are loaded
-        $this->timesheet->loadMissing(['details', 'contractor', 'project.contractors', 'project.client']);
+        $this->timesheet->loadMissing(['details', 'contractor', 'project.contractors', 'project.client' ]);
 
         $totalHours = $this->timesheet->details->sum('actual_hours');
-
+        $client_rate = $this->timesheet->project->client_rate;
         // Get rate from pivot table
         $pivotRate = $this->timesheet->project
             ->contractors()
@@ -38,6 +38,7 @@ class InvoiceJob implements ShouldQueue
             'details_count' => $this->timesheet->details->count(),
             'total_hours' => $totalHours,
             'contractor_rate' => $pivotRate,
+            'client_rate' => $client_rate,
         ]);
 
         // Avoid creating zero-value invoices
@@ -48,13 +49,21 @@ class InvoiceJob implements ShouldQueue
             return;
         }
 
+         // 🔒 Check if payment already exists for this timesheet
+        $alreadyExists = Payments::where('timesheet_id', $this->timesheet->id)->exists();
+
+        if ($alreadyExists) {
+            \Log::info('⚠️ Invoice already exists for timesheet ID: ' . $this->timesheet->id);
+            return;
+        }
+
         // Create payment
         Payments::create([
             'timesheet_id' => $this->timesheet->id,
             'contractor_id' => $this->timesheet->contractor_id,
             'client_id' => $this->timesheet->project->client_id ?? null,
             'contractor_paid' => $totalHours * $pivotRate,
-            'admin_received' => $totalHours * $pivotRate, // Adjust if admin fee logic changes
+            'admin_received' => $totalHours * $client_rate, // Adjust if admin fee logic changes
         ]);
 
         \Log::info('✅ Invoice created for timesheet ID: ' . $this->timesheet->id);
@@ -65,60 +74,3 @@ class InvoiceJob implements ShouldQueue
 
 
 
-// namespace App\Jobs;
-
-// use App\Models\Payment;
-// use Illuminate\Bus\Queueable;
-// use Illuminate\Contracts\Queue\ShouldQueue;
-// use Illuminate\Queue\InteractsWithQueue;
-// use Illuminate\Queue\SerializesModels;
-// use Illuminate\Foundation\Bus\Dispatchable;
-
-// class InvoiceJob implements ShouldQueue
-// {
-//     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
-
-//     protected $timesheet;
-
-//     public function __construct($timesheet)
-//     {
-//         $this->timesheet = $timesheet;
-//     }
-//     public function handle()
-//     {
-//         $this->timesheet->loadMissing(['details', 'contractor', 'project.client']);
-
-//         $totalHours = $this->timesheet->details->sum('actual_hours');
-//         $rate = $this->timesheet->contractor->rate ?? 0;
-
-//         Payment::create([
-//             'timesheet_id' => $this->timesheet->id,
-//             'contractor_id' => $this->timesheet->contractor_id,
-//             'client_id' => $this->timesheet->project->client_id ?? null,
-//             'contractor_paid' => $totalHours * $rate,
-//             'admin_received' => $totalHours * $rate, // You can modify this logic
-//         ]);
-//     }
-
-
-// }
-
-
-// public function handle()
-// {
-//     $contractor = $this->timesheet->contractor;
-//     $project = $this->timesheet->project;
-
-//     $totalHours = $this->timesheet->total_hours; // ✅ fixed
-//     $contractorRate = $contractor->rate;
-//     $billingAmount = $totalHours * $contractorRate;
-
-//     Payment::create([
-//         'timesheet_id' => $this->timesheet->id,
-//         'client_id' => $project->client_id,
-//         'contractor_id' => $contractor->id,
-//         'admin_received' => $billingAmount,
-//         'contractor_paid' => $billingAmount,
-//         'payment_date' => null,
-//     ]);
-// }

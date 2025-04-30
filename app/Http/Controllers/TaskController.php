@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 
 use App\Models\DailyTask;
 use App\Models\TimesheetDetail;
+use App\Models\Timesheet;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
@@ -29,6 +30,11 @@ class TaskController extends Controller
 
         TimesheetDetail::where('id', $timesheetDetailId)
             ->update(['actual_hours' => $totalHours]);
+
+        $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
+        $timesheet = Timesheet::find($timesheetDetail->timesheet_id);
+        $timesheet->total_hours = $timesheet->total_actual_hours;
+        $timesheet->save();
 
         return response()->json([
             'status' => 'success',
@@ -65,6 +71,11 @@ class TaskController extends Controller
         TimesheetDetail::where('id', $timesheetDetailId)
             ->update(['actual_hours' => $totalHours]);
 
+            $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
+            $timesheet = Timesheet::find($timesheetDetail->timesheet_id);
+            $timesheet->total_hours = $timesheet->total_actual_hours;
+            $timesheet->save();
+
         return response()->json([
             'status' => 'success',
             'message' => 'Task updated successfully',
@@ -90,6 +101,11 @@ class TaskController extends Controller
             // Update the timesheet_details table with new total hours
             TimesheetDetail::where('id', $timesheetDetailId)
                 ->update(['actual_hours' => $totalHours]);
+
+                $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
+                $timesheet = Timesheet::find($timesheetDetail->timesheet_id);
+                $timesheet->total_hours = $timesheet->total_actual_hours;
+                $timesheet->save();
 
             return response()->json([
                 'status' => 'success',
