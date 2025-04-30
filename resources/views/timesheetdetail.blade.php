@@ -38,7 +38,7 @@
                                 </th>
                                 <td>{{ \Carbon\Carbon::parse($detail->date)->format('Y-m-d') }}</td>
                                 <td data-detail-id="{{ $detail->id }}">
-                                    {{ $detail->actual_hours ?? 0 }} 
+                                    {{ $detail->actual_hours ?? 0 }}
                                     <span class="total-actual-hours"
                                         style="display: none;">{{ $detail->actual_hours ?? 0 }}</span>
                                 </td>
@@ -131,6 +131,19 @@
                     }
                 });
             }
+
+            function updateGrandTotal(timesheetId) {
+                $.ajax({
+                    url: `/timesheet/${timesheetId}/total-hours`,
+                    method: 'GET',
+                    success: function(response) {
+                        if (response.status === 'success') {
+                            $(`#grand-total-hours-${timesheetId}`).text(response.total_hours);
+                        }
+                    }
+                });
+            }
+
             // Load all existing tasks on page load
             $(".task-body").each(function() {
                 const taskBody = $(this);
@@ -227,7 +240,7 @@
                             const timesheetRow = $(`tr[data-detail-id="${timesheetDetailId}"]`);
                             timesheetRow.find("td:nth-child(3)").text(
                                 totalActualHours
-                                ); // Assuming the actual hours are in the 3rd column
+                            ); // Assuming the actual hours are in the 3rd column
                         } else {
                             alert("Error saving task!");
                         }
@@ -298,9 +311,10 @@
                             // Update the actual hours for the timesheet in the UI (you might want to update this value on the backend as well)
                             const timesheetRow = $(
                                 `tr[data-detail-id="${taskBody.closest(".nested-table").prev().data("detail-id")}"]`
-                                );
+                            );
                             timesheetRow.find("td:nth-child(3)").text(
-                            totalActualHours); // Assuming the actual hours are in the 3rd column
+                                totalActualHours
+                            ); // Assuming the actual hours are in the 3rd column
                         } else {
                             alert("Error deleting task!");
                         }
@@ -309,6 +323,11 @@
                         alert("An error occurred while deleting the task.");
                     }
                 });
+            });
+
+            $('#timesheet-table-body tr').each(function() {
+                const timesheetId = $(this).data('timesheet-id');
+                updateGrandTotal(timesheetId);
             });
 
         });

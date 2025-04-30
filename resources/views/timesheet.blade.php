@@ -238,7 +238,7 @@
                     </thead>
                     <tbody id="timesheet-table-body">
                         @foreach ($timesheets as $timesheet)
-                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}"
+                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}" data-timesheet-id="{{ $timesheet->id }}"
                                 data-date="{{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}"
                                 data-project="{{ $timesheet->project->name ?? '' }}"
                                 data-client="{{ $timesheet->project->client->firstname ?? '' }}"
@@ -254,9 +254,10 @@
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                     {{ $timesheet->status ?? 'N/A' }}
                                 </td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
+                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base" id="grand-total-hours-{{ $timesheet->id }}">
                                     {{ $timesheet->total_hours }}
                                 </td>
+                                
                                 {{-- <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
                                     {{ $timesheet->total_ot_hours }}
                                 </td> --}}
