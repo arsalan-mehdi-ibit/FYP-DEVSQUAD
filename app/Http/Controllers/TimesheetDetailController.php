@@ -58,7 +58,7 @@ class TimesheetDetailController extends Controller
     //         $totalHours = $timesheetDetail->tasks()->sum('actual_hours');
     //         return response()->json(['status' => 'success', 'total_hours' => $totalHours]);
     //     }
-    //     return response()->json(['status' => 'error', 'message' => 'Timesheet detail not found']);
+    //     return response()->json(['status' => 'error', 'message' => 'Timesheetdetail not found']);
     // }
 
 

@@ -27,16 +27,16 @@ class ProjectController extends Controller
     public function index(Request $request)
     {
         $pageTitle = "Projects";
-    
+
         // Initialize counts
         $activeProjectsCount = Project::whereIn('status', ['pending', 'in-progress'])->count();
         $adminsCount = User::where('role', 'admin')->count();
         $clientsCount = User::where('role', 'client')->count();
         $contractorsCount = User::where('role', 'contractor')->count();
-    
+
         // Start query
         $projectsQuery = Project::with('client');
-    
+
         // Role-based filtering
         if (Auth::user()->role == 'admin') {
             // Admin sees all projects
@@ -54,26 +54,26 @@ class ProjectController extends Controller
                 $query->where('users.id', $contractorId);
             });
         }
-    
+
         // Apply client filter if selected
         if ($request->clients) {
             $projectsQuery->whereIn('client_id', $request->clients);
         }
-    
+
         // Apply ordering and execute query
         $projects = $projectsQuery->orderBy('id', 'desc')->get();
-    
+
         // Handle AJAX
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('project', compact('pageTitle', 'projects', 'activeProjectsCount', 'adminsCount', 'clientsCount', 'contractorsCount'))->render(),
             ]);
         }
-    
+
         return view('project', compact('pageTitle', 'projects', 'activeProjectsCount', 'adminsCount', 'clientsCount', 'contractorsCount'));
     }
-    
-    
+
+
 
     /**
      * Show the form for creating a new project.
@@ -211,103 +211,103 @@ class ProjectController extends Controller
             $adminUsers = User::where('role', 'admin')->get(); // Modify this if you're using a roles table or package
 
 
-            
-        // Step 2: Create recent activity for each admin
-        foreach ($adminUsers as $admin) {
-            RecentActivity::create([
-                'title' => 'Project Created',
-                'description' => 'New project "' . $project->name . '" has been created.',
-                'parent_id' => $project->id,
-                'created_for' => 'project',
-                'user_id' => $admin->id, // Notify each admin
-                'created_by' => Auth::id(), // Logged-in user
-            ]);
-            notifications::create([
-                'parent_id' => $project->id,
-                'created_for' => 'project',
-                'user_id' => $admin->id,
-                'message' => 'New project "' . $project->name . '" has been created.',
-                'is_read' => 0, // By default, unread
-            ]);
-        }
 
-        // Recent Activity for the Client
-        if ($client) {
-            RecentActivity::create([
-                'title' => 'Project Assigned',
-                'description' => 'You have been assigned as a client for project "' . $project->name . '".',
-                'parent_id' => $project->id,
-                'created_for' => 'project',
-                'user_id' => $client->id,
-                'created_by' => Auth::id(),
-            ]);
-            notifications::create([
-                'parent_id' => $project->id,
-                'created_for' => 'project',
-                'user_id' => $client->id,
-                'message' => 'You have been assigned as a client for project "' . $project->name . '".',
-                'is_read' => 0, // Unread by default
-            ]);
-        }
-
-        // Recent Activity for the Consultant
-        if ($project->consultant_id) {
-            $consultant = User::find($project->consultant_id);
-            if ($consultant) {
+            // Step 2: Create recent activity for each admin
+            foreach ($adminUsers as $admin) {
                 RecentActivity::create([
-                    'title' => 'Project Assigned',
-                    'description' => 'You have been assigned as a consultant for project "' . $project->name . '".',
+                    'title' => 'Project Created',
+                    'description' => 'New project "' . $project->name . '" has been created.',
                     'parent_id' => $project->id,
                     'created_for' => 'project',
-                    'user_id' => $consultant->id,
+                    'user_id' => $admin->id, // Notify each admin
+                    'created_by' => Auth::id(), // Logged-in user
+                ]);
+                notifications::create([
+                    'parent_id' => $project->id,
+                    'created_for' => 'project',
+                    'user_id' => $admin->id,
+                    'message' => 'New project "' . $project->name . '" has been created.',
+                    'is_read' => 0, // By default, unread
+                ]);
+            }
+
+            // Recent Activity for the Client
+            if ($client) {
+                RecentActivity::create([
+                    'title' => 'Project Assigned',
+                    'description' => 'You have been assigned as a client for project "' . $project->name . '".',
+                    'parent_id' => $project->id,
+                    'created_for' => 'project',
+                    'user_id' => $client->id,
                     'created_by' => Auth::id(),
                 ]);
                 notifications::create([
                     'parent_id' => $project->id,
                     'created_for' => 'project',
-                    'user_id' => $consultant->id,
-                    'message' => 'You have been assigned as a consultant for project "' . $project->name . '".',
+                    'user_id' => $client->id,
+                    'message' => 'You have been assigned as a client for project "' . $project->name . '".',
                     'is_read' => 0, // Unread by default
                 ]);
             }
-        }
 
-        // Recent Activity for the Contractors
-       
-if (isset($validated['contractors']) && count($validated['contractors']) > 0) {
-    // Loop through the contractors (even though only one contractor is expected)
-    foreach ($validated['contractors'] as $contractor) {
-        // Fetch the contractor by ID
-        $contractorUser = User::find($contractor['contractor_id']); 
+            // Recent Activity for the Consultant
+            if ($project->consultant_id) {
+                $consultant = User::find($project->consultant_id);
+                if ($consultant) {
+                    RecentActivity::create([
+                        'title' => 'Project Assigned',
+                        'description' => 'You have been assigned as a consultant for project "' . $project->name . '".',
+                        'parent_id' => $project->id,
+                        'created_for' => 'project',
+                        'user_id' => $consultant->id,
+                        'created_by' => Auth::id(),
+                    ]);
+                    notifications::create([
+                        'parent_id' => $project->id,
+                        'created_for' => 'project',
+                        'user_id' => $consultant->id,
+                        'message' => 'You have been assigned as a consultant for project "' . $project->name . '".',
+                        'is_read' => 0, // Unread by default
+                    ]);
+                }
+            }
 
-        // Check if the contractor exists
-        if ($contractorUser) {
-            // Create recent activity for the assigned contractor
-            RecentActivity::create([
-                'title' => 'Project Assigned',
-                'description' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
-                'parent_id' => $project->id,
-                'created_for' => 'project',
-                'user_id' => $contractorUser->id,  // Notify only the assigned contractor
-                'created_by' => Auth::id(),  // Logged-in user who created the project
-            ]);
+            // Recent Activity for the Contractors
 
-            // Create notification for the assigned contractor
-            notifications::create([
-                'parent_id' => $project->id,
-                'created_for' => 'project',
-                'user_id' => $contractorUser->id,  // Notify only the assigned contractor
-                'message' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
-                'is_read' => 0,  // By default, unread
-            ]);
-        } else {
-            // Log or handle case where contractor does not exist
-            Log::warning('Contractor with ID ' . $contractor['contractor_id'] . ' not found.');
-        }
-    }
-}
+            if (isset($validated['contractors']) && count($validated['contractors']) > 0) {
+                // Loop through the contractors (even though only one contractor is expected)
+                foreach ($validated['contractors'] as $contractor) {
+                    // Fetch the contractor by ID
+                    $contractorUser = User::find($contractor['contractor_id']);
 
-      
+                    // Check if the contractor exists
+                    if ($contractorUser) {
+                        // Create recent activity for the assigned contractor
+                        RecentActivity::create([
+                            'title' => 'Project Assigned',
+                            'description' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
+                            'parent_id' => $project->id,
+                            'created_for' => 'project',
+                            'user_id' => $contractorUser->id,  // Notify only the assigned contractor
+                            'created_by' => Auth::id(),  // Logged-in user who created the project
+                        ]);
+
+                        // Create notification for the assigned contractor
+                        notifications::create([
+                            'parent_id' => $project->id,
+                            'created_for' => 'project',
+                            'user_id' => $contractorUser->id,  // Notify only the assigned contractor
+                            'message' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
+                            'is_read' => 0,  // By default, unread
+                        ]);
+                    } else {
+                        // Log or handle case where contractor does not exist
+                        Log::warning('Contractor with ID ' . $contractor['contractor_id'] . ' not found.');
+                    }
+                }
+            }
+
+
             // Dispatch the FillTimesheet job after project creation
             $this->triggerTimesheetJob($project);
 
@@ -396,19 +396,19 @@ if (isset($validated['contractors']) && count($validated['contractors']) > 0) {
         try {
             // Find the project to update
             $project = Project::findOrFail($id);
-    
+
             // Check if the name has changed
             if ($project->name !== $validated['name']) {
                 // Look for any soft-deleted project with the same name
                 $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
-    
+
                 if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
                     // If found, force delete the soft-deleted project
                     $trashed->forceDelete();
                 }
             }
-    
-         
+
+
             // Sync the contractors (remove previous and add new ones)
             if (isset($request->contractors)) {
                 $project->contractors()->detach(); // Remove existing contractors
@@ -425,17 +425,17 @@ if (isset($validated['contractors']) && count($validated['contractors']) > 0) {
 
             // Update the project with the new validated data
             $project->update($validated);
-             // ✅ Dispatch the FillTimesheet job
+            // ✅ Dispatch the FillTimesheet job
             $this->triggerTimesheetJob($project);
 
-        
+
             // Return a success message
             return redirect()->route('project.index')->with('project_updated', 'Project updated successfully.');
-    
-       } catch (\Exception $e) {
-           // Handle any errors during the update process
-           return back()->with('error', 'Whoops! Something went wrong, please try again.');
-       }
+
+        } catch (\Exception $e) {
+            // Handle any errors during the update process
+            return back()->with('error', 'Whoops! Something went wrong, please try again.');
+        }
 
         // Update the project
         $project->update($validated);
@@ -467,89 +467,89 @@ if (isset($validated['contractors']) && count($validated['contractors']) > 0) {
                 'created_by' => Auth::id(), // Logged-in user
             ]);
 
-    Notifications::create([
-        'parent_id' => $project->id,
-        'created_for' => 'project',
-        'user_id' => $admin->id,
-        'message' => 'Project "' . $project->name . '" has been updated.',
-        'is_read' => 0, // unread by default
-    ]);
-}
- // Recent Activity for the Client
- if ($client) {
-    RecentActivity::create([
-        'title' => 'Project Assigned',
-        'description' => 'You have been assigned as a client for project "' . $project->name . '".',
-        'parent_id' => $project->id,
-        'created_for' => 'project',
-        'user_id' => $client->id,
-        'created_by' => Auth::id(),
-    ]);
-    notifications::create([
-        'parent_id' => $project->id,
-        'created_for' => 'project',
-        'user_id' => $client->id,
-        'message' => 'You have been assigned as a client for project "' . $project->name . '".',
-        'is_read' => 0, // Unread by default
-    ]);
-}
+            Notifications::create([
+                'parent_id' => $project->id,
+                'created_for' => 'project',
+                'user_id' => $admin->id,
+                'message' => 'Project "' . $project->name . '" has been updated.',
+                'is_read' => 0, // unread by default
+            ]);
+        }
+        // Recent Activity for the Client
+        if ($client) {
+            RecentActivity::create([
+                'title' => 'Project Assigned',
+                'description' => 'You have been assigned as a client for project "' . $project->name . '".',
+                'parent_id' => $project->id,
+                'created_for' => 'project',
+                'user_id' => $client->id,
+                'created_by' => Auth::id(),
+            ]);
+            notifications::create([
+                'parent_id' => $project->id,
+                'created_for' => 'project',
+                'user_id' => $client->id,
+                'message' => 'You have been assigned as a client for project "' . $project->name . '".',
+                'is_read' => 0, // Unread by default
+            ]);
+        }
 
-// Recent Activity for the Consultant
-if ($project->consultant_id) {
-    $consultant = User::find($project->consultant_id);
-    if ($consultant) {
-        RecentActivity::create([
-            'title' => 'Project Assigned',
-            'description' => 'You have been assigned as a consultant for project "' . $project->name . '".',
-            'parent_id' => $project->id,
-            'created_for' => 'project',
-            'user_id' => $consultant->id,
-            'created_by' => Auth::id(),
-        ]);
-        notifications::create([
-            'parent_id' => $project->id,
-            'created_for' => 'project',
-            'user_id' => $consultant->id,
-            'message' => 'You have been assigned as a consultant for project "' . $project->name . '".',
-            'is_read' => 0, // Unread by default
-        ]);
-    }
-}
+        // Recent Activity for the Consultant
+        if ($project->consultant_id) {
+            $consultant = User::find($project->consultant_id);
+            if ($consultant) {
+                RecentActivity::create([
+                    'title' => 'Project Assigned',
+                    'description' => 'You have been assigned as a consultant for project "' . $project->name . '".',
+                    'parent_id' => $project->id,
+                    'created_for' => 'project',
+                    'user_id' => $consultant->id,
+                    'created_by' => Auth::id(),
+                ]);
+                notifications::create([
+                    'parent_id' => $project->id,
+                    'created_for' => 'project',
+                    'user_id' => $consultant->id,
+                    'message' => 'You have been assigned as a consultant for project "' . $project->name . '".',
+                    'is_read' => 0, // Unread by default
+                ]);
+            }
+        }
 
-// Recent Activity for the Contractors
+        // Recent Activity for the Contractors
 
-if (isset($validated['contractors']) && count($validated['contractors']) > 0) {
-// Loop through the contractors (even though only one contractor is expected)
-foreach ($validated['contractors'] as $contractor) {
-// Fetch the contractor by ID
-$contractorUser = User::find($contractor['contractor_id']); 
+        if (isset($validated['contractors']) && count($validated['contractors']) > 0) {
+            // Loop through the contractors (even though only one contractor is expected)
+            foreach ($validated['contractors'] as $contractor) {
+                // Fetch the contractor by ID
+                $contractorUser = User::find($contractor['contractor_id']);
 
-// Check if the contractor exists
-if ($contractorUser) {
-    // Create recent activity for the assigned contractor
-    RecentActivity::create([
-        'title' => 'Project Assigned',
-        'description' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
-        'parent_id' => $project->id,
-        'created_for' => 'project',
-        'user_id' => $contractorUser->id,  // Notify only the assigned contractor
-        'created_by' => Auth::id(),  // Logged-in user who created the project
-    ]);
+                // Check if the contractor exists
+                if ($contractorUser) {
+                    // Create recent activity for the assigned contractor
+                    RecentActivity::create([
+                        'title' => 'Project Assigned',
+                        'description' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
+                        'parent_id' => $project->id,
+                        'created_for' => 'project',
+                        'user_id' => $contractorUser->id,  // Notify only the assigned contractor
+                        'created_by' => Auth::id(),  // Logged-in user who created the project
+                    ]);
 
-    // Create notification for the assigned contractor
-    notifications::create([
-        'parent_id' => $project->id,
-        'created_for' => 'project',
-        'user_id' => $contractorUser->id,  // Notify only the assigned contractor
-        'message' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
-        'is_read' => 0,  // By default, unread
-    ]);
-} else {
-    // Log or handle case where contractor does not exist
-    Log::warning('Contractor with ID ' . $contractor['contractor_id'] . ' not found.');
-}
-}
-}
+                    // Create notification for the assigned contractor
+                    notifications::create([
+                        'parent_id' => $project->id,
+                        'created_for' => 'project',
+                        'user_id' => $contractorUser->id,  // Notify only the assigned contractor
+                        'message' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
+                        'is_read' => 0,  // By default, unread
+                    ]);
+                } else {
+                    // Log or handle case where contractor does not exist
+                    Log::warning('Contractor with ID ' . $contractor['contractor_id'] . ' not found.');
+                }
+            }
+        }
 
 
         // Redirect with success message

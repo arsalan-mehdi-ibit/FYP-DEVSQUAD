@@ -21,7 +21,7 @@
                         <th>SR</th>
                         <th>Date</th>
                         <th>Actual Hours</th>
-                        <th>OT Hours</th>
+                        {{-- <th>OT Hours</th> --}}
                         <th>Memo</th>
                     </tr>
                 </thead>
@@ -43,7 +43,7 @@
                                         style="display: none;">{{ $detail->actual_hours ?? 0 }}</span>
                                 </td>
 
-                                <td>{{ $detail->ot_hours ?? 0 }}</td>
+                                {{-- <td>{{ $detail->ot_hours ?? 0 }}</td> --}}
                                 <td>{{ $detail->memo ?? '-' }}</td>
                             </tr>
                             <tr class="nested-table hidden" id="taskTable{{ $index + 1 }}">
@@ -132,17 +132,17 @@
                 });
             }
 
-            function updateGrandTotal(timesheetId) {
-                $.ajax({
-                    url: `/timesheet/${timesheetId}/total-hours`,
-                    method: 'GET',
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            $(`#grand-total-hours-${timesheetId}`).text(response.total_hours);
-                        }
-                    }
-                });
-            }
+            // function updateGrandTotal(timesheetId) {
+            //     $.ajax({
+            //         url: `/timesheet/${timesheetId}/total-hours`,
+            //         method: 'GET',
+            //         success: function(response) {
+            //             if (response.status === 'success') {
+            //                 $(`#grand-total-hours-${timesheetId}`).text(response.total_hours);
+            //             }
+            //         }
+            //     });
+            // }
 
             // Load all existing tasks on page load
             $(".task-body").each(function() {
@@ -240,7 +240,10 @@
                             const timesheetRow = $(`tr[data-detail-id="${timesheetDetailId}"]`);
                             timesheetRow.find("td:nth-child(3)").text(
                                 totalActualHours
+
                             ); // Assuming the actual hours are in the 3rd column
+
+                            // updateGrandTotal(timesheetRow.data("timesheet-id"));
                         } else {
                             alert("Error saving task!");
                         }
@@ -315,6 +318,8 @@
                             timesheetRow.find("td:nth-child(3)").text(
                                 totalActualHours
                             ); // Assuming the actual hours are in the 3rd column
+                           
+                            // updateGrandTotal(timesheetRow.data("timesheet-id"));
                         } else {
                             alert("Error deleting task!");
                         }

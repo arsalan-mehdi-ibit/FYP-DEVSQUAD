@@ -84,7 +84,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/approve', [TimesheetController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [TimesheetController::class, 'reject'])->name('reject');
         // Route::get('/filter', [TimesheetController::class, 'filter'])->name('filter');
-        Route::get('/{timesheetDetailId}/total-actual-hours', [TimesheetController::class, 'getTotalActualHours']);
+        // Route::get('/{timesheetDetailId}/total-actual-hours', [TimesheetController::class, 'getTotalActualHours']);
+        Route::get('/{id}/total-hours', [TimesheetController::class, 'getTotalHours']);
 
 
     });
@@ -95,6 +96,8 @@ Route::middleware('auth')->group(function () {
         Route::put('/{taskId}', [TaskController::class, 'update'])->name('tasks.update');
         Route::delete('/{taskId}', [TaskController::class, 'destroy'])->name('tasks.destroy');
         Route::get('/', [TaskController::class, 'getTasks'])->name('tasks.index');
+        // Route::get('/timesheet/{id}/total-hours', [TaskController::class, 'getTotalHours']);
+
     });
 
 

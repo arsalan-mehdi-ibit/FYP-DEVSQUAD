@@ -254,8 +254,8 @@
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                     {{ $timesheet->status ?? 'N/A' }}
                                 </td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base" id="grand-total-hours-{{ $timesheet->id }}">
-                                    {{ $timesheet->total_hours }}
+                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
+                                    {{ $timesheet->total_actual_hours }}
                                 </td>
                                 
                                 {{-- <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">

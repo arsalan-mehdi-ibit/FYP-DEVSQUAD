@@ -227,231 +227,58 @@
 
 
 
+public function approve(Request $request, $id)
+{
+    $timesheet = Timesheet::with(['details', 'contractor', 'project.client'])->findOrFail($id);
 
+    if (!in_array(Auth::user()->role, ['admin', 'client'])) {
+        abort(403, 'Unauthorized');
+    }
 
-<script>
-    $(document).ready(function () {
-        const csrfToken = @json(csrf_token());
+    $timesheet->status = 'approved';
+    $timesheet->save();
 
-        // Fetch and render existing tasks
-        function loadTasksForTimesheetDetail(timesheetDetailId, taskBody) {
-            $.ajax({
-                url: `/timesheet/${timesheetDetailId}/tasks`,
-                method: 'GET',
-                success: function (response) {
-                    if (response.status === 'success') {
-                        taskBody.empty();
-                        response.data.forEach((task, index) => {
-                            const row = `
-                            <tr data-task-id="${task.id}">
-                                <td>${index + 1}</td>
-                                <td>${task.title}</td>
-                                <td>${task.description ?? ''}</td>
-                                <td>${task.actual_hours}</td>
-                                <td class="text-center">
-                                    <button class="edit-task px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                        <span class="bi bi-pencil text-black"></span>
-                                    </button>
-                                    <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                        <span class="bi bi-trash text-red-500"></span>
-                                    </button>
-                                </td>
-                            </tr>`;
-                            taskBody.append(row);
-                        });
-                        updateTotalActualHours(
-                            timesheetDetailId);
-                    }
-                }
-            });
-        }
+    // Dispatch the invoice creation job with all required relationships preloaded
+    InvoiceJob::dispatch($timesheet);
 
-        function updateTotalActualHours(timesheetDetailId) {
-            $.ajax({
-                url: `/timesheet/${timesheetDetailId}/total-actual-hours`, // Create this route in backend
-                method: 'GET',
-                success: function (response) {
-                    if (response.status === 'success') {
-                        $(`[data-detail-id="${timesheetDetailId}"]`).find(".total-actual-hours")
-                            .text(response.total_hours);
-                    }
-                }
-            });
-        }
+    // Send email to contractor
+    $contractor = $timesheet->contractor;
+    $project = $timesheet->project;
+    $client = $project->client;
+    $approver = Auth::user();
 
-        // Load all existing tasks on page load
-        $(".task-body").each(function () {
-            const taskBody = $(this);
-            const timesheetDetailId = taskBody.closest(".nested-table").prev().data("detail-id");
-            if (timesheetDetailId) {
-                loadTasksForTimesheetDetail(timesheetDetailId, taskBody);
-            }
-        });
+    $emailData = [
+        'contractor_name' => "{$contractor->firstname} {$contractor->lastname}",
+        'approver_name' => "{$approver->firstname} {$approver->lastname}",
+        'project_name' => $project->name,
+        'status' => 'approved',
+    ];
 
-        // Add Task Button
-        $(document).on("click", ".add-task", function () {
-            const taskBody = $(this).closest(".p-3").find(".task-body");
-            const nextSr = taskBody.find("tr").length + 1;
-            const newRow = `
-            <tr>
-                <td>${nextSr}</td>
-                <td><input type="text" class="form-control p-1 task-title" placeholder="Title"></td>
-                <td><input type="text" class="form-control p-1 task-desc" placeholder="Task description"></td>
-                <td><input type="number" class="form-control p-1 task-hours" placeholder="Hours"></td>
-                <td class="text-center">
-                    <button class="save-task bg-blue-900 text-white px-3 py-1 rounded-full">Save</button>
-                    <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                        <span class="bi bi-trash text-red-500"></span>
-                    </button>
-                </td>
-            </tr>`;
-            taskBody.append(newRow);
-        });
+    Mail::to($contractor->email)->send(new EmailSender(
+        "Timesheet Approved",
+        $emailData,
+        'emails.timesheet_status_email'
+    ));
 
-        // Save Task (Create or Update)
-        $(document).on("click", ".save-task", function () {
-            let row = $(this).closest("tr");
-            let title = row.find(".task-title").val();
-            let desc = row.find(".task-desc").val();
-            let hours = row.find(".task-hours").val();
-            let timesheetDetailId = row.closest(".nested-table").prev().data("detail-id");
+    // Define all users to notify (contractor, client, all admins)
+    $usersToNotify = collect([$contractor, $client])
+        ->merge(User::where('role', 'admin')->get())
+        ->filter(); // removes null users like missing client
 
-            // Get the task ID (if it's an existing task)
-            let taskId = row.attr('data-task-id'); // Use attr() to get task ID
+    foreach ($usersToNotify as $user) {
+        $description = $user->id === $contractor->id
+            ? 'Your timesheet for the project "' . $project->name . '" has been approved.'
+            : 'A contractor\'s timesheet for the project "' . $project->name . '" has been approved.';
 
-            // Make sure that the required fields are filled
-            if (!title || !hours) {
-                alert("Title and Hours are required!");
-                return;
-            }
+        RecentActivity::create([
+            'title' => 'Timesheet Approved',
+            'description' => $description,
+            'parent_id' => $timesheet->id,
+            'created_for' => 'timesheet',
+            'user_id' => $user->id,
+            'created_by' => $approver->id,
+        ]);
+    }
 
-            // Determine if it's an update or create
-            let url = taskId ?
-                `/timesheet/${timesheetDetailId}/tasks/${taskId}` // Update the task (correct URL)
-                :
-                `{{ route('tasks.store', ['timesheetDetailId' => ':timesheetDetailId']) }}`.replace(
-                    ':timesheetDetailId', timesheetDetailId); // Create a new task
-
-            let method = taskId ? "PUT" : "POST"; // Use PUT for update, POST for create
-
-            // Send AJAX request to save task
-            $.ajax({
-                url: url,
-                method: method,
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    timesheet_detail_id: timesheetDetailId,
-                    title: title,
-                    description: desc,
-                    actual_hours: hours,
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        // On success, update the row with the task data
-                        row.html(
-                            `<td>${row.index() + 1}</td>
-                        <td>${title}</td>
-                        <td>${desc}</td>
-                        <td>${hours}</td>
-                        <td class="text-center">
-                            <button class="edit-task px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                <span class="bi bi-pencil text-black"></span>
-                            </button>
-                            <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                <span class="bi bi-trash text-red-500"></span>
-                            </button>
-                        </td>`
-                        );
-
-                        // Remove task ID after update to avoid conflicts
-                        row.removeAttr('data-task-id');
-
-                        // Calculate total actual hours after saving the task and update the timesheet
-                        let totalActualHours = 0;
-                        row.closest(".task-body").find("tr").each(function () {
-                            totalActualHours += parseFloat($(this).find("td:nth-child(4)").text()) || 0;
-                        });
-
-                        // Update the actual hours for the timesheet in the UI (you might want to update this value on the backend as well)
-                        const timesheetRow = $(`tr[data-detail-id="${timesheetDetailId}"]`);
-                        timesheetRow.find("td:nth-child(3)").text(totalActualHours); // Assuming the actual hours are in the 3rd column
-                    } else {
-                        alert("Error saving task!");
-                    }
-                }
-            });
-        });
-
-        // Edit Task
-        $(document).on("click", ".edit-task", function () {
-            let row = $(this).closest("tr");
-            let title = row.find("td:nth-child(2)").text();
-            let desc = row.find("td:nth-child(3)").text();
-            let hours = row.find("td:nth-child(4)").text();
-            let taskId = row.data("task-id"); // Preserve this
-
-            // Clear the row and inject inputs (without replacing the row)
-            row.html(`
-            <td>${row.index() + 1}</td>
-            <td><input type="text" class="form-control p-1 task-title" value="${title}"></td>
-            <td><input type="text" class="form-control p-1 task-desc" value="${desc}"></td>
-            <td><input type="number" class="form-control p-1 task-hours" value="${hours}"></td>
-            <td class="text-center">
-                <button class="save-task bg-blue-900 text-white px-3 py-1 rounded-full">Save</button>
-                <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                    <span class="bi bi-trash text-red-500"></span>
-                </button>
-            </td>
-        `);
-
-            // Reattach task ID to the modified row
-            row.attr("data-task-id", taskId);
-        });
-
-        // Remove Task (from UI and backend)
-        $(document).on("click", ".remove-task", function () {
-            const row = $(this).closest("tr");
-            const taskBody = row.closest(".task-body");
-
-            // Get taskId to delete it from the backend
-            let taskId = row.data('task-id');
-
-            // Delete the task from the backend (AJAX request)
-            $.ajax({
-                url: `/timesheet/${taskBody.closest(".nested-table").prev().data("detail-id")}/tasks/${taskId}`,
-                method: 'DELETE',
-                data: {
-                    _token: "{{ csrf_token() }}",
-                },
-                success: function (response) {
-                    if (response.status === 'success') {
-                        // Remove the row from the frontend
-                        row.remove();
-
-                        // Reindex the remaining rows
-                        taskBody.find("tr").each(function (index) {
-                            $(this).find("td:first").text(index +
-                                1); // Update the SR column
-                        });
-
-                        // Update the actual hours after task removal
-                        let totalActualHours = 0;
-                        taskBody.find("tr").each(function () {
-                            totalActualHours += parseFloat($(this).find("td:nth-child(4)").text()) || 0;
-                        });
-
-                        // Update the actual hours for the timesheet in the UI (you might want to update this value on the backend as well)
-                        const timesheetRow = $(`tr[data-detail-id="${taskBody.closest(".nested-table").prev().data("detail-id")}"]`);
-                        timesheetRow.find("td:nth-child(3)").text(totalActualHours); // Assuming the actual hours are in the 3rd column
-                    } else {
-                        alert("Error deleting task!");
-                    }
-                },
-                error: function () {
-                    alert("An error occurred while deleting the task.");
-                }
-            });
-        });
-
-    });
-</script>
+    return back()->with('success', 'Timesheet approved successfully.');
+}

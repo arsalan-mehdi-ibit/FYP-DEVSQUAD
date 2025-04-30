@@ -116,19 +116,19 @@ class TaskController extends Controller
         ]);
     }
 
-    public function getTotalHours($timesheetId)
-    {
-        $totalHours = TimesheetDetail::where('timesheet_id', $timesheetId)
-            ->with('tasks')
-            ->get()
-            ->flatMap->tasks
-            ->sum('actual_hours');
+    // public function getTotalHours($timesheetId)
+    // {
+    //     $totalHours = TimesheetDetail::where('timesheet_id', $timesheetId)
+    //         ->with('tasks')
+    //         ->get()
+    //         ->flatMap->tasks
+    //         ->sum('actual_hours');
 
-        return response()->json([
-            'status' => 'success',
-            'total_hours' => $totalHours
-        ]);
-    }
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'total_hours' => $totalHours
+    //     ]);
+    // }
 
 
 }

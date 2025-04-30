@@ -34,5 +34,15 @@ class Timesheet extends Model
         return $this->belongsTo(User::class, 'client_id'); // or the correct FK
     }
 
+    public function details()
+{
+    return $this->hasMany(TimesheetDetail::class);
+}
+
+public function getTotalActualHoursAttribute()
+{
+    return $this->details()->sum('actual_hours');
+}
+
 }
 
