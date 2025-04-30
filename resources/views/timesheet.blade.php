@@ -176,7 +176,7 @@
                             </div>
                         </div>
                     </div>
-                @endif
+                    @endif
                 <!-- Status Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
@@ -218,11 +218,13 @@
                                 Status</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Total Hours</th>
-                           
+
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Project</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Contractor</th>
+                            @if (Auth::user()->role != 'client')
+                                <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                                    Contractor</th>
+                            @endif
                             @if (Auth::user()->role == 'admin' || Auth::user()->role == 'consultant')
                                 <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                     Client</th>
@@ -235,7 +237,8 @@
                     </thead>
                     <tbody id="timesheet-table-body">
                         @foreach ($timesheets as $timesheet)
-                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}" data-timesheet-id="{{ $timesheet->id }}"
+                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}"
+                                data-timesheet-id="{{ $timesheet->id }}"
                                 data-date="{{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}"
                                 data-project="{{ $timesheet->project->name ?? '' }}"
                                 data-client="{{ $timesheet->project->client->firstname ?? '' }}"
@@ -252,15 +255,18 @@
                                     {{ $timesheet->status ?? 'N/A' }}
                                 </td>
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
-                                   {{ $timesheet->total_actual_hours }}
+                                    {{ $timesheet->total_actual_hours }}
                                 </td>
-                                
+
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                     {{ $timesheet->project->name ?? 'N/A' }}
                                 </td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
-                                    {{ $timesheet->contractor->firstname ?? 'N/A' }}
-                                </td>
+                                @if (Auth::user()->role != 'client')
+                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
+                                        {{ $timesheet->contractor->firstname ?? 'N/A' }}
+                                    </td>
+                                @endif
+
                                 @if (Auth::user()->role == 'admin' || Auth::user()->role == 'consultant')
                                     <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                         {{ $timesheet->project->client->firstname ?? 'N/A' }}

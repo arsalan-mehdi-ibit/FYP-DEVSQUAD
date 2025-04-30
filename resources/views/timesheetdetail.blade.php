@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
+
     <div class="main-layout max-w-full mx-auto bg-white p-3 p-sm-2 shadow-lg rounded-lg">
         <h3 class="text-xl font-bold mb-4">Timesheets</h3>
 
@@ -44,7 +45,15 @@
                                 </td>
 
                                 {{-- <td>{{ $detail->ot_hours ?? 0 }}</td> --}}
-                                <td>{{ $detail->memo ?? '-' }}</td>
+                                <td @if (Auth::user()->role === 'contractor') contenteditable="true" @endif class="editable-memo"
+                                    data-id="{{ $detail->id }}"
+                                    data-url="{{ route('timesheet.details.memo.update', $detail->id) }}">
+                                    {{ $detail->memo ?? 'Click to add memo...' }}
+                                </td>
+
+
+
+
                             </tr>
                             <tr class="nested-table hidden" id="taskTable{{ $index + 1 }}">
                                 <td colspan="7">
@@ -182,7 +191,8 @@
                 let timesheetDetailId = row.closest(".nested-table").prev().data("detail-id");
 
                 // Get the task ID (if it's an existing task)
-                let taskId = row.attr('data-task-id'); // Use attr() to get task ID
+                // let taskId = row.attr('data-task-id'); // Use attr() to get task ID
+                const taskId = row.data('task-id'); // Properly preserved now
 
                 // Make sure that the required fields are filled
                 if (!title || !hours) {
@@ -226,10 +236,14 @@
                                     <span class="bi bi-trash text-red-500"></span>
                                 </button>
                             </td>`
-                            );
+                            ).attr('data-task-id', response.data
+                            .id); // Reattach updated task ID
 
-                            // Remove task ID after update to avoid conflicts
-                            row.removeAttr('data-task-id');
+                            // Set the task ID if it was just created
+                            // if (!taskId && response.task_id) {
+                            //     row.attr('data-task-id', response.task_id);
+                            // }
+
                             let totalActualHours = 0;
                             row.closest(".task-body").find("tr").each(function() {
                                 totalActualHours += parseFloat($(this).find(
@@ -271,10 +285,10 @@
                         <span class="bi bi-trash text-red-500"></span>
                     </button>
                 </td>
-            `);
+            `).attr("data-task-id", taskId); // Retain task ID
 
                 // Reattach task ID to the modified row
-                row.attr("data-task-id", taskId);
+                // row.attr("data-task-id", taskId);
 
             });
 
@@ -282,57 +296,96 @@
             $(document).on("click", ".remove-task", function() {
                 const row = $(this).closest("tr");
                 const taskBody = row.closest(".task-body");
+                const timesheetDetailId = taskBody.closest(".nested-table").prev().data("detail-id");
+                const taskId = row.data('task-id');
 
-                // Get taskId to delete it from the backend
-                let taskId = row.data('task-id');
-
-                // Delete the task from the backend (AJAX request)
-                $.ajax({
-                    url: `/timesheet/${taskBody.closest(".nested-table").prev().data("detail-id")}/tasks/${taskId}`,
-                    method: 'DELETE',
-                    data: {
-                        _token: "{{ csrf_token() }}",
-                    },
-                    success: function(response) {
-                        if (response.status === 'success') {
-                            // Remove the row from the frontend
-                            row.remove();
-
-                            // Reindex the remaining rows
-                            taskBody.find("tr").each(function(index) {
-                                $(this).find("td:first").text(index +
-                                    1); // Update the SR column
-                            });
-
-                            // Update the actual hours after task removal
-                            let totalActualHours = 0;
-                            taskBody.find("tr").each(function() {
-                                totalActualHours += parseFloat($(this).find(
-                                    "td:nth-child(4)").text()) || 0;
-                            });
-
-                            // Update the actual hours for the timesheet in the UI (you might want to update this value on the backend as well)
-                            const timesheetRow = $(
-                                `tr[data-detail-id="${taskBody.closest(".nested-table").prev().data("detail-id")}"]`
-                            );
-                            timesheetRow.find("td:nth-child(3)").text(
-                                totalActualHours
-                            ); // Assuming the actual hours are in the 3rd column
-                           
-                            // updateGrandTotal(timesheetRow.data("timesheet-id"));
-                        } else {
-                            alert("Error deleting task!");
+                // Case 1: If taskId is present, delete from backend
+                if (taskId) {
+                    $.ajax({
+                        url: `/timesheet/${timesheetDetailId}/tasks/${taskId}`,
+                        method: 'DELETE',
+                        data: {
+                            _token: "{{ csrf_token() }}",
+                        },
+                        success: function(response) {
+                            if (response.status === 'success') {
+                                row.remove();
+                                updateTaskUI(taskBody, timesheetDetailId);
+                            } else {
+                                alert("Error deleting task!");
+                            }
+                        },
+                        error: function() {
+                            alert("An error occurred while deleting the task.");
                         }
-                    },
-                    error: function() {
-                        alert("An error occurred while deleting the task.");
-                    }
-                });
+                    });
+                } else {
+                    // Case 2: Not saved in DB — just remove from DOM
+                    row.remove();
+                    updateTaskUI(taskBody, timesheetDetailId);
+                }
             });
+
+            // Helper to reindex SR and update total actual hours
+            function updateTaskUI(taskBody, timesheetDetailId) {
+                // Reindex SR column
+                taskBody.find("tr").each(function(index) {
+                    $(this).find("td:first").text(index + 1);
+                });
+
+                // Update actual hours
+                let totalActualHours = 0;
+                taskBody.find("tr").each(function() {
+                    totalActualHours += parseFloat($(this).find("td:nth-child(4)").text()) || 0;
+                });
+
+                const timesheetRow = $(`tr[data-detail-id="${timesheetDetailId}"]`);
+                timesheetRow.find("td:nth-child(3)").text(totalActualHours);
+            }
 
             $('#timesheet-table-body tr').each(function() {
                 const timesheetId = $(this).data('timesheet-id');
                 updateGrandTotal(timesheetId);
+            });
+
+            $(document).ready(function() {
+                $('.editable-memo').on('focus', function() {
+                    let $this = $(this);
+                    if ($this.text().trim() === 'Click to add memo...') {
+                        $this.text('');
+                    }
+                });
+
+                $('.editable-memo').on('blur', function() {
+                    let $this = $(this);
+                    let memo = $this.text().trim();
+                    let url = $this.data('url');
+
+                    if (memo === '') {
+                        $this.text('Click to add memo...');
+                        memo = null;
+                    }
+
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: JSON.stringify({
+                            memo: memo
+                        }),
+                        contentType: 'application/json',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (!response.success) {
+                                alert('Failed to update memo.');
+                            }
+                        },
+                        error: function() {
+                            alert('Something went wrong while saving the memo.');
+                        }
+                    });
+                });
             });
 
         });

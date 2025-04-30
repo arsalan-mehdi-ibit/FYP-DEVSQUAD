@@ -86,6 +86,8 @@ Route::middleware('auth')->group(function () {
         // Route::get('/filter', [TimesheetController::class, 'filter'])->name('filter');
         // Route::get('/{timesheetDetailId}/total-actual-hours', [TimesheetController::class, 'getTotalActualHours']);
         Route::get('/{id}/total-hours', [TimesheetController::class, 'getTotalHours']);
+        Route::post('/details/{id}/memo', [TimesheetDetailController::class, 'updateMemo'])->name('details.memo.update');
+
 
 
     });
