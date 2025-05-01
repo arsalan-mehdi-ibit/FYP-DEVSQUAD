@@ -2,6 +2,26 @@
 <html lang="en">
 
 <head>
+<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+<script>
+  window.OneSignalDeferred = window.OneSignalDeferred || [];
+  OneSignalDeferred.push(async function(OneSignal) {
+    await OneSignal.init({
+      appId: "06375bc5-04f9-4a40-b08b-c85ef8083a6c", // your app ID
+      notifyButton: {
+        enable: true, // optional, shows a bell icon
+      },
+      serviceWorkerPath: 'OneSignalSDKWorker.js',
+      serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
+      allowLocalhostAsSecureOrigin: true, // for local testing
+    });
+
+    @auth
+      OneSignal.sendTag("user_id", "{{ auth()->id() }}"); // tag logged in user
+    @endauth
+  });
+</script>
+
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('img/apple-icon.png') }}">
