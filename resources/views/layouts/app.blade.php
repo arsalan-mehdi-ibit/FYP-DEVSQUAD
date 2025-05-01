@@ -537,6 +537,31 @@
                 $(this).closest('span').remove();
             });
 
+
+
+            // $('#toggleFilters').on('click', function() {
+            //     $('#filtersContent').slideToggle();
+            //     const isVisible = $('#filtersContent').is(':visible');
+            //     $(this).text(isVisible ? 'Hide Filters' : 'Show Filters');
+            // });
+
+            // // Optional: Toggle dropdowns individually (click outside to close can be added)
+            // $('.relative > button').on('click', function(e) {
+            //     $(this).siblings('div').toggle();
+            //     $('.relative > div').not($(this).siblings('div')).hide();
+            //     e.stopPropagation();
+            // });
+
+            // $(document).on('click', function() {
+            //     $('.relative > div').hide();
+            // });
+
+            $('#toggleFilters').click(function () {
+            $('#filterSection').toggleClass('hidden');
+            $(this).text(function (i, text) {
+                return text === "Filters" ? " Filters" : "Filters";
+            });
+        });
         });
     </script>
 </body>

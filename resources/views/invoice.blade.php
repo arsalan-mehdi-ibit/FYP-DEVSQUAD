@@ -71,6 +71,15 @@
 
         <!-- Filters Wrapper -->
         <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between mb-4 mt-4">
+
+             <!-- Mobile Toggle Button -->
+             <div class="flex justify-between items-center md:hidden bg-white p-3 rounded-md shadow-sm">
+                <span class="text-gray-700 font-semibold text-sm">Filter By</span>
+                <button id="toggleFilters" class="text-sm text-black hover:underline">
+                    Show Filters
+                </button>
+            </div>
+
             <div class="flex flex-col" style="max-width: 450px !important;">
                 <span class="text-gray-500 font-semibold text-xs mb-2">Filters:</span>
                 <div id="applied-filters" class="flex flex-wrap gap-2">
@@ -78,136 +87,149 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm">
+            <div id="filterSection" class="hidden md:flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm">
 
-                <div class="flex items-center text-gray-700 text-sm font-semibold mr-2">
+                <div class="flex items-center text-gray-700 text-sm font-semibold mr-2 mb-1">
                     <i class="bi bi-funnel-fill mr-1 text-gray-600"></i>
                     Filter By
                 </div>
-                <!-- Timesheet Filter -->
-                <div class="relative filter-dropdown">
-                    <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
-                        Timesheet
-                        <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                    </button>
-                    <div
-                        class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                        <div class="py-2 max-h-60 overflow-y-auto">
-                            @foreach ($allInvoices->unique(function ($item) {
+                <div class="flex flex-wrap gap-2 sm:gap-3">
+                    <!-- Timesheet Filter -->
+                    <div class="relative filter-dropdown">
+                        <button type="button"
+                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md 
+           px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm 
+           hover:bg-gray-200">
+                            Timesheet
+                            <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        </button>
+                        <div
+                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-2 max-h-60 overflow-y-auto">
+                                @foreach ($allInvoices->unique(function ($item) {
             return $item->timesheet->week_start_date . $item->timesheet->week_end_date;
         }) as $invoice)
-                                <div class="flex items-center px-3 py-1 hover:bg-gray-50">
-                                    <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                        name="timesheets[]"
-                                        value="{{ $invoice->timesheet->week_start_date }} - {{ $invoice->timesheet->week_end_date }}">
-                                    <label class="ml-3 mt-1 text-gray-700"  style="font-size: 13px;">
-                                        {{ \Carbon\Carbon::parse($invoice->timesheet->week_start_date)->format('M d, Y') }}
-                                        -
-                                        {{ \Carbon\Carbon::parse($invoice->timesheet->week_end_date)->format('M d, Y') }}
-                                    </label>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
-                </div>
-
-                @if (Auth::user()->role == 'admin')
-                    <!-- Client Filter -->
-                    <div class="relative filter-dropdown">
-                        <button type="button"
-                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
-                            Client
-                            <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                        </button>
-                        <div
-                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                            <div class="py-2 max-h-60 overflow-y-auto">
-                                @foreach ($allInvoices->unique('client_id') as $invoice)
-                                    @if ($invoice->client)
-                                        <div class="flex items-center px-3 py-1 hover:bg-gray-50">
-                                            <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                                name="clients[]" value="{{ $invoice->client->id }}">
-                                            <label class="ml-3 mt-1 text-sm text-gray-700">
-                                                {{ $invoice->client->firstname }}
-                                            </label>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Contractor Filter -->
-                    <div class="relative filter-dropdown">
-                        <button type="button"
-                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
-                            Contractor
-                            <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                        </button>
-                        <div
-                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                            <div class="py-2 max-h-60 overflow-y-auto">
-                                @foreach ($allInvoices->unique('contractor_id') as $invoice)
-                                    @if ($invoice->contractor)
-                                        <div class="flex items-center px-3 py-1 hover:bg-gray-50">
-                                            <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                                name="contractors[]" value="{{ $invoice->contractor->id }}">
-                                            <label class="ml-3 mt-1 text-sm text-gray-700">
-                                                {{ $invoice->contractor->firstname }} {{ $invoice->contractor->lastname }}
-                                            </label>
-                                        </div>
-                                    @endif
-                                @endforeach
-                            </div>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Project Filter -->
-                <div class="relative filter-dropdown">
-                    <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
-                        Project
-                        <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                    </button>
-                    <div
-                        class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                        <div class="py-2 max-h-60 overflow-y-auto">
-                            @foreach ($allInvoices->unique('timesheet.project_id') as $invoice)
-                                @if ($invoice->timesheet && $invoice->timesheet->project)
                                     <div class="flex items-center px-3 py-1 hover:bg-gray-50">
                                         <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                            name="projects[]" value="{{ $invoice->timesheet->project->id }}">
-                                        <label class="ml-3 mt-1 text-sm text-gray-700">
-                                            {{ $invoice->timesheet->project->name }}
+                                            name="timesheets[]"
+                                            value="{{ $invoice->timesheet->week_start_date }} - {{ $invoice->timesheet->week_end_date }}">
+                                        <label class="ml-3 mt-1 text-gray-700" style="font-size: 13px;">
+                                            {{ \Carbon\Carbon::parse($invoice->timesheet->week_start_date)->format('M d, Y') }}
+                                            -
+                                            {{ \Carbon\Carbon::parse($invoice->timesheet->week_end_date)->format('M d, Y') }}
                                         </label>
                                     </div>
-                                @endif
-                            @endforeach
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <!-- Status Filter -->
-                <div class="relative filter-dropdown">
-                    <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
-                        Status
-                        <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                    </button>
-                    <div
-                        class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                        <div class="py-2">
-                            <div class="flex items-center px-3 py-1 hover:bg-gray-50">
-                                <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600" name="statuses[]"
-                                    value="paid">
-                                <label class="ml-3 mt-1 text-sm text-gray-700">Paid</label>
+                    @if (Auth::user()->role == 'admin')
+                        <!-- Client Filter -->
+                        <div class="relative filter-dropdown">
+                            <button type="button"
+                                class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md 
+           px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm 
+           hover:bg-gray-200">
+                                Client
+                                <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                            </button>
+                            <div
+                                class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                                <div class="py-2 max-h-60 overflow-y-auto">
+                                    @foreach ($allInvoices->unique('client_id') as $invoice)
+                                        @if ($invoice->client)
+                                            <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                                <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                                    name="clients[]" value="{{ $invoice->client->id }}">
+                                                <label class="ml-3 mt-1 text-sm text-gray-700">
+                                                    {{ $invoice->client->firstname }}
+                                                </label>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
                             </div>
-                            <div class="flex items-center px-3 py-1 hover:bg-gray-50">
-                                <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600" name="statuses[]"
-                                    value="unpaid">
-                                <label class="ml-3 mt-1 text-sm text-gray-700">Unpaid</label>
+                        </div>
+
+                        <!-- Contractor Filter -->
+                        <div class="relative filter-dropdown">
+                            <button type="button"
+                                class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md 
+           px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm 
+           hover:bg-gray-200">
+                                Contractor
+                                <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                            </button>
+                            <div
+                                class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                                <div class="py-2 max-h-60 overflow-y-auto">
+                                    @foreach ($allInvoices->unique('contractor_id') as $invoice)
+                                        @if ($invoice->contractor)
+                                            <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                                <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                                    name="contractors[]" value="{{ $invoice->contractor->id }}">
+                                                <label class="ml-3 mt-1 text-sm text-gray-700">
+                                                    {{ $invoice->contractor->firstname }}
+                                                    {{ $invoice->contractor->lastname }}
+                                                </label>
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    @endif
+
+                    <!-- Project Filter -->
+                    <div class="relative filter-dropdown">
+                        <button type="button"
+                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md 
+           px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm 
+           hover:bg-gray-200">
+                            Project
+                            <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        </button>
+                        <div
+                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-2 max-h-60 overflow-y-auto">
+                                @foreach ($allInvoices->unique('timesheet.project_id') as $invoice)
+                                    @if ($invoice->timesheet && $invoice->timesheet->project)
+                                        <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                            <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                                name="projects[]" value="{{ $invoice->timesheet->project->id }}">
+                                            <label class="ml-3 mt-1 text-sm text-gray-700">
+                                                {{ $invoice->timesheet->project->name }}
+                                            </label>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Filter -->
+                    <div class="relative filter-dropdown">
+                        <button type="button"
+                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md 
+           px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm 
+           hover:bg-gray-200">
+                            Status
+                            <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        </button>
+                        <div
+                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-2">
+                                <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                    <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                        name="statuses[]" value="paid">
+                                    <label class="ml-3 mt-1 text-sm text-gray-700">Paid</label>
+                                </div>
+                                <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                    <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                        name="statuses[]" value="unpaid">
+                                    <label class="ml-3 mt-1 text-sm text-gray-700">Unpaid</label>
+                                </div>
                             </div>
                         </div>
                     </div>

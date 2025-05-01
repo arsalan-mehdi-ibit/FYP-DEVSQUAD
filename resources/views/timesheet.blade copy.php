@@ -442,3 +442,161 @@
         });
     </script>
 @endsection
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Filters Wrapper -->
+<div class="w-full mb-4 mt-4">
+    <!-- Filter Heading (Mobile Toggle) -->
+    <div class="flex justify-between items-center md:hidden bg-white p-3 rounded-md shadow-sm">
+        <span class="text-gray-700 font-semibold text-sm">Filter By</span>
+        <button id="toggleFilters" class="text-sm text-blue-600 hover:underline">
+            Show Filters
+        </button>
+    </div>
+
+    <!-- Filters Content -->
+    <div id="filtersContent" class="hidden md:flex md:flex-row md:justify-between md:items-start w-full gap-4 mt-2">
+        <!-- Left: Applied Filters -->
+        <div class="flex flex-col w-full md:max-w-xs mb-4 md:mb-0">
+            <span class="text-gray-500 font-semibold text-xs mb-2">Filters:</span>
+            <div id="applied-filters" class="flex flex-wrap gap-2">
+                <!-- Dynamic filter badges will appear here -->
+            </div>
+        </div>
+
+        <!-- Right: Filters -->
+        <div class="flex flex-col sm:flex-row sm:flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm w-full md:w-auto">
+
+            <!-- Date Filter -->
+            <div class="relative">
+                <button type="button"
+                    class="flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200">
+                    Date <i class="bi bi-caret-down-fill ml-1"></i>
+                </button>
+                <div class="hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2 max-h-60 overflow-y-auto">
+                        @foreach ($dates as $timesheet)
+                            <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                <input type="checkbox" class="form-checkbox text-blue-600"
+                                    name="dates[]"
+                                    value="{{ $timesheet->week_start_date }} - {{ $timesheet->week_end_date }}">
+                                <label class="ml-3 text-sm text-gray-700">
+                                    {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }}
+                                    -
+                                    {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Project Filter -->
+            <div class="relative">
+                <button type="button"
+                    class="flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200">
+                    Project <i class="bi bi-caret-down-fill ml-1"></i>
+                </button>
+                <div class="hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2 max-h-60 overflow-y-auto">
+                        @foreach ($projects as $item)
+                            @if ($item->project)
+                                <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                    <input type="checkbox" class="form-checkbox text-blue-600"
+                                        name="projects[]" value="{{ $item->project->id }}">
+                                    <label class="ml-3 text-sm text-gray-700">{{ $item->project->name }}</label>
+                                </div>
+                            @endif
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+            @if (in_array(Auth::user()->role, ['admin', 'consultant']))
+                <!-- Client Filter -->
+                <div class="relative">
+                    <button type="button"
+                        class="flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200">
+                        Client <i class="bi bi-caret-down-fill ml-1"></i>
+                    </button>
+                    <div class="hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                        <div class="py-2 max-h-60 overflow-y-auto">
+                            @foreach ($clients as $item)
+                                @if ($item->project && $item->project->client)
+                                    <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                        <input type="checkbox" class="form-checkbox text-blue-600"
+                                            name="clients[]" value="{{ $item->project->client->id }}">
+                                        <label class="ml-3 text-sm text-gray-700">
+                                            {{ $item->project->client->firstname }}
+                                        </label>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contractor Filter -->
+                <div class="relative">
+                    <button type="button"
+                        class="flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200">
+                        Contractor <i class="bi bi-caret-down-fill ml-1"></i>
+                    </button>
+                    <div class="hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                        <div class="py-2 max-h-60 overflow-y-auto">
+                            @foreach ($contractors as $item)
+                                @if ($item->contractor)
+                                    <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                        <input type="checkbox" class="form-checkbox text-blue-600"
+                                            name="contractors[]" value="{{ $item->contractor->id }}">
+                                        <label class="ml-3 text-sm text-gray-700">
+                                            {{ $item->contractor->firstname }}
+                                        </label>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            <!-- Status Filter -->
+            <div class="relative">
+                <button type="button"
+                    class="flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200">
+                    Status <i class="bi bi-caret-down-fill ml-1"></i>
+                </button>
+                <div class="hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                    <div class="py-2 max-h-60 overflow-y-auto">
+                        @foreach (['pending', 'submitted', 'approved', 'rejected', 'in_progress'] as $status)
+                            <div class="flex items-center px-3 py-1 hover:bg-gray-50">
+                                <input type="checkbox" class="form-checkbox text-blue-600"
+                                    name="statuses[]" value="{{ $status }}">
+                                <label class="ml-3 text-sm text-gray-700 capitalize">
+                                    {{ str_replace('_', ' ', $status) }}
+                                </label>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>

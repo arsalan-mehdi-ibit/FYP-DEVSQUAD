@@ -30,14 +30,15 @@ class DashboardController extends Controller
     {
         $projectId = $request->input('project_id');
 
-        $query = TimesheetDetail::with('timesheet')  // eager load to avoid N+1
-            ->whereYear('date', now()->year);
+        $query = TimesheetDetail::with('timesheet')
+        ->whereYear('date', now()->year)
+        ->whereHas('timesheet', function ($q) use ($projectId) {
+            $q->where('status', 'approved'); // ✅ only approved timesheets
 
-        if ($projectId && $projectId !== 'all') {
-            $query->whereHas('timesheet', function ($q) use ($projectId) {
+            if ($projectId && $projectId !== 'all') {
                 $q->where('project_id', $projectId);
-            });
-        }
+            }
+        });
 
         $monthlyHours = $query->selectRaw('MONTH(date) as month, SUM(actual_hours) as total_hours')
             ->groupBy('month')

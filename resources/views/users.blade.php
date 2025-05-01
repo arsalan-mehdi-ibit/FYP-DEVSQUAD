@@ -29,7 +29,8 @@
                     <h3 class="text-base sm:text-lg font-semibold text-gray-600">All Users </h3>
                 </div>
                 <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $adminCount + $clientCount + $contractorCount + $consultantCount }} Users</p>
+                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">
+                        {{ $adminCount + $clientCount + $contractorCount + $consultantCount }} Users</p>
                     <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
                         34.4%</span>
                 </div>
@@ -83,6 +84,15 @@
 
         <!-- Filters Wrapper -->
         <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between mb-4 mt-4 ">
+
+            <!-- Mobile Toggle Button -->
+            <div class="flex justify-between items-center md:hidden bg-white p-3 rounded-md shadow-sm">
+                <span class="text-gray-700 font-semibold text-sm">Filter By</span>
+                <button id="toggleFilters" class="text-sm text-black hover:underline">
+                    Show Filters
+                </button>
+            </div>
+
             <!-- Left side: Filter label and active filters -->
             <div class="flex flex-col" style="max-width: 550px !important;">
                 <span class="text-gray-500 font-semibold text-xs mb-2">Filters:</span>
@@ -92,7 +102,8 @@
             </div>
 
             <!-- Right side: Filter dropdown -->
-            <div class="flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm" style="margin-right: 130px">
+            <div id="filterSection" class="hidden md:flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm"
+                style="margin-right: 130px">
 
                 <div class="flex items-center text-gray-700 text-sm font-semibold mr-2">
                     <i class="bi bi-funnel-fill mr-1 text-gray-600"></i>
@@ -101,7 +112,9 @@
 
                 <div class="relative filter-dropdown">
                     <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-xs hover:bg-gray-200 focus:outline-none">
+                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md 
+           px-2 py-1 text-xs sm:px-3 sm:py-2 sm:text-sm 
+           hover:bg-gray-200 ">
                         Role <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
                     </button>
                     <div
@@ -110,9 +123,9 @@
                             @foreach (['admin', 'client', 'consultant', 'contractor'] as $role)
                                 <div class="flex items-center px-3 py-0 hover:bg-gray-50">
                                     <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                        name="roles[]"  value="{{ $role }}">
-                                    <label
-                                        class="ml-3 mt-1 text-sm text-gray-700 capitalize"> {{ str_replace('_', ' ', $role) }}</label>
+                                        name="roles[]" value="{{ $role }}">
+                                    <label class="ml-3 mt-1 text-sm text-gray-700 capitalize">
+                                        {{ str_replace('_', ' ', $role) }}</label>
                                 </div>
                             @endforeach
                         </div>
