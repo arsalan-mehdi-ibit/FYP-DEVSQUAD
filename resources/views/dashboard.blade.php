@@ -66,64 +66,33 @@
                 </div>
             </div>
 
-            <div class="space-y-4 overflow-y-auto  divide-y divide-gray-200">
-                <div class="p-2 bg-gray-50 rounded-md">
-                    <div class="flex justify-between items-center text-xs text-gray-500 px-2">
-                        <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">PROJECT</span>
-                        <span>November 21, 2024</span>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-800 px-2 mt-2 mb-2">Project Updated!</p>
-                    <p class="text-sm text-gray-800 px-2">
-                        Project 'Noelani Shaw' in company 'Poole Beasley Plc' updated by Tech Bugss.
-                        Start Date: 2024-11-21, End Date: 2024-11-26.
-                    </p>
-                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
-                        <span class="font-normal text-gray-500">Tech Bugss</span>
-                    </p>
-                    <p class="text-xs text-black font-semibold px-2">Company:
-                        <span class="font-normal text-gray-500">Poole Beasley Plc</span>
-                    </p>
-                </div>
-
-                <div class="p-2 bg-gray-50 rounded-md">
-                    <div class="flex justify-between items-center text-xs text-gray-500 px-2">
-                        <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">PROJECT</span>
-                        <span>November 21, 2024</span>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-800 mt-2 mb-2 px-2">Project Updated!</p>
-                    <p class="text-sm text-gray-800 px-2">
-                        Project 'Noelani Shaw' in company 'Poole Beasley Plc' updated by Tech Bugss.
-                        Start Date: 2024-11-21, End Date: 2024-11-26.
-                    </p>
-                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
-                        <span class="font-normal text-gray-500">Tech Bugss</span>
-                    </p>
-                    <p class="text-xs text-black font-semibold px-2">Company:
-                        <span class="font-normal text-gray-500">Poole Beasley Plc</span>
-                    </p>
-                </div>
-
-                <div class="p-2 bg-gray-50 rounded-md">
-                    <div class="flex justify-between items-center text-xs text-gray-500 px-2">
-                        <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">PROJECT</span>
-                        <span>November 21, 2024</span>
-                    </div>
-                    <p class="text-sm font-semibold text-gray-800 mt-2 mb-2 px-2">Project Updated!</p>
-                    <p class="text-sm text-gray-800 px-2">
-                        Project 'Noelani Shaw' in company 'Poole Beasley Plc' updated by Tech Bugss.
-                        Start Date: 2024-11-21, End Date: 2024-11-26.
-                    </p>
-                    <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
-                        <span class="font-normal text-gray-500">Tech Bugss</span>
-                    </p>
-                    <p class="text-xs text-black font-semibold px-2">Company:
-                        <span class="font-normal text-gray-500">Poole Beasley Plc</span>
-                    </p>
-                </div>
+            <div class="space-y-4 overflow-y-auto divide-y divide-gray-200">
+    @forelse ($activities as $activity)
+    <div class="p-2 bg-gray-50 rounded-md">
+        <div class="flex justify-between items-center text-xs text-gray-500 px-2">
+            <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">
+                {{ strtoupper($activity->created_for ?? 'ACTIVITY') }}
+            </span>
+                <span>{{ \Carbon\Carbon::parse($activity->created_at)->format('F d, Y') }}</span>
             </div>
-        </div>
-    </div>
+            <p class="text-sm font-semibold text-gray-800 px-2 mt-2 mb-2">
+                {{ $activity->title ?? 'Activity Performed' }}
+            </p>
+            <p class="text-sm text-gray-800 px-2">
+                {{ $activity->description }}
+            </p>
+            <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
+    <span class="font-normal text-gray-500">
+        {{ trim("{$activity->creator->firstname} {$activity->creator->lastname}") ?: 'N/A' }}
+    </span>
+</p>
 
+
+        </div>
+    @empty
+        <div class="p-2 text-gray-500 text-sm text-center">No recent activity found.</div>
+    @endforelse
+</div>
     <script>
         $(document).ready(function() {
             const ctx = document.getElementById('hoursChart').getContext('2d');

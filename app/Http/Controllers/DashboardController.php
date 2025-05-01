@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\RecentActivity;
+use Illuminate\Support\Facades\Auth;
 use App\Models\TimesheetDetail;
 use App\Models\Project;
 
@@ -21,10 +23,16 @@ class DashboardController extends Controller
         $contractorCount = User::where('role', 'contractor')->count();
         $projects = Project::all();
         $pageTitle = "Dashboard";
-
-        // Pass the counts to the view
-        return view('dashboard', compact('pageTitle', 'adminCount', 'consultantCount', 'clientCount', 'contractorCount','projects'));
-    }
+  
+    // Fetch recent activities using RecentActivity model
+    $activities = RecentActivity::with('creator') 
+    ->where('user_id', Auth::id())  // Filtering by user_id
+    ->latest()
+    ->take(10)
+    ->get();
+    // Pass the counts to the view
+    return view('dashboard', compact('pageTitle', 'adminCount', 'consultantCount', 'clientCount', 'contractorCount', 'activities','projects'));
+}
 
     public function getMonthlyHours(Request $request)
     {
