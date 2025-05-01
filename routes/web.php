@@ -87,6 +87,9 @@ Route::middleware('auth')->group(function () {
         // Route::get('/{timesheetDetailId}/total-actual-hours', [TimesheetController::class, 'getTotalActualHours']);
         Route::get('/{id}/total-hours', [TimesheetController::class, 'getTotalHours']);
         Route::post('/details/{id}/memo', [TimesheetDetailController::class, 'updateMemo'])->name('details.memo.update');
+        Route::get('/export-all', [TimesheetController::class, 'exportAllToPdf'])->name('export.all');
+
+
 
 
 

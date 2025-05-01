@@ -13,6 +13,7 @@ use App\Models\RecentActivity;
 use App\Models\Notifications;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 
 class TimesheetController extends Controller
@@ -35,8 +36,8 @@ class TimesheetController extends Controller
         $approvedCount = Timesheet::where('status', 'approved')->count();
         $rejectedCount = Timesheet::where('status', 'rejected')->count();
         $pendingApprovalCount = Timesheet::where('status', 'pending')
-        ->whereNotNull('submitted_at')
-        ->count();
+            ->whereNotNull('submitted_at')
+            ->count();
 
         $dates = Timesheet::select('week_start_date')
             ->distinct()
@@ -380,6 +381,60 @@ class TimesheetController extends Controller
             }
         }
         return back()->with('success', 'Timesheet rejected successfully.');
+    }
+
+    public function exportAllToPdf()
+    {
+        $query = Timesheet::with(['project.client', 'contractor']);
+
+        if (Auth::user()->role == 'admin') {
+            $query->orderByRaw("
+                CASE 
+                    WHEN status = 'submitted' THEN 1
+                    WHEN status = 'pending' THEN 2
+                    WHEN status = 'rejected' THEN 3
+                    WHEN status = 'approved' THEN 4
+                    ELSE 5
+                END
+            ")->orderByDesc('submitted_at')
+                ->orderByDesc('updated_at');
+
+        } elseif (Auth::user()->role == 'client') {
+            $projectIds = Project::where('client_id', Auth::id())->pluck('id');
+            $query->whereIn('project_id', $projectIds)
+                ->orderByRaw("
+                      CASE 
+                          WHEN status = 'submitted' THEN 1
+                          WHEN status = 'pending' THEN 2
+                          WHEN status = 'rejected' THEN 3
+                          WHEN status = 'approved' THEN 4
+                          ELSE 5
+                      END
+                  ")->orderByDesc('submitted_at')
+                ->orderByDesc('updated_at');
+
+        } elseif (Auth::user()->role == 'contractor') {
+            $query->where('contractor_id', Auth::id())
+                ->orderByRaw("
+                      CASE 
+                          WHEN status = 'rejected' THEN 1
+                          WHEN status = 'pending' THEN 2
+                          WHEN status = 'submitted' THEN 3
+                          WHEN status = 'approved' THEN 4
+                          ELSE 5
+                      END
+                  ")->orderByDesc('submitted_at')
+                ->orderByDesc('updated_at');
+
+        } else {
+            $query->orderBy('week_start_date', 'asc');
+        }
+
+        $timesheets = $query->get();
+
+        $pdf = Pdf::loadView('pdf.timesheet', compact('timesheets'));
+
+        return $pdf->download('Timesheets.pdf');
     }
 
     // public function getTotalActualHours($timesheetDetailId)

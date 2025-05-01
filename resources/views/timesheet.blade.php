@@ -139,8 +139,8 @@
                             class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
                             <div class="py-2 max-h-60 overflow-y-auto">
                                 @foreach ($timesheets->unique(function ($item) {
-                            return $item->project ? $item->project->client_id : null;
-                        }) as $timesheet)
+            return $item->project ? $item->project->client_id : null;
+        }) as $timesheet)
                                     @if ($timesheet->project && $timesheet->project->client)
                                         <div class="flex items-center px-3 py-0 hover:bg-gray-50">
                                             <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
@@ -176,7 +176,7 @@
                             </div>
                         </div>
                     </div>
-                    @endif
+                @endif
                 <!-- Status Filter -->
                 <div class="relative filter-dropdown">
                     <button type="button"
@@ -203,7 +203,16 @@
         <!-- End Filters Wrapper -->
 
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
-            <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Timesheets</h2>
+            <div class="flex justify-between items-center mb-2 sm:mb-4">
+                <h2 class="text-lg sm:text-xl font-bold">Timesheets</h2>
+
+                <a href="{{ route('timesheet.export.all') }}"
+                    class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-500 
+          hover:from-indigo-500 hover:to-purple-500 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
+                    <i class="bi bi-download text-sm"></i> Export 
+                </a>
+
+            </div>
 
             <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 460px"
                 id="timesheet-table-wrapper">

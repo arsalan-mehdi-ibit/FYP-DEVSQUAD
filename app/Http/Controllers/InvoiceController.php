@@ -136,7 +136,7 @@ class InvoiceController extends Controller
                 'client_name' =>$payment->client->firstname,
             ];
 
-            Mail::to("haishamfaizan@gmail.com")->send(new EmailSender(
+            Mail::to($user->email)->send(new EmailSender(
                 "INVOICE STATUS UPDATE",
                 $emailData,
                 'emails.invoice_payment',$pdfContent,
