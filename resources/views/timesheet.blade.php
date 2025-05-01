@@ -233,7 +233,7 @@
 
             </div>
 
-            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 460px"
+            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 520px"
                 id="timesheet-table-wrapper">
                 <table class="w-full min-w-full text-center">
                     <thead class="sticky top-0 bg-gray-100 z-10 text-center">
@@ -366,12 +366,13 @@
                     </tbody>
 
                 </table>
-            </div>
-            <div class="mt-0 flex justify-end">
+                <div class="mt-0 flex justify-end">
                 <div class="bg-transparent dark:bg-gray-800  rounded-lg px-3 py-0">
-                    {{ $timesheets->links() }}
+                {{ $timesheets->appends(request()->except(['_token']))->links() }}
                 </div>
             </div>
+            </div>
+           
         </div>
     </div>
     <script>
@@ -460,10 +461,10 @@
                         var tempDiv = $('<div>').html(response.html);
 
                         // Find the tbody inside that response
-                        var newTbody = tempDiv.find('#timesheet-table-body').html();
+                        var newTbody = tempDiv.find('#timesheet-table-wrapper').html();
 
                         // Replace your current tbody content
-                        $('#timesheet-table-body').html(newTbody);
+                        $('#timesheet-table-wrapper').html(newTbody);
                     }
                 });
             }
