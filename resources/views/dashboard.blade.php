@@ -2,7 +2,7 @@
 
 @section('content')
     <div id="dashboard" class="main-layout max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8 grid grid-cols-1 lg:grid-cols-3 gap-4">
-       
+
         <div class="lg:col-span-2">
             <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
@@ -29,13 +29,14 @@
             <div class="mt-4 bg-white p-2 rounded-lg shadow-md">
                 <div class="flex justify-between items-center mb-3">
                     <h3 class="text-lg font-semibold text-gray-700">Hours Worked For All Projects</h3>
-                 
-                    <select class="px-3 py-1 border border-gray-100 rounded-md text-gray-700 text-sm">
-                        <option value="all">All</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="daily">Daily</option>
+
+                    <select id="projectSelect" class="px-3 py-1 border border-gray-100 rounded-md text-gray-700 text-sm">
+                        <option value="all">All Projects</option>
+                        @foreach ($projects as $project)
+                            <option value="{{ $project->id }}">{{ $project->name }}</option>
+                        @endforeach
                     </select>
+                    
 
                 </div>
                 <canvas id="hoursChart" class=" h-40"></canvas>
@@ -43,7 +44,7 @@
         </div>
 
         <div class="bg-white shadow-md rounded-lg p-0 overflow-hidden lg:col-span-1 flex flex-col" style="height: 31rem">
-          
+
             <div class="flex justify-between items-center bg-gray-300 px-3 py-2 rounded-t-md">
                 <h3 class="text-sm font-medium text-gray-900">Recent Activity</h3>
                 <div class="relative inline-block text-left">
@@ -126,43 +127,64 @@
     <script>
         $(document).ready(function() {
             const ctx = document.getElementById('hoursChart').getContext('2d');
-            const selectedText = $("#selectedOption");
-            const dropdownMenu = $("#dropdownMenu");
-            const dropdownItems = $(".dropdown-item");
+            const projectDropdown = $("#projectSelect"); // create this dropdown with project IDs
+            let hoursChart;
 
-            // Chart Data
-            const hoursChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov',
-                        'Dec'
-                    ],
-                    datasets: [{
-                        label: "Hours Worked",
-                        data: [0, 0, 0, 0, 0, 0, 200, 15, 180, 15, 0, 0], // Example data
-                        backgroundColor: "rgba(33, 60, 95, 0.9)",
-                        borderWidth: 0
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        },
-                        x: {
-                            grid: {
-                                display: false
-                            }
-                        }
+            function loadChart(projectId = 'all') {
+                $.ajax({
+                    url: '/dashboard/monthly-hours',
+                    method: 'GET',
+                    data: {
+                        project_id: projectId
                     },
-                    plugins: {
-                        legend: {
-                            display: false
-                        }
+                    success: function(res) {
+                        const data = res.data;
+
+                        if (hoursChart) hoursChart.destroy();
+
+                        hoursChart = new Chart(ctx, {
+                            type: 'bar',
+                            data: {
+                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                                ],
+                                datasets: [{
+                                    label: "Hours Worked",
+                                    data: data,
+                                    backgroundColor: "rgba(33, 60, 95, 0.9)",
+                                    borderWidth: 0
+                                }]
+                            },
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
+                                    },
+                                    x: {
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                }
+                            }
+                        });
                     }
-                }
+                });
+            }
+
+            // Initial load
+            loadChart();
+
+            // Reload when project changes
+            $("#projectSelect").on('change', function() {
+                const selectedProject = $(this).val();
+                loadChart(selectedProject);
             });
         });
     </script>
-    
 @endsection
