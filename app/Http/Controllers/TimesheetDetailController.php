@@ -49,6 +49,21 @@ class TimesheetDetailController extends Controller
         return view('timesheetdetail', compact('timesheet', 'timesheetDetails', 'pageTitle'));
     }
 
+    public function updateMemo(Request $request, $id)
+    {
+        $request->validate([
+            'memo' => 'nullable|string',
+        ]);
+    
+        $detail = TimesheetDetail::findOrFail($id);
+        $detail->memo = $request->input('memo');
+        $detail->save();
+    
+        return response()->json(['success' => true]);
+    }
+    
+
+
     // public function getTotalActualHours($timesheetDetailId)
     // {
     //     $timesheetDetail = TimesheetDetail::find($timesheetDetailId);

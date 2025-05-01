@@ -154,28 +154,30 @@
                     </div>
                 </div>
 
-                <!-- Contractor Filter -->
-                <div class="relative filter-dropdown">
-                    <button type="button"
-                        class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
-                        Contractor <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
-                    </button>
-                    <div
-                        class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
-                        <div class="py-2 max-h-60 overflow-y-auto">
-                            @foreach ($timesheets->unique('contractor_id') as $timesheet)
-                                @if ($timesheet->contractor)
-                                    <div class="flex items-center px-3 py-0 hover:bg-gray-50">
-                                        <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
-                                            name="contractors[]" value="{{ $timesheet->contractor->id }}">
-                                        <label
-                                            class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->contractor->firstname }}</label>
-                                    </div>
-                                @endif
-                            @endforeach
+                @if (Auth::user()->role != 'client')
+                    <!-- Contractor Filter -->
+                    <div class="relative filter-dropdown">
+                        <button type="button"
+                            class="filter-button flex items-center bg-gray-100 text-gray-700 border border-gray-300 rounded-md px-3 py-2 text-sm hover:bg-gray-200 focus:outline-none">
+                            Contractor <i class="bi bi-caret-down-fill ml-1 transition-transform duration-200"></i>
+                        </button>
+                        <div
+                            class="filter-options hidden absolute mt-2 w-64 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+                            <div class="py-2 max-h-60 overflow-y-auto">
+                                @foreach ($timesheets->unique('contractor_id') as $timesheet)
+                                    @if ($timesheet->contractor)
+                                        <div class="flex items-center px-3 py-0 hover:bg-gray-50">
+                                            <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
+                                                name="contractors[]" value="{{ $timesheet->contractor->id }}">
+                                            <label
+                                                class="ml-3 mt-1 text-sm text-gray-700">{{ $timesheet->contractor->firstname }}</label>
+                                        </div>
+                                    @endif
+                                @endforeach
+                            </div>
                         </div>
                     </div>
-                </div>
+                @endif
 
                 <!-- Status Filter -->
                 <div class="relative filter-dropdown">
@@ -218,11 +220,13 @@
                                 Status</th>
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Total Hours</th>
-                           
+
                             <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                 Project</th>
-                            <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
-                                Contractor</th>
+                            @if (Auth::user()->role != 'client')
+                                <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
+                                    Contractor</th>
+                            @endif
                             @if (Auth::user()->role == 'admin' || Auth::user()->role == 'consultant')
                                 <th class="p-2 sm:p-3  font-semibold text-gray-700 text-xs sm:text-sm md:text-base">
                                     Client</th>
@@ -235,7 +239,8 @@
                     </thead>
                     <tbody id="timesheet-table-body">
                         @foreach ($timesheets as $timesheet)
-                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}" data-timesheet-id="{{ $timesheet->id }}"
+                            <tr class="border-b {{ $timesheet->status == 'rejected' ? 'bg-red-100' : 'hover:bg-gray-50' }}"
+                                data-timesheet-id="{{ $timesheet->id }}"
                                 data-date="{{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} - {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}"
                                 data-project="{{ $timesheet->project->name ?? '' }}"
                                 data-client="{{ $timesheet->project->client->firstname ?? '' }}"
@@ -252,15 +257,18 @@
                                     {{ $timesheet->status ?? 'N/A' }}
                                 </td>
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base">
-                                   {{ $timesheet->total_actual_hours }}
+                                    {{ $timesheet->total_actual_hours }}
                                 </td>
-                                
+
                                 <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                     {{ $timesheet->project->name ?? 'N/A' }}
                                 </td>
-                                <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
-                                    {{ $timesheet->contractor->firstname ?? 'N/A' }}
-                                </td>
+                                @if (Auth::user()->role != 'client')
+                                    <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
+                                        {{ $timesheet->contractor->firstname ?? 'N/A' }}
+                                    </td>
+                                @endif
+
                                 @if (Auth::user()->role == 'admin' || Auth::user()->role == 'consultant')
                                     <td class="p-2 sm:p-3 text-xs sm:text-sm md:text-base filter-input">
                                         {{ $timesheet->project->client->firstname ?? 'N/A' }}

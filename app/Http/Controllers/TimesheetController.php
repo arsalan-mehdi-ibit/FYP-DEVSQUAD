@@ -48,14 +48,47 @@ class TimesheetController extends Controller
         // Role-based restrictions
         if (Auth::user()->role == 'admin') {
             // admin sees all
+            $query->orderByRaw("
+            CASE 
+                WHEN status = 'submitted' THEN 1
+                WHEN status = 'pending' THEN 2
+                WHEN status = 'rejected' THEN 3
+                WHEN status = 'approved' THEN 4
+                ELSE 5
+            END
+        ")->orderByDesc('submitted_at')
+                ->orderByDesc('updated_at');
         } elseif (Auth::user()->role == 'client') {
             $projectIds = Project::where('client_id', Auth::id())->pluck('id');
-            $query->whereIn('project_id', $projectIds);
+            $query->whereIn('project_id', $projectIds)
+                ->orderByRaw("
+              CASE 
+                  WHEN status = 'submitted' THEN 1
+                  WHEN status = 'pending' THEN 2
+                  WHEN status = 'rejected' THEN 3
+                  WHEN status = 'approved' THEN 4
+                  ELSE 5
+              END
+            ")->orderByDesc('submitted_at')
+                ->orderByDesc('updated_at');
         } elseif (Auth::user()->role == 'consultant') {
             $projectIds = Project::where('consultant_id', Auth::id())->pluck('id');
             $query->whereIn('project_id', $projectIds);
         } elseif (Auth::user()->role == 'contractor') {
-            $query->where('contractor_id', Auth::id());
+            $query->where('contractor_id', Auth::id())
+                ->orderByRaw("
+            CASE 
+                WHEN status = 'rejected' THEN 1
+                WHEN status = 'pending' THEN 2
+                WHEN status = 'submitted' THEN 3
+                WHEN status = 'approved' THEN 4
+                ELSE 5
+            END
+          ")->orderByDesc('submitted_at')
+                ->orderByDesc('updated_at');
+
+        } {
+            $query->orderBy('week_start_date', 'asc');
         }
 
         // Filters
@@ -95,20 +128,20 @@ class TimesheetController extends Controller
         }
 
         // Sorting
-        if (in_array(Auth::user()->role, ['admin', 'contractor'])) {
-            $query->orderByRaw("
-                CASE 
-                    WHEN status = 'submitted' THEN 1
-                    WHEN status = 'pending' THEN 2
-                    WHEN status = 'approved' THEN 3
-                    WHEN status = 'rejected' THEN 4
-                    ELSE 5
-                END
-            ")->orderBy('submitted_at', 'desc')
-                ->orderBy('week_start_date', 'asc');
-        } else {
-            $query->orderBy('week_start_date', 'asc');
-        }
+        // if (in_array(Auth::user()->role, ['admin', 'contractor'])) {
+        //     $query->orderByRaw("
+        //         CASE 
+        //             WHEN status = 'submitted' THEN 1
+        //             WHEN status = 'pending' THEN 2
+        //             WHEN status = 'approved' THEN 3
+        //             WHEN status = 'rejected' THEN 4
+        //             ELSE 5
+        //         END
+        //     ")->orderBy('submitted_at', 'asc')
+        //         ->orderBy('week_start_date', 'asc');
+        // } else {
+        //     $query->orderBy('week_start_date', 'asc');
+        // }
 
         // Final pagination
         $timesheets = $query->paginate(10);
@@ -141,7 +174,7 @@ class TimesheetController extends Controller
         }
 
         $timesheet->status = 'submitted';
-        $timesheet->submitted_at = now(); // Save current time!
+        $timesheet->submitted_at = now();
         $timesheet->save();
         // Prepare common data
         $project = $timesheet->project;
@@ -221,6 +254,8 @@ class TimesheetController extends Controller
 
         return back()->with('success', 'Timesheet submitted successfully.');
     }
+
+
     public function approve(Request $request, $id)
     {
         $timesheet = Timesheet::with(['details', 'contractor', 'project.client'])->findOrFail($id);
@@ -271,11 +306,8 @@ class TimesheetController extends Controller
                 'created_by' => $approver->id,
             ]);
         }
-
-
         return back()->with('success', 'Timesheet approved successfully.');
     }
-
 
 
     public function reject(Request $request, $id)
@@ -345,10 +377,6 @@ class TimesheetController extends Controller
                 ]);
             }
         }
-
-
-
-
         return back()->with('success', 'Timesheet rejected successfully.');
     }
 
