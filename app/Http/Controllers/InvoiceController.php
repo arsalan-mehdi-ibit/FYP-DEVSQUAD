@@ -22,35 +22,32 @@ class InvoiceController extends Controller
     public function index(Request $request)
     {
         $pageTitle = "Invoice List";
-        // dd($request);
 
-        $invoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet.project' , 'timesheet']);
+        // Load all data for filters
+        $allInvoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet.project', 'timesheet'])->get();
 
-        // // Apply Filters
-        // if ($request->timesheets) {
-        //     $invoices->whereIn('timesheet_name', $request->timesheets);
-        // }
+        // Main paginated query
+        $invoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet.project', 'timesheet']);
 
+        // Filters
+        if ($request->timesheets) {
+            $invoices->whereHas('timesheet', function ($query) use ($request) {
+                $query->where(function ($q) use ($request) {
+                    foreach ($request->timesheets as $timesheet) {
+                        $range = explode(' - ', $timesheet);
+                        if (count($range) === 2) {
+                            $start = Carbon::parse(trim($range[0]))->format('Y-m-d');
+                            $end = Carbon::parse(trim($range[1]))->format('Y-m-d');
 
-    // Now Apply Filters if any (dates, projects, clients, contractors, statuses)
-    if ($request->timesheets) {
-        $invoices->whereHas('timesheet', function ($query) use ($request) {
-            $query->where(function ($q) use ($request) {
-                foreach ($request->timesheets as $timesheet) {
-                    $range = explode(' - ', $timesheet);
-                    if (count($range) == 2) {
-                        $start = Carbon::parse(trim($range[0]))->format('Y-m-d');
-                        $end = Carbon::parse(trim($range[1]))->format('Y-m-d');
-    
-                        $q->orWhere(function ($subQ) use ($start, $end) {
-                            $subQ->whereDate('week_start_date', $start)
-                                 ->whereDate('week_end_date', $end);
-                        });
+                            $q->orWhere(function ($subQ) use ($start, $end) {
+                                $subQ->whereDate('week_start_date', $start)
+                                    ->whereDate('week_end_date', $end);
+                            });
+                        }
                     }
-                }
+                });
             });
-        });
-    }
+        }
 
         if ($request->contraactor) {
             $invoices->whereIn('contractor_id', $request->contraactor);
@@ -82,12 +79,13 @@ class InvoiceController extends Controller
 
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('invoice', compact('pageTitle', 'invoices'))->render(),
+                'html' => view('invoice', compact('pageTitle', 'invoices', 'allInvoices'))->render(),
             ]);
         }
 
-        return view('invoice', compact('pageTitle', 'invoices'));
+        return view('invoice', compact('pageTitle', 'invoices', 'allInvoices'));
     }
+
 
 
 
@@ -95,20 +93,20 @@ class InvoiceController extends Controller
     {
         $payment = Payments::findOrFail($id);
         $usersToNotify = collect([$payment->contractor, $payment->client])
-        ->merge(User::where('role', 'admin')->get())
-        ->filter(); // Removes null users like missing client
-    
+            ->merge(User::where('role', 'admin')->get())
+            ->filter(); // Removes null users like missing client
+
         foreach ($usersToNotify as $user) {
             $projectName = $payment->timesheet->project->name;
-            $timesheetName = 'Timesheet of week ' . $payment->timesheet->week_start_date; 
+            $timesheetName = 'Timesheet of week ' . $payment->timesheet->week_start_date;
             $amount = $payment->admin_received; // or contractor_paid based on context
-            $adminName = Auth::user()->firstname .  ' ' . Auth::user()->lastname;
-        
-        $description = match ($user->role) {
-            'contractor' => "Your invoice for {$timesheetName} for the project \"{$projectName}\" has been marked as paid by {$adminName}.",
-            'client'     => "You have paid \${$amount} for {$timesheetName} for the project \"{$projectName}\".",
-            'admin'      => "The invoice for {$timesheetName} has been marked as paid.",
-            default      => "Invoice update for {$timesheetName}.",
+            $adminName = Auth::user()->firstname . ' ' . Auth::user()->lastname;
+
+            $description = match ($user->role) {
+                'contractor' => "Your invoice for {$timesheetName} for the project \"{$projectName}\" has been marked as paid by {$adminName}.",
+                'client' => "You have paid \${$amount} for {$timesheetName} for the project \"{$projectName}\".",
+                'admin' => "The invoice for {$timesheetName} has been marked as paid.",
+                default => "Invoice update for {$timesheetName}.",
             };
 
             RecentActivity::create([
@@ -132,14 +130,15 @@ class InvoiceController extends Controller
                 'contractor_paid' => $payment->contractor_paid,
                 'admin_received' => $payment->admin_received,
                 'admin_name' => $adminName,
-                'contractor_name' =>$payment->contractor->firstname ,
-                'client_name' =>$payment->client->firstname,
+                'contractor_name' => $payment->contractor->firstname,
+                'client_name' => $payment->client->firstname,
             ];
 
             Mail::to($user->email)->send(new EmailSender(
                 "INVOICE STATUS UPDATE",
                 $emailData,
-                'emails.invoice_payment',$pdfContent,
+                'emails.invoice_payment',
+                $pdfContent,
                 $pdfFilename
             ));
         }

@@ -39,10 +39,16 @@ class TimesheetController extends Controller
             ->whereNotNull('submitted_at')
             ->count();
 
-        $dates = Timesheet::select('week_start_date')
-            ->distinct()
-            ->orderBy('week_start_date', 'desc')
-            ->get();
+        $allTimesheets = Timesheet::with(['project.client', 'contractor'])->get();
+
+        $dates = $allTimesheets->unique(function ($item) {
+            return $item->week_start_date . $item->week_end_date;
+        })->sortByDesc('week_start_date')->values();
+
+        $projects = $allTimesheets->unique('project_id')->filter(fn($t) => $t->project);
+        $clients = $allTimesheets->filter(fn($t) => $t->project && $t->project->client)->unique(fn($t) => $t->project->client->id);
+        $contractors = $allTimesheets->unique('contractor_id')->filter(fn($t) => $t->contractor);
+
 
         // Start base query
         $query = Timesheet::with(['details', 'project.client', 'contractor']);
@@ -151,11 +157,35 @@ class TimesheetController extends Controller
 
         if ($request->ajax()) {
             return response()->json([
-                'html' => view('timesheet', compact('timesheets', 'pageTitle', 'thisMonthCount', 'approvedCount', 'rejectedCount', 'pendingApprovalCount', 'dates'))->render(),
+                'html' => view('timesheet', compact(
+                    'timesheets',
+                    'pageTitle',
+                    'thisMonthCount',
+                    'approvedCount',
+                    'rejectedCount',
+                    'pendingApprovalCount',
+                    'dates',
+                    'projects',
+                    'clients',
+                    'contractors'
+                ))->render(),
             ]);
+
         }
 
-        return view('timesheet', compact('pageTitle', 'timesheets', 'thisMonthCount', 'approvedCount', 'rejectedCount', 'pendingApprovalCount', 'dates'));
+        return view('timesheet', compact(
+            'pageTitle',
+            'timesheets',
+            'thisMonthCount',
+            'approvedCount',
+            'rejectedCount',
+            'pendingApprovalCount',
+            'dates',
+            'projects',
+            'clients',
+            'contractors'
+        ));
+
     }
 
     public function getTotalHours($id)

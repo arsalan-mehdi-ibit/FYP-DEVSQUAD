@@ -443,6 +443,7 @@
 
             // Toggle filter dropdowns
             // 1. Load previously selected filters from localStorage
+            // 1. Load stored filters and apply them
             var storedFilters = JSON.parse(localStorage.getItem('selectedFilters')) || [];
 
             storedFilters.forEach(function(value) {
@@ -458,9 +459,8 @@
                 var options = $this.next('.filter-options');
                 var icon = $this.find('i');
 
-                var isVisible = options.is(':visible'); // Check BEFORE toggling
+                var isVisible = options.is(':visible');
 
-                // Close all other dropdowns
                 $('.filter-options').slideUp();
                 $('.filter-button i').removeClass('bi-caret-up-fill').addClass('bi-caret-down-fill');
 
@@ -479,13 +479,13 @@
                 $('.filter-button i').removeClass('bi-caret-up-fill').addClass('bi-caret-down-fill');
             });
 
-            // 4. Handle checkbox filter changes
+            // 4. Handle checkbox changes
             $('.filter-checkbox').change(function() {
                 saveSelectedFilters();
                 generateAppliedFilters();
             });
 
-            // Save selected checkboxes to localStorage
+            // Save selected filters to localStorage
             function saveSelectedFilters() {
                 var selected = [];
                 $('.filter-checkbox:checked').each(function() {
@@ -494,20 +494,49 @@
                 localStorage.setItem('selectedFilters', JSON.stringify(selected));
             }
 
-            // Generate applied filters badges
+            // Generate filter badges with close buttons
             function generateAppliedFilters() {
                 var appliedFilters = $('#applied-filters');
-                appliedFilters.html(''); // Clear previous
+                appliedFilters.html('');
+
+                var selected = [];
 
                 $('.filter-checkbox:checked').each(function() {
                     var label = $(this).closest('div').find('label').text().trim();
-                    appliedFilters.append(
-                        '<span style="display:inline-flex;align-items:center;padding:2px 6px;border-radius:9999px;font-size:9px;background-color:#e5e7eb;color:#4b5563;margin-right:4px;margin-bottom:4px;">' +
-                        label +
-                        '</span>'
-                    );
+                    var value = $(this).val();
+
+                    selected.push(value);
+
+                    appliedFilters.append(`
+            <span style="display:inline-flex;align-items:center;padding:2px 6px;border-radius:9999px;font-size:9px;background-color:#e5e7eb;color:#4b5563;margin-right:4px;margin-bottom:4px;">
+                ${label}
+                <button type="button" class="ml-1 text-gray-500 hover:text-red-500 remove-filter" data-value="${value}" style="margin-left:6px;font-size:12px;line-height:1;">&times;</button>
+            </span>
+        `);
                 });
+
+                localStorage.setItem('selectedFilters', JSON.stringify(selected));
             }
+
+            // 5. Handle badge × removal
+            $(document).on('click', '.remove-filter', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+
+                var value = $(this).data('value');
+
+                // Uncheck checkbox
+                $('.filter-checkbox[value="' + value + '"]').prop('checked', false).trigger('change');
+
+                // Remove from localStorage
+                var currentFilters = JSON.parse(localStorage.getItem('selectedFilters')) || [];
+                var updatedFilters = currentFilters.filter(f => f !== value);
+                localStorage.setItem('selectedFilters', JSON.stringify(updatedFilters));
+
+                // Remove the badge
+                $(this).closest('span').remove();
+            });
+
         });
     </script>
 </body>
