@@ -38,7 +38,7 @@ class TimesheetController extends Controller
 
         $approvedCount = Timesheet::where('status', 'approved')->count();
         $rejectedCount = Timesheet::where('status', 'rejected')->count();
-        $pendingApprovalCount = Timesheet::where('status', 'pending')
+        $pendingApprovalCount = Timesheet::where('status', 'submitted')
             ->whereNotNull('submitted_at')
             ->count();
 
