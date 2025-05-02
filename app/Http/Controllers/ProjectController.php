@@ -231,6 +231,7 @@ class ProjectController extends Controller
                     'message' => 'New project "' . $project->name . '" has been created.',
                     'is_read' => 0, // By default, unread
                 ]);
+                event(new NewNotification('New project "' . $project->name . '" has been created by ' . Auth::user()->firstname, $admin->id));
             }
 
             // Recent Activity for the Client
@@ -250,7 +251,7 @@ class ProjectController extends Controller
                     'message' => '"' . $project->name . '" has been updated.',
                     'is_read' => 0, // Unread by default
                 ]);
-                event(new NewNotification('You have a new notification!', $client->id));
+                event(new NewNotification('You have been assigned as a client for project "' . $project->name . '" by ' . Auth::user()->firstname, $project->client_id));
             }
 
 
@@ -273,6 +274,8 @@ class ProjectController extends Controller
                         'message' => 'You have been assigned as a consultant for project "' . $project->name . '".',
                         'is_read' => 0, // Unread by default
                     ]);
+                        event(new NewNotification('You have been assigned as a consultant for project "' . $project->name . '" by ' . Auth::user()->firstname,  $consultant->id));
+
                 }
             }
 
@@ -304,6 +307,8 @@ class ProjectController extends Controller
                             'message' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
                             'is_read' => 0,  // By default, unread
                         ]);
+                    event(new NewNotification('You have been assigned as a contractor for project "' . $project->name . '" by ' . Auth::user()->firstname, $contractorUser->id));
+
                     } else {
                         // Log or handle case where contractor does not exist
                         Log::warning('Contractor with ID ' . $contractor['contractor_id'] . ' not found.');
@@ -477,7 +482,7 @@ class ProjectController extends Controller
                 'message' => 'Project "' . $project->name . '" has been updated.',
                 'is_read' => 0, // unread by default
             ]);
-            // event((new NewNotification('Project created!', $admin->id))->delay(now()->addSeconds(2)));
+            event(new NewNotification('Project "' . $project->name . '" has been updated by ' . Auth::user()->firstname, $admin->id));
 
 
         }
@@ -485,7 +490,7 @@ class ProjectController extends Controller
         if ($project->client_id) {
             RecentActivity::create([
                 'title' => 'Project Updated',
-                'description' => 'You have been assigned as a client for project "' . $project->name . '".',
+                'description' => 'The project "' . $project->name . '" has been updated.',
                 'parent_id' => $project->id,
                 'created_for' => 'project',
                 'user_id' => $project->client_id,
@@ -495,11 +500,10 @@ class ProjectController extends Controller
                 'parent_id' => $project->id,
                 'created_for' => 'project',
                 'user_id' =>  $project->client_id,
-                'message' => '"' . $project->name . '".',
+                'message' => 'The project "' . $project->name . '" has been updated.',
                 'is_read' => 0, // Unread by default
             ]);
-            // event((new NewNotification('Project created!', $project->client_id))->delay(now()->addSeconds(2)));
-            event(new NewNotification('Project ' .$project->name. ' Updated by ' . Auth::user()->firstname, $project->client_id));
+            event(new NewNotification('The project "' . $project->name . '" has been updated by' . Auth::user()->firstname, $project->client_id));
 
 
         }
@@ -509,8 +513,8 @@ class ProjectController extends Controller
             $consultant = User::find($project->consultant_id);
             if ($consultant) {
                 RecentActivity::create([
-                    'title' => 'Project Assigned',
-                    'description' => 'You have been assigned as a consultant for project "' . $project->name . '".',
+                    'title' => 'Project updated',
+                    'description' => 'The project "' . $project->name . '" has been updated.',
                     'parent_id' => $project->id,
                     'created_for' => 'project',
                     'user_id' => $consultant->id,
@@ -520,9 +524,11 @@ class ProjectController extends Controller
                     'parent_id' => $project->id,
                     'created_for' => 'project',
                     'user_id' => $consultant->id,
-                    'message' => 'You have been assigned as a consultant for project "' . $project->name . '".',
+                    'message' => 'The project "' . $project->name . '" has been updated.',
                     'is_read' => 0, // Unread by default
                 ]);
+                event(new NewNotification('The project "' . $project->name . '" has been updated by' . Auth::user()->firstname, $consultant->id));
+
             }
         }
 
@@ -538,8 +544,8 @@ class ProjectController extends Controller
                 if ($contractorUser) {
                     // Create recent activity for the assigned contractor
                     RecentActivity::create([
-                        'title' => 'Project Assigned',
-                        'description' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
+                        'title' => 'Project Updated',
+                        'description' => 'The project "' . $project->name . '" has been updated.',
                         'parent_id' => $project->id,
                         'created_for' => 'project',
                         'user_id' => $contractorUser->id,  // Notify only the assigned contractor
@@ -551,9 +557,11 @@ class ProjectController extends Controller
                         'parent_id' => $project->id,
                         'created_for' => 'project',
                         'user_id' => $contractorUser->id,  // Notify only the assigned contractor
-                        'message' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
+                        'message' => 'The project "' . $project->name . '" has been updated.',
                         'is_read' => 0,  // By default, unread
                     ]);
+                    event(new NewNotification('The project "' . $project->name . '" has been updated by' . Auth::user()->firstname, $contractorUser->id));
+
                 } else {
                     // Log or handle case where contractor does not exist
                     Log::warning('Contractor with ID ' . $contractor['contractor_id'] . ' not found.');

@@ -245,7 +245,7 @@ class TimesheetController extends Controller
                     'message' => $description,
                     'is_read' => 0,
                 ]);
-                event(new NewNotification('You have a new notification!', $user->id));
+                event(new NewNotification($description, $user->id));
 
             }
         };
@@ -413,6 +413,9 @@ class TimesheetController extends Controller
                     'message' => $description,
                     'is_read' => 0,
                 ]);
+                event(new NewNotification($description, $contractor->id));
+
+                
             }
         }
         return back()->with('success', 'Timesheet rejected successfully.');
