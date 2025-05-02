@@ -17,6 +17,8 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailSender;
 use App\Jobs\FillTimesheet;
 use App\Events\NewNotification;
+use Carbon\Carbon;
+
 
 
 class ProjectController extends Controller
@@ -379,6 +381,16 @@ class ProjectController extends Controller
      */
     public function update(Request $request, $id)
     {
+
+        $project = Project::findOrFail($id);
+
+        $startDateRule = 'required|date'; // Default rule
+
+        // Only apply "after_or_equal:today" if this is a new project OR if updating to a future date
+        if (!$project->exists || ($project->start_date == $request->start_date && $request->start_date >= now()->toDateString())) {
+            $startDateRule .= '|after_or_equal:today';
+        }
+
         // Validate the form data
         $validated = $request->validate([
             'name' => [
@@ -392,8 +404,17 @@ class ProjectController extends Controller
             'consultant_id' => 'nullable|exists:users,id',
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => ['nullable', 'date', 'after:start_date', 'after_or_equal:today'],
+            'start_date' => $startDateRule,
+            'end_date' => [
+                'nullable',
+                function ($attribute, $value, $fail) use ($project) {
+                    // Only enforce future end date if the project is new (i.e., being created)
+                    // But skip this check if we're updating and end_date is before today
+                    if (!$project->exists && Carbon::parse($value)->lt(today())) {
+                        $fail('The end date cannot be before today.');
+                    }
+                }
+            ],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048',
             'contractors' => 'array',
@@ -410,12 +431,12 @@ class ProjectController extends Controller
         }
         try {
             // Find the project to update
-            $project = Project::findOrFail($id);
+            // $project = Project::findOrFail($id);
 
             if ($project->status === 'completed') {
                 return back()->withErrors(['status' => 'Completed project cannot be edited.']);
             }
-            
+
 
             if ($project->status === 'in_progress' && $validated['status'] === 'pending') {
                 return back()->withErrors(['status' => 'Project already in progress cannot be reverted to pending.']);
@@ -428,8 +449,8 @@ class ProjectController extends Controller
             if ($project->status === 'completed' && $validated['status'] !== 'completed') {
                 return back()->withErrors(['status' => 'Completed project cannot change status.']);
             }
-            
-            
+
+
             // Check if the name has changed
             if ($project->name !== $validated['name']) {
                 // Look for any soft-deleted project with the same name
@@ -456,8 +477,8 @@ class ProjectController extends Controller
                 MediaController::uploadFile($request, $project->id);
             }
 
-            
-            
+
+
 
             // Update the project with the new validated data
             $project->update($validated);

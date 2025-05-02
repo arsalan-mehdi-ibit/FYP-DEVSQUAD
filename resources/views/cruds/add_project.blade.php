@@ -161,20 +161,36 @@
                                     <!-- Start Date -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Start Date</label>
-                                        <input type="date" name="start_date"
-                                            value="{{ old('start_date', $project->start_date ?? '') }}"
+
+                                        @php
+                                            $isInProgress = isset($project) && $project->status === 'in_progress';
+                                            $startDateValue = old('start_date', $project->start_date ?? '');
+                                        @endphp
+
+                                        <input type="date" name="start_date" value="{{ $startDateValue }}"
                                             min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
-                                            class="w-full px-2 py-1 text-sm border rounded-md bg-white">
+                                            class="w-full px-2 py-1 text-sm border rounded-md
+                  {{ $isInProgress ? 'bg-gray-200 text-gray-500 cursor-not-allowed' : 'bg-white' }}"
+                                            @if ($isInProgress) disabled @endif>
+
+                                        @if ($isInProgress)
+                                            <!-- Hidden input to submit the start date even if disabled -->
+                                            <input type="hidden" name="start_date" value="{{ $startDateValue }}">
+                                        @endif
                                     </div>
+
+
 
                                     <!-- End Date -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">End Date</label>
                                         <input type="date" name="end_date"
-                                            value="{{ old('end_date', $project->end_date ?? '') }}"
-                                            min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
+                                            value="{{ old('end_date', \Carbon\Carbon::parse($project->end_date)->format('Y-m-d')) }}"
+                                            @if (!$project->exists) min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" @endif
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-white">
                                     </div>
+
+
 
                                     <!-- Referral Source -->
                                     <div>
@@ -266,13 +282,18 @@
                                                                 min="0">
                                                         </td>
                                                         <td class="p-2 text-right">
+                                                            @php $isInProgress = $project->status === 'in_progress'; @endphp
                                                             <button type="button"
-                                                                class="remove-contractor-btn text-md bg-red-500 text-white px-3 py-0 rounded"
+                                                                class="remove-contractor-btn text-md px-3 py-0 rounded
+                                                                    {{ $isInProgress ? 'bg-gray-300 text-gray-600 cursor-not-allowed' : 'bg-red-500 text-white' }}"
                                                                 data-contractor-id="{{ $contractor['contractor_id'] }}"
-                                                                data-project-id="{{ $project->id }}">
+                                                                data-project-id="{{ $project->id }}"
+                                                                @if ($isInProgress) disabled @endif>
                                                                 X
                                                             </button>
                                                         </td>
+
+
                                                     </tr>
                                                 @endforeach
                                             @endif
