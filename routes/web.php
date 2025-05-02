@@ -14,6 +14,8 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TaskController;
+use App\Http\Controllers\NotificationController;
+
 
 
 
@@ -52,6 +54,10 @@ Route::middleware('auth')->group(function () {
 
     });
 
+    Route::group(['as' => 'notifications.', 'prefix' => '/notifications'], function () {
+        Route::post('/mark-read/{id}', [NotificationController::class, 'markRead'])->name('markRead');
+        Route::post('/mark-all-read', [NotificationController::class, 'markAllRead'])->name('markAllRead');
+    });
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile'); // Use the correct controller and method
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -63,7 +69,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/download/{id}', [InvoiceController::class, 'download'])->name('download');
         Route::patch('/{payment}/mark-as-paid', [InvoiceController::class, 'markAsPaid'])->name('markAsPaid');
     });
-    
+
     Route::group(['as' => 'users.', 'prefix' => '/users'], function () {
         Route::get('/', [UsersController::class, 'index'])->name('index');
         Route::get('/add', [UsersController::class, 'add'])->name('add');

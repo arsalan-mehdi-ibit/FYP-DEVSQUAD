@@ -106,7 +106,7 @@
                                         <input type="checkbox" class="filter-checkbox form-checkbox text-blue-600"
                                             name="dates[]"
                                             value="{{ $timesheet->week_start_date }} - {{ $timesheet->week_end_date }}">
-                                        <label class="ml-3 mt-1 text-gray-700"  style="font-size: 13px;">
+                                        <label class="ml-3 mt-1 text-gray-700" style="font-size: 13px;">
                                             {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} -
                                             {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}
                                         </label>
@@ -367,12 +367,12 @@
 
                 </table>
                 <div class="mt-0 flex justify-end">
-                <div class="bg-transparent dark:bg-gray-800  rounded-lg px-3 py-0">
-                {{ $timesheets->appends(request()->except(['_token']))->links() }}
+                    <div class="bg-transparent dark:bg-gray-800  rounded-lg px-3 py-0">
+                        {{ $timesheets->appends(request()->except(['_token']))->links() }}
+                    </div>
                 </div>
             </div>
-            </div>
-           
+
         </div>
     </div>
     <script>

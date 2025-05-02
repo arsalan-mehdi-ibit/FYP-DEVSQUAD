@@ -17,13 +17,21 @@
             <!-- Icons Section -->
             <div class="flex items-center gap-2 sm:gap-3 md:gap-4">
                 {{-- <i class="bi bi-moon cursor-pointer hover:text-gray-700 text-lg sm:text-base md:text-lg"></i> --}}
+                {{-- @php
+                    $notifications = \App\Models\Notifications::where('user_id', Auth::id())
+                        ->latest()
+                        ->limit(10)
+                        ->get();
+                    $unreadCount = $notifications->where('is_read', 0)->count();
+                @endphp --}}
                 {{-- notification dropdown --}}
                 <div class="relative z-50">
                     <!-- Bell Icon with Notification Badge -->
                     <div class="relative cursor-pointer" id="notificationBell">
                         <i class="bi bi-bell  text-gray-700 hover:text-gray-900"></i>
                         <span id="notificationCount"
-                            class="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1.5 rounded-full">0</span>
+                            class="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1.5 rounded-full {{$unreadNotificationCount == 0 ? 'hidden' : '' }}">
+                            {{ $unreadNotificationCount }}</span>
 
                     </div>
 
@@ -40,63 +48,20 @@
                         </div>
 
                         <div class="p-4 p-sm-2 space-y-4 notification-scroll">
-
-                            <div class="flex items-start space-x-3 notification-item new-notification" data-new="true">
-                                <div class="flex-1">
-                                    <p class="m-1"><span class="font-bold text-gray-800">New User</span></p>
-                                    <p class="text-sm text-gray-500 m-1">You have a new follower!</p>
-                                    <p class="text-xs text-gray-400 m-1">Just now</p>
+                            @foreach ($notifications as $notification)
+                                <div class="flex items-start space-x-3 notification-item {{ $notification->is_read ? '' : 'new-notification' }}"
+                                    data-id="{{ $notification->id }}"
+                                    data-new="{{ $notification->is_read ? 'false' : 'true' }}">
+                                    <div class="flex-1">
+                                        <p class="m-1"><span class="font-bold text-gray-800"> {{ $notification->title ?? 'Notification' }}</span></p>
+                                        <p class="text-sm text-gray-500 m-1">{{ $notification->message }}</p>
+                                        <p class="text-xs text-gray-400 m-1">
+                                            {{ $notification->created_at->diffForHumans() }}</p>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="border-b m-0 border-gray-200"></div>
-                            <div class="flex items-start space-x-3 notification-item">
+                                <div class="border-b m-0 border-gray-200"></div>
+                            @endforeach
 
-                                <div class="flex-1">
-                                    <p class="m-1"><span class="font-bold text-gray-800">Brandon Newman</span></p>
-                                    <p class="text-sm text-gray-500 m-1">UI/UX Inspo</p>
-                                    <p class="text-xs text-gray-400 m-1">21 min ago</p>
-                                </div>
-                            </div>
-                            <div class="border-b m-0 border-gray-200"></div>
-
-                            <div class="flex items-start space-x-3 notification-item">
-
-                                <div class="flex-1">
-                                    <p class="m-1"><span class="font-bold text-gray-800">Dave Wood</span></p>
-                                    <p class="text-sm text-gray-500 m-1">Daily UI Challenge 049</p>
-                                    <p class="text-xs text-gray-400 m-1">2 hours ago</p>
-                                </div>
-                            </div>
-                            <div class="border-b m-0 border-gray-200"></div>
-
-                            <div class="flex items-start space-x-3 notification-item">
-
-                                <div class="flex-1">
-                                    <p class="m-1"><span class="font-bold text-gray-800">Anna Lee</span></p>
-                                    <p class="text-sm text-gray-500 m-1">Woah! Loving these colours! Keep it up</p>
-                                    <p class="text-xs text-gray-400 m-1">1 day ago</p>
-                                </div>
-                            </div>
-                            <div class="border-b m-0 border-gray-200"></div>
-
-                            <div class="flex items-start space-x-3 notification-item">
-
-                                <div class="flex-1">
-                                    <p class="m-1"><span class="font-bold text-gray-800">Michael Scott</span></p>
-                                    <p class="text-sm text-gray-500 m-1">Woah! Loving these colours! Keep it up</p>
-                                    <p class="text-xs text-gray-400 m-1">1 day ago</p>
-                                </div>
-                            </div>
-                            <div class="border-b m-0 border-gray-200"></div>
-
-                            <div class="flex items-start space-x-3 notification-item">
-
-                                <div class="flex-1">
-                                    <p class="m-1"><span class="font-bold text-gray-800">Jessica Pearson</span></p>
-                                    <p class="text-sm text-gray-500 m-1">This design looks amazing! 🔥</p>
-                                    <p class="text-xs text-gray-400 m-1">4 days ago</p>
-                                </div>
-                            </div>
                         </div>
 
                         <!-- Footer: Mark All as Read Button -->
@@ -118,10 +83,8 @@
                 <!-- Profile Image -->
                 <div class="relative w-full md:w-12 h-10 md:h-12 rounded-full overflow-hidden border border-gray-300">
                     <a href="{{ route('profile') }}">
-                        <img src="{{ $headerProfilePic 
-                        ? asset($headerProfilePic)
-                        : asset('assets/profile.jpeg') }}" class="w-full h-full object-cover cursor-pointer"
-                            alt="User">
+                        <img src="{{ $headerProfilePic ? asset($headerProfilePic) : asset('assets/profile.jpeg') }}"
+                            class="w-full h-full object-cover cursor-pointer" alt="User">
                     </a>
                 </div>
             </div>

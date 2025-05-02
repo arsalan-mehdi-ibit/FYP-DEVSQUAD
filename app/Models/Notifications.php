@@ -14,6 +14,7 @@ class Notifications extends Model
 
     // Mass assignable fields
     protected $fillable = [
+        'title',
         'parent_id',
         'created_for',
         'user_id',

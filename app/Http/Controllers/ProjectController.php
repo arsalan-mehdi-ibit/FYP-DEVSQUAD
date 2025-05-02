@@ -63,7 +63,8 @@ class ProjectController extends Controller
             $projectsQuery->whereIn('status', $request->statuses);
         }
         // Apply ordering and execute query
-        $projects = $projectsQuery->orderBy('id', 'desc')->get();
+        $projects = $projectsQuery->orderBy('id', 'desc')->paginate(10); // 10 projects per page
+
 
         // Handle AJAX
         if ($request->ajax()) {
@@ -225,6 +226,7 @@ class ProjectController extends Controller
                     'created_by' => Auth::id(), // Logged-in user
                 ]);
                 notifications::create([
+                    'title' => 'Project Created',
                     'parent_id' => $project->id,
                     'created_for' => 'project',
                     'user_id' => $admin->id,
@@ -244,6 +246,7 @@ class ProjectController extends Controller
                     'created_by' => Auth::id(),
                 ]);
                 notifications::create([
+                    'title' => 'Project Assigned',
                     'parent_id' => $project->id,
                     'created_for' => 'project',
                     'user_id' => $client->id,
@@ -265,6 +268,7 @@ class ProjectController extends Controller
                         'created_by' => Auth::id(),
                     ]);
                     notifications::create([
+                        'title' => 'Project Assigned',
                         'parent_id' => $project->id,
                         'created_for' => 'project',
                         'user_id' => $consultant->id,
@@ -293,9 +297,10 @@ class ProjectController extends Controller
                             'user_id' => $contractorUser->id,  // Notify only the assigned contractor
                             'created_by' => Auth::id(),  // Logged-in user who created the project
                         ]);
-
+                        
                         // Create notification for the assigned contractor
                         notifications::create([
+                            'title' => 'Project Assigned',
                             'parent_id' => $project->id,
                             'created_for' => 'project',
                             'user_id' => $contractorUser->id,  // Notify only the assigned contractor
@@ -468,8 +473,9 @@ class ProjectController extends Controller
                 'user_id' => $admin->id, // Notify each admin
                 'created_by' => Auth::id(), // Logged-in user
             ]);
-
+            
             Notifications::create([
+                'title' => 'Project Updated',
                 'parent_id' => $project->id,
                 'created_for' => 'project',
                 'user_id' => $admin->id,
@@ -488,6 +494,7 @@ class ProjectController extends Controller
                 'created_by' => Auth::id(),
             ]);
             notifications::create([
+                'title' => 'Project Assigned',
                 'parent_id' => $project->id,
                 'created_for' => 'project',
                 'user_id' => $client->id,
@@ -509,6 +516,7 @@ class ProjectController extends Controller
                     'created_by' => Auth::id(),
                 ]);
                 notifications::create([
+                    'title' => 'Project Assigned',
                     'parent_id' => $project->id,
                     'created_for' => 'project',
                     'user_id' => $consultant->id,
@@ -537,9 +545,10 @@ class ProjectController extends Controller
                         'user_id' => $contractorUser->id,  // Notify only the assigned contractor
                         'created_by' => Auth::id(),  // Logged-in user who created the project
                     ]);
-
+                    
                     // Create notification for the assigned contractor
                     notifications::create([
+                        'title' => 'Project Assigned',
                         'parent_id' => $project->id,
                         'created_for' => 'project',
                         'user_id' => $contractorUser->id,  // Notify only the assigned contractor

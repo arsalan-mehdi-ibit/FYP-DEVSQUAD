@@ -83,12 +83,12 @@
         <!-- Filters Wrapper -->
         <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between mb-4 mt-4">
 
-            
+
             <!-- Mobile Toggle Button -->
             <div class="flex justify-between items-center md:hidden bg-white p-3 rounded-md shadow-sm">
                 <span class="text-gray-700 font-semibold text-sm">Filter By</span>
                 <button id="toggleFilters" class="text-sm text-black hover:underline">
-                   Show Filters
+                    Show Filters
                 </button>
             </div>
             <!-- Left side: Filter label and active filters -->
@@ -178,7 +178,8 @@
                 @endif
 
             </div>
-            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px">
+            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px"
+                id="project-table-wrapper">
 
 
                 <table class="w-full border-collapse border border-gray-200">
@@ -224,7 +225,7 @@
                         @foreach ($projects as $project)
                             <tr class="border-b hover:bg-gray-50">
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
-                                    {{ $loop->iteration }}</td>
+                                    {{ ($projects->currentPage() - 1) * $projects->perPage() + $loop->iteration }}</td>
                                 <td class="p-2 sm:p-3 text-xs text-center sm:text-sm md:text-base whitespace-nowrap">
                                     {{ $project->name }}</td>
                                 @if (Auth::user()->role == 'admin' || Auth::user()->role == 'consultant')
@@ -274,13 +275,16 @@
                                             </form>
                                         @endif
                                     @endif
-
-
                                 </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
+                <div class="mt-0 flex justify-end">
+                    <div class="bg-transparent dark:bg-gray-800  rounded-lg px-3 py-0">
+                        {{ $projects->appends(request()->except(['_token']))->links() }}
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -332,8 +336,8 @@
                     },
                     success: function(response) {
                         var tempDiv = $('<div>').html(response.html);
-                        var newTbody = tempDiv.find('#project-table-body').html();
-                        $('#project-table-body').html(newTbody);
+                        var newTbody = tempDiv.find('#project-table-wrapper').html();
+                        $('#project-table-wrapper').html(newTbody);
                     }
                 });
             }

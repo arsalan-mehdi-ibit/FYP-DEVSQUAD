@@ -20,8 +20,12 @@
                 <th>Status</th>
                 <th>Total Hours</th>
                 <th>Project</th>
-                <th>Contractor</th>
-                <th>Client</th>
+                @if (!in_array($role, ['contractor']))
+                    <th>Client</th>
+                @endif
+                @if (!in_array($role, ['client']))
+                    <th>Contractor</th>
+                @endif
             </tr>
         </thead>
         <tbody>
@@ -32,8 +36,12 @@
                     <td>{{ strtoupper($t->status) }}</td>
                     <td>{{ $t->total_actual_hours ?? 0 }}</td>
                     <td>{{ $t->project->name ?? 'N/A' }}</td>
-                    <td>{{ $t->contractor->firstname ?? 'N/A' }}</td>
-                    <td>{{ $t->project->client->firstname ?? 'N/A' }}</td>
+                    @if (!in_array($role, ['contractor']))
+                        <td>{{ $t->project->client->firstname ?? 'N/A' }}</td>
+                    @endif
+                    @if (!in_array($role, ['client']))
+                        <td>{{ $t->contractor->firstname ?? 'N/A' }}</td>
+                    @endif
                 </tr>
             @endforeach
         </tbody>

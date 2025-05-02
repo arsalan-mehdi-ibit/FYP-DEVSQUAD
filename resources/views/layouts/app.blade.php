@@ -2,25 +2,25 @@
 <html lang="en">
 
 <head>
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "06375bc5-04f9-4a40-b08b-c85ef8083a6c", // your app ID
-      notifyButton: {
-        enable: true, // optional, shows a bell icon
-      },
-      serviceWorkerPath: 'OneSignalSDKWorker.js',
-      serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
-      allowLocalhostAsSecureOrigin: true, // for local testing
-    });
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+    <script>
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        OneSignalDeferred.push(async function(OneSignal) {
+            await OneSignal.init({
+                appId: "06375bc5-04f9-4a40-b08b-c85ef8083a6c", // your app ID
+                notifyButton: {
+                    enable: true, // optional, shows a bell icon
+                },
+                serviceWorkerPath: 'OneSignalSDKWorker.js',
+                serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
+                allowLocalhostAsSecureOrigin: true, // for local testing
+            });
 
-    @auth
-      OneSignal.sendTag("user_id", "{{ auth()->id() }}"); // tag logged in user
-    @endauth
-  });
-</script>
+            @auth
+            OneSignal.sendTag("user_id", "{{ auth()->id() }}"); // tag logged in user
+        @endauth
+        });
+    </script>
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -312,7 +312,6 @@
 
 
 
-            // notification dropdown
             function updateNotificationCount() {
                 let unreadCount = $(".notification-item[data-new='true']").length;
                 if (unreadCount > 0) {
@@ -322,36 +321,55 @@
                 }
             }
 
-            // Update count on page load
             updateNotificationCount();
 
-            // Toggle dropdown on bell click
             $("#notificationBell").click(function(event) {
                 event.stopPropagation();
                 $("#notificationDropdown").toggle();
             });
 
-            // Hide dropdown when clicking outside
             $(document).click(function(event) {
                 if (!$(event.target).closest("#notificationDropdown, #notificationBell").length) {
                     $("#notificationDropdown").hide();
                 }
             });
 
-            // Mark notifications as read when clicked
+            // Mark individual notification
             $(".notification-item").click(function() {
-                $(this).removeClass("new-notification").attr("data-new", "false");
-                updateNotificationCount();
+                const item = $(this);
+                const notificationId = item.data("id");
+
+                $.ajax({
+                    url: `/notifications/mark-read/${notificationId}`,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(res) {
+                        if (res.status === 'success') {
+                            item.removeClass("new-notification").attr("data-new", "false");
+                            updateNotificationCount();
+                        }
+                    }
+                });
             });
 
+            // Mark all as read
             $("#markAllRead").click(function() {
-                $(".notification-item").removeClass("new-notification").attr("data-new", "false");
-                updateNotificationCount();
-            });
-
-            // Close notification when sidebar opens
-            $("#menu-toggle").click(function() {
-                $("#notificationDropdown").hide();
+                $.ajax({
+                    url: `/notifications/mark-all-read`,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(res) {
+                        if (res.status === 'success') {
+                            $(".notification-item").removeClass("new-notification").attr(
+                                "data-new", "false");
+                            updateNotificationCount();
+                        }
+                    }
+                });
             });
 
 
@@ -576,12 +594,12 @@
             //     $('.relative > div').hide();
             // });
 
-            $('#toggleFilters').click(function () {
-            $('#filterSection').toggleClass('hidden');
-            $(this).text(function (i, text) {
-                return text === "Filters" ? " Filters" : "Filters";
+            $('#toggleFilters').click(function() {
+                $('#filterSection').toggleClass('hidden');
+                $(this).text(function(i, text) {
+                    return text === "Filters" ? " Filters" : "Filters";
+                });
             });
-        });
         });
     </script>
 </body>
