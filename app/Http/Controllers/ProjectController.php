@@ -297,7 +297,7 @@ class ProjectController extends Controller
                             'user_id' => $contractorUser->id,  // Notify only the assigned contractor
                             'created_by' => Auth::id(),  // Logged-in user who created the project
                         ]);
-                        
+
                         // Create notification for the assigned contractor
                         notifications::create([
                             'title' => 'Project Assigned',
@@ -333,6 +333,7 @@ class ProjectController extends Controller
     {
         $pageTitle = "Edit Project";
         $project = Project::findOrFail($id);
+        $assignedContractorIds = $project->contractors->pluck('id')->toArray();
         $users = User::all();
         $contractors = $users->where('role', 'contractor');
 
@@ -404,6 +405,24 @@ class ProjectController extends Controller
             // Find the project to update
             $project = Project::findOrFail($id);
 
+            if ($project->status === 'completed') {
+                return back()->withErrors(['status' => 'Completed project cannot be edited.']);
+            }
+            
+
+            if ($project->status === 'in_progress' && $validated['status'] === 'pending') {
+                return back()->withErrors(['status' => 'Project already in progress cannot be reverted to pending.']);
+            }
+
+            if ($project->status === 'pending' && $validated['status'] === 'completed') {
+                return back()->withErrors(['status' => 'Project cannot go directly from pending to completed.']);
+            }
+
+            if ($project->status === 'completed' && $validated['status'] !== 'completed') {
+                return back()->withErrors(['status' => 'Completed project cannot change status.']);
+            }
+            
+            
             // Check if the name has changed
             if ($project->name !== $validated['name']) {
                 // Look for any soft-deleted project with the same name
@@ -430,6 +449,9 @@ class ProjectController extends Controller
                 MediaController::uploadFile($request, $project->id);
             }
 
+            
+            
+
             // Update the project with the new validated data
             $project->update($validated);
             // ✅ Dispatch the FillTimesheet job
@@ -445,16 +467,16 @@ class ProjectController extends Controller
         }
 
         // Update the project
-        $project->update($validated);
+        // $project->update($validated);
 
         // Sync the contractors (remove previous and add new ones)
-        if (isset($request->contractors)) {
-            $project->contractors()->detach(); // Remove existing contractors
+        // if (isset($request->contractors)) {
+        //     $project->contractors()->detach(); // Remove existing contractors
 
-            foreach ($request->contractors as $contractor) {
-                $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
-            }
-        }
+        //     foreach ($request->contractors as $contractor) {
+        //         $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
+        //     }
+        // }
 
         // Handle file uploads (attachments)
         if ($request->hasFile('attachments')) {
@@ -473,7 +495,7 @@ class ProjectController extends Controller
                 'user_id' => $admin->id, // Notify each admin
                 'created_by' => Auth::id(), // Logged-in user
             ]);
-            
+
             Notifications::create([
                 'title' => 'Project Updated',
                 'parent_id' => $project->id,
@@ -545,7 +567,7 @@ class ProjectController extends Controller
                         'user_id' => $contractorUser->id,  // Notify only the assigned contractor
                         'created_by' => Auth::id(),  // Logged-in user who created the project
                     ]);
-                    
+
                     // Create notification for the assigned contractor
                     notifications::create([
                         'title' => 'Project Assigned',
@@ -570,6 +592,14 @@ class ProjectController extends Controller
     public function removeContractor($contractorId, Request $request)
     {
         $project = Project::findOrFail($request->project_id); // This should return an object, not an array
+
+        if ($project->status === 'in_progress') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Contractor cannot be removed while project is in progress.',
+            ], 403);
+        }
+
         $contractor = User::findOrFail($contractorId); // Ensure this is an object
 
         // Detach the contractor from the project

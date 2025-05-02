@@ -240,12 +240,17 @@
                                                             <select name="contractors[{{ $index }}][contractor_id]"
                                                                 class="contractor-id w-56 px-2 py-1 border rounded-md bg-gray-100">
                                                                 @foreach ($contractors as $contractorOption)
-                                                                    <option value="{{ $contractorOption->id }}"
-                                                                        {{ $contractorOption->id == $contractor['contractor_id'] ? 'selected' : '' }}>
-                                                                        {{ $contractorOption->firstname }}
-                                                                        {{ $contractorOption->lastname }}
-                                                                    </option>
+                                                                    @if (
+                                                                        $contractorOption->id == $contractor['contractor_id'] ||
+                                                                            !in_array($contractorOption->id, $projectContractors->pluck('contractor_id')->toArray()))
+                                                                        <option value="{{ $contractorOption->id }}"
+                                                                            {{ $contractorOption->id == $contractor['contractor_id'] ? 'selected' : '' }}>
+                                                                            {{ $contractorOption->firstname }}
+                                                                            {{ $contractorOption->lastname }}
+                                                                        </option>
+                                                                    @endif
                                                                 @endforeach
+
                                                             </select>
                                                         </td>
                                                         <td class="p-2 flex">
@@ -446,30 +451,41 @@
             $("#addContractorBtn").click(function() {
                 let rowIndex = $("#contractor-table-body tr").length + 1;
                 contractorCount++; // Increment contractor count for uniqueness
-                const newRow = `
-    <tr id="contractor-row-${contractorCount}" class="border-b">
-        <td class="p-2 text-left">${rowIndex}</td>
-        <td class="p-2">
-           <select name="contractors[${contractorCount}][contractor_id]" class="contractor-id form-control w-56 px-2 py-1 border rounded-md bg-gray-100">
-            <option>Select Contractor</option>
-            @foreach ($contractors as $contractorOption)
-                    <option value="{{ $contractorOption->id }}">
-                        {{ $contractorOption->firstname }} {{ $contractorOption->lastname }}
-                    </option>
+                let selectedIds = [];
+                $('.contractor-id').each(function() {
+                    let val = $(this).val();
+                    if (val) selectedIds.push(val);
+                });
+
+                let optionsHtml = '<option value="">Select Contractor</option>';
+                @foreach ($contractors as $contractorOption)
+                    if (!selectedIds.includes('{{ $contractorOption->id }}')) {
+                        optionsHtml += `<option value="{{ $contractorOption->id }}">
+            {{ $contractorOption->firstname }} {{ $contractorOption->lastname }}
+        </option>`;
+                    }
                 @endforeach
+
+                const newRow = `
+<tr id="contractor-row-${contractorCount}" class="border-b">
+    <td class="p-2 text-left">${rowIndex}</td>
+    <td class="p-2">
+       <select name="contractors[${contractorCount}][contractor_id]" class="contractor-id form-control w-56 px-2 py-1 border rounded-md bg-gray-100">
+            ${optionsHtml}
+       </select>
+    </td>
+    <td class="p-2 flex">
+        <select class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
+            <option>USD</option>
+            <option>CAD</option>
         </select>
-        </td>
-       <td class="p-2 flex">
-            <select class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
-                <option>USD</option>
-                <option>CAD</option>
-            </select>
-            <input type="number" name="contractors[${contractorCount}][rate]" class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100" placeholder="Contractor Rate">
-        </td>
-        <td class="p-2 text-right">
-            <button class="removeRow text-md bg-red-500 text-white px-3 py-0 rounded">X</button>
-        </td>
-    </tr>`;
+        <input type="number" name="contractors[${contractorCount}][rate]" class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100" placeholder="Contractor Rate">
+    </td>
+    <td class="p-2 text-right">
+        <button class="removeRow text-md bg-red-500 text-white px-3 py-0 rounded">X</button>
+    </td>
+</tr>`;
+
 
                 $("#contractor-table-body").append(newRow);
                 updateStatusBasedOnContractors(); // Update status dropdown after contractor is added
@@ -500,7 +516,7 @@
 
                 var contractorId = $(this).data('contractor-id');
                 var projectId = $(this).data(
-                'project-id'); // Assuming you have project ID as data attribute
+                    'project-id'); // Assuming you have project ID as data attribute
 
                 if (confirm('Are you sure you want to remove this contractor?')) {
                     $.ajax({
@@ -516,17 +532,21 @@
                                 $(event.target).closest('tr').remove();
                                 $('#contractor-table-body tr').each(function(index) {
                                     $(this).find('td:first').text(index +
-                                    1); // Reorder the contractor list
+                                        1); // Reorder the contractor list
                                 });
                                 updateStatusBasedOnContractors
-                            (); // Update status dropdown after contractor is removed
+                                    (); // Update status dropdown after contractor is removed
                             } else {
                                 alert('Error: ' + (response.message ||
                                     'Unable to remove contractor'));
                             }
                         },
                         error: function(xhr, status, error) {
-                            alert('Error occurred while removing the contractor.');
+                            let message = 'Error occurred while removing the contractor.';
+                            if (xhr.responseJSON && xhr.responseJSON.message) {
+                                message = xhr.responseJSON.message;
+                            }
+                            alert('Error: ' + message);
                         }
                     });
                 }

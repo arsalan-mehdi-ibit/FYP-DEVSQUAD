@@ -255,7 +255,7 @@
                                             <i class="fas fa-eye text-blue-500"></i>
                                         </button>
                                     </a>
-                                    @if (Auth::user()->role == 'admin')
+                                    @if (Auth::user()->role == 'admin' && $project->status !== 'completed')
                                         <a href="{{ route('project.edit', $project->id) }}">
                                             <button
                                                 class="p-2 rounded-xl bg-yellow-100 hover:bg-orange-200 transition-all">
