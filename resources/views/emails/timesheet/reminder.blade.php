@@ -2,72 +2,73 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Submitted Timesheet Reminder</title>
+    <title>Timesheet Approval Reminder</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f9f9f9;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f8;
+            margin: 0;
             padding: 30px;
         }
         .container {
+            background-color: #ffffff;
             max-width: 600px;
-            background: #ffffff;
-            padding: 40px;
-            border-radius: 8px;
             margin: auto;
-            box-shadow: 0 0 10px rgba(0,0,0,0.06);
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
         }
         .header {
+            color: #2f3640;
             font-size: 24px;
             font-weight: bold;
-            color: #273c75;
             margin-bottom: 20px;
         }
         .content {
-            font-size: 16px;
+            font-size: 15px;
             color: #333;
             line-height: 1.6;
         }
-        .button {
-            display: inline-block;
-            margin-top: 20px;
-            background-color: #273c75;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 12px 20px;
+        .details {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f1f2f6;
             border-radius: 5px;
-            font-weight: bold;
+        }
+        .details strong {
+            display: inline-block;
+            width: 140px;
+            color: #2f3640;
         }
         .footer {
             font-size: 13px;
             color: #888;
-            margin-top: 40px;
+            margin-top: 30px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">Timesheet Submitted Successfully</div>
+<div class="container">
+    <div class="header">Timesheet Approval Reminder</div>
 
-        <div class="content">
-            <p>Dear {{ $timesheet->client->name ?? 'Client' }},</p>
+    <div class="content">
+        <p>Dear {{ $client_name }},</p>
 
-            <p>This is a reminder that your timesheet has been <strong>successfully submitted</strong>.</p>
+        <p>This is a gentle reminder that the following timesheet is awaiting your review and approval:</p>
 
-            <ul>
-                <li><strong>Timesheet ID:</strong> {{ $timesheet->id }}</li>
-                <li><strong>Project Name:</strong> {{ $timesheet->project->name ?? 'N/A' }}</li>
-                <li><strong>Submitted On:</strong> {{ \Carbon\Carbon::parse($timesheet->submitted_at)->format('F j, Y') ?? 'N/A' }}</li>
-                <li><strong>Status:</strong> {{ ucfirst($timesheet->status) }}</li>
-            </ul>
-
-          
+        <div class="details">
+            <p><strong>Project Name:</strong> {{ $project_name }}</p>
+            <p><strong>Submitted On:</strong> {{ $submitted_at }}</p>
+            <p><strong>Status:</strong> {{ $status }}</p>
         </div>
 
-        <div class="footer">
-            &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
-        </div>
+        <p>Please log in to your dashboard to take necessary action.</p>
     </div>
+
+    <div class="footer">
+        &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+    </div>
+</div>
 </body>
 </html>

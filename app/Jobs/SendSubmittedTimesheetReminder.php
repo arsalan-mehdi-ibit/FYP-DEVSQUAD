@@ -30,12 +30,20 @@ class SendSubmittedTimesheetReminder implements ShouldQueue
      */
     public function handle(): void
     {
-       
-\Log::info("helooo");
-Mail::to("haishamfaizan@gmail.com")->send(new EmailSender(
-    "Timesheet Approval Reminder",
-    $this->timesheet->toArray(),
-    'emails.timesheet.reminder'
-));
+        $emailData = [
+            'client_name'     => $this->timesheet->project->client->name ?? 'Client',
+            'project_name'    => $this->timesheet->project->name ?? 'N/A',
+            'submitted_date'  => optional($this->timesheet->submitted_at)->format('F j, Y') ?? 'N/A',
+            'status'          => ucfirst($this->timesheet->status),
+        ];
+    
+        $recipient = $this->timesheet->project->client->email ?? 'default@example.com';
+    
+        Mail::to($recipient)->send(new EmailSender(
+            "Timesheet Approval Reminder",
+            $emailData,
+            'emails.timesheet.reminder'
+        ));
     }
+    
 }
