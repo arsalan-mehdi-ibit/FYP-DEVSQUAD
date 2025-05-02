@@ -16,7 +16,7 @@ use App\Models\Notifications;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailSender;
 use App\Jobs\FillTimesheet;
-
+use App\Events\NewNotification;
 
 
 class ProjectController extends Controller
@@ -247,10 +247,12 @@ class ProjectController extends Controller
                     'parent_id' => $project->id,
                     'created_for' => 'project',
                     'user_id' => $client->id,
-                    'message' => 'You have been assigned as a client for project "' . $project->name . '".',
+                    'message' => '"' . $project->name . '" has been updated.',
                     'is_read' => 0, // Unread by default
                 ]);
+                event(new NewNotification('You have a new notification!', $client->id));
             }
+
 
             // Recent Activity for the Consultant
             if ($project->consultant_id) {
@@ -431,8 +433,6 @@ class ProjectController extends Controller
             $this->triggerTimesheetJob($project);
 
 
-            // Return a success message
-            return redirect()->route('project.index')->with('project_updated', 'Project updated successfully.');
 
         } catch (\Exception $e) {
             // Handle any errors during the update process
@@ -460,6 +460,7 @@ class ProjectController extends Controller
 
         // Step 2: Create recent activity for each admin
         foreach ($adminUsers as $admin) {
+
             RecentActivity::create([
                 'title' => 'Project Updated',
                 'description' => 'Project "' . $project->name . '" has been updated.',
@@ -476,24 +477,31 @@ class ProjectController extends Controller
                 'message' => 'Project "' . $project->name . '" has been updated.',
                 'is_read' => 0, // unread by default
             ]);
+            // event((new NewNotification('Project created!', $admin->id))->delay(now()->addSeconds(2)));
+
+
         }
         // Recent Activity for the Client
-        if ($client) {
+        if ($project->client_id) {
             RecentActivity::create([
-                'title' => 'Project Assigned',
+                'title' => 'Project Updated',
                 'description' => 'You have been assigned as a client for project "' . $project->name . '".',
                 'parent_id' => $project->id,
                 'created_for' => 'project',
-                'user_id' => $client->id,
+                'user_id' => $project->client_id,
                 'created_by' => Auth::id(),
             ]);
             notifications::create([
                 'parent_id' => $project->id,
                 'created_for' => 'project',
-                'user_id' => $client->id,
-                'message' => 'You have been assigned as a client for project "' . $project->name . '".',
+                'user_id' =>  $project->client_id,
+                'message' => '"' . $project->name . '".',
                 'is_read' => 0, // Unread by default
             ]);
+            // event((new NewNotification('Project created!', $project->client_id))->delay(now()->addSeconds(2)));
+            event(new NewNotification('Project ' .$project->name. ' Updated by ' . Auth::user()->firstname, $project->client_id));
+
+
         }
 
         // Recent Activity for the Consultant

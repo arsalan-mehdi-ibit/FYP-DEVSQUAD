@@ -2,28 +2,15 @@
 <html lang="en">
 
 <head>
-<script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
-<script>
-  window.OneSignalDeferred = window.OneSignalDeferred || [];
-  OneSignalDeferred.push(async function(OneSignal) {
-    await OneSignal.init({
-      appId: "06375bc5-04f9-4a40-b08b-c85ef8083a6c", // your app ID
-      notifyButton: {
-        enable: true, // optional, shows a bell icon
-      },
-      serviceWorkerPath: 'OneSignalSDKWorker.js',
-      serviceWorkerUpdaterPath: 'OneSignalSDKUpdaterWorker.js',
-      allowLocalhostAsSecureOrigin: true, // for local testing
-    });
 
-    @auth
-      OneSignal.sendTag("user_id", "{{ auth()->id() }}"); // tag logged in user
-    @endauth
-  });
-</script>
+
+<script src="https://js.pusher.com/7.2/pusher.min.js"></script>
+
+
 
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <link rel="apple-touch-icon" sizes="76x76" href="{{ asset('img/apple-icon.png') }}">
     <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
     <title>
@@ -100,6 +87,79 @@
 
     <script>
         $(document).ready(function() {
+
+            @if(Auth::user())
+
+                // Enable pusher logging - remove in production
+                Pusher.logToConsole = true;
+
+                var pusher = new Pusher('516f298ecbcf241b77a3', {
+                    cluster: 'ap2',
+                    encrypted: true,
+                    authEndpoint: '/broadcasting/auth',
+                    auth: {
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        }
+                    }
+                });
+
+                var userId = {{ Auth::user()->id }};
+
+                var channel = pusher.subscribe('private-notifications.' + userId);
+
+                channel.bind('NewNotification', function (data) {
+                    console.log('Received notification:', data.message);
+
+                    // Create HTML for new notification
+                    let newNotification = `
+                        <div class="flex items-start space-x-3 notification-item new-notification" data-new="true">
+                            <div class="flex-1">
+                                <p class="m-1"><span class="font-bold text-gray-800">New Alert</span></p>
+                                <p class="text-sm text-gray-500 m-1">${data.message}</p>
+                                <p class="text-xs text-gray-400 m-1">Just now</p>
+                            </div>
+                        </div>
+                        <div class="border-b m-0 border-gray-200"></div>
+                    `;
+
+                    // Prepend new notification
+                    $('.notification-scroll').prepend(newNotification);
+
+                    // Update badge count
+                    let $count = $('#notificationCount');
+                    let current = parseInt($count.text()) || 0;
+                    $count.text(current + 1).removeClass('hidden').show();
+                });
+
+
+
+            @endif
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

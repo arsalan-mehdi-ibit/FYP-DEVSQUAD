@@ -14,7 +14,14 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\TaskController;
+use Illuminate\Support\Facades\Broadcast;
 
+
+Route::get('/test-auth', function () {
+    return auth()->check() ? 'Logged in as: ' . auth()->user()->id : 'Not authenticated';
+});
+
+Broadcast::routes(['middleware' => ['auth']]);
 
 
 Route::get('/reset-password/{token}', [NewPasswordController::class, 'create'])

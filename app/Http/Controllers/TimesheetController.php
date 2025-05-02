@@ -14,6 +14,9 @@ use App\Models\Notifications;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Events\NewNotification;
+
+
 
 
 class TimesheetController extends Controller
@@ -242,6 +245,8 @@ class TimesheetController extends Controller
                     'message' => $description,
                     'is_read' => 0,
                 ]);
+                event(new NewNotification('You have a new notification!', $user->id));
+
             }
         };
 
