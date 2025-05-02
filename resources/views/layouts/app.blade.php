@@ -115,7 +115,7 @@
                     let newNotification = `
                         <div class="flex items-start space-x-3 notification-item new-notification" data-new="true">
                             <div class="flex-1">
-                                <p class="m-1"><span class="font-bold text-gray-800">New Alert</span></p>
+                                <p class="m-1"><span class="font-bold text-gray-800">New Notification</span></p>
                                 <p class="text-sm text-gray-500 m-1">${data.message}</p>
                                 <p class="text-xs text-gray-400 m-1">Just now</p>
                             </div>

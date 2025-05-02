@@ -550,7 +550,7 @@ class ProjectController extends Controller
                     'created_by' => Auth::id(),
                 ]);
                 notifications::create([
-                    'title' => 'Project Assigned',
+                    'title' => 'Project updated',
                     'parent_id' => $project->id,
                     'created_for' => 'project',
                     'user_id' => $consultant->id,

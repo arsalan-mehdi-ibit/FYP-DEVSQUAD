@@ -357,6 +357,8 @@ class TimesheetController extends Controller
                     'message' => $description,
                     'is_read' => 0,
                 ]);
+                event(new NewNotification($description, $contractor->id));
+
             }
         }
 
