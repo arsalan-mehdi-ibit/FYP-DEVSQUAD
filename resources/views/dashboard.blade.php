@@ -36,7 +36,7 @@
                             <option value="{{ $project->id }}">{{ $project->name }}</option>
                         @endforeach
                     </select>
-                    
+
 
                 </div>
                 <canvas id="hoursChart" class=" h-40"></canvas>
@@ -67,93 +67,93 @@
             </div>
 
             <div class="space-y-4 overflow-y-auto divide-y divide-gray-200">
-    @forelse ($activities as $activity)
-    <div class="p-2 bg-gray-50 rounded-md">
-        <div class="flex justify-between items-center text-xs text-gray-500 px-2">
-            <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">
-                {{ strtoupper($activity->created_for ?? 'ACTIVITY') }}
-            </span>
-                <span>{{ \Carbon\Carbon::parse($activity->created_at)->format('F d, Y') }}</span>
+                @forelse ($activities as $activity)
+                    <div class="p-2 bg-gray-50 rounded-md">
+                        <div class="flex justify-between items-center text-xs text-gray-500 px-2">
+                            <span class="font-semibold uppercase bg-gray-300 text-white px-3 py-1 rounded-xl">
+                                {{ strtoupper($activity->created_for ?? 'ACTIVITY') }}
+                            </span>
+                            <span>{{ \Carbon\Carbon::parse($activity->created_at)->format('F d, Y') }}</span>
+                        </div>
+                        <p class="text-sm font-semibold text-gray-800 px-2 mt-2 mb-2">
+                            {{ $activity->title ?? 'Activity Performed' }}
+                        </p>
+                        <p class="text-sm text-gray-800 px-2">
+                            {{ $activity->description }}
+                        </p>
+                        <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
+                            <span class="font-normal text-gray-500">
+                                {{ trim("{$activity->creator->firstname} {$activity->creator->lastname}") ?: 'N/A' }}
+                            </span>
+                        </p>
+
+
+                    </div>
+                @empty
+                    <div class="p-2 text-gray-500 text-sm text-center">No recent activity found.</div>
+                @endforelse
             </div>
-            <p class="text-sm font-semibold text-gray-800 px-2 mt-2 mb-2">
-                {{ $activity->title ?? 'Activity Performed' }}
-            </p>
-            <p class="text-sm text-gray-800 px-2">
-                {{ $activity->description }}
-            </p>
-            <p class="text-xs text-black font-semibold mt-2 px-2">Creator:
-    <span class="font-normal text-gray-500">
-        {{ trim("{$activity->creator->firstname} {$activity->creator->lastname}") ?: 'N/A' }}
-    </span>
-</p>
+            <script>
+                $(document).ready(function() {
+                    const ctx = document.getElementById('hoursChart').getContext('2d');
+                    const projectDropdown = $("#projectSelect"); // create this dropdown with project IDs
+                    let hoursChart;
 
-
-        </div>
-    @empty
-        <div class="p-2 text-gray-500 text-sm text-center">No recent activity found.</div>
-    @endforelse
-</div>
-    <script>
-        $(document).ready(function() {
-            const ctx = document.getElementById('hoursChart').getContext('2d');
-            const projectDropdown = $("#projectSelect"); // create this dropdown with project IDs
-            let hoursChart;
-
-            function loadChart(projectId = 'all') {
-                $.ajax({
-                    url: '/dashboard/monthly-hours',
-                    method: 'GET',
-                    data: {
-                        project_id: projectId
-                    },
-                    success: function(res) {
-                        const data = res.data;
-
-                        if (hoursChart) hoursChart.destroy();
-
-                        hoursChart = new Chart(ctx, {
-                            type: 'bar',
+                    function loadChart(projectId = 'all') {
+                        $.ajax({
+                            url: '/dashboard/monthly-hours',
+                            method: 'GET',
                             data: {
-                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-                                ],
-                                datasets: [{
-                                    label: "Hours Worked",
-                                    data: data,
-                                    backgroundColor: "rgba(33, 60, 95, 0.9)",
-                                    borderWidth: 0
-                                }]
+                                project_id: projectId
                             },
-                            options: {
-                                scales: {
-                                    y: {
-                                        beginAtZero: true
+                            success: function(res) {
+                                const data = res.data;
+
+                                if (hoursChart) hoursChart.destroy();
+
+                                hoursChart = new Chart(ctx, {
+                                    type: 'bar',
+                                    data: {
+                                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                                        ],
+                                        datasets: [{
+                                            label: "Hours Worked",
+                                            data: data,
+                                            backgroundColor: "rgba(33, 60, 95, 0.9)",
+                                            borderWidth: 0
+                                        }]
                                     },
-                                    x: {
-                                        grid: {
-                                            display: false
+                                    options: {
+                                        scales: {
+                                            y: {
+                                                beginAtZero: true
+                                            },
+                                            x: {
+                                                grid: {
+                                                    display: false
+                                                }
+                                            }
+                                        },
+                                        plugins: {
+                                            legend: {
+                                                display: false
+                                            }
                                         }
                                     }
-                                },
-                                plugins: {
-                                    legend: {
-                                        display: false
-                                    }
-                                }
+                                });
                             }
                         });
                     }
+
+                    // Initial load
+                    loadChart();
+
+                    // Reload when project changes
+                    $("#projectSelect").on('change', function() {
+                        const selectedProject = $(this).val();
+                        loadChart(selectedProject);
+                    });
                 });
-            }
-
-            // Initial load
-            loadChart();
-
-            // Reload when project changes
-            $("#projectSelect").on('change', function() {
-                const selectedProject = $(this).val();
-                loadChart(selectedProject);
-            });
-        });
-    </script>
-@endsection
+            </script>
+        @endsection

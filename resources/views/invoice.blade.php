@@ -72,8 +72,8 @@
         <!-- Filters Wrapper -->
         <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between mb-4 mt-4">
 
-             <!-- Mobile Toggle Button -->
-             <div class="flex justify-between items-center md:hidden bg-white p-3 rounded-md shadow-sm">
+            <!-- Mobile Toggle Button -->
+            <div class="flex justify-between items-center md:hidden bg-white p-3 rounded-md shadow-sm">
                 <span class="text-gray-700 font-semibold text-sm">Filter By</span>
                 <button id="toggleFilters" class="text-sm text-black hover:underline">
                     Show Filters
@@ -244,7 +244,8 @@
         <div class="bg-white p-2 sm:p-5 rounded-lg shadow-md mt-4 sm:mt-6">
             <h2 class="text-lg sm:text-xl font-bold mb-3 sm:mb-4">All Invoices List</h2>
 
-            <div class="max-h-[320px] overflow-y-auto overflow-x-auto relative border rounded-md">
+            <div class="max-h-[320px] overflow-y-auto overflow-x-auto relative border rounded-md"
+                id="invoice-table-wrapper">
                 <table class="w-full min-w-full text-center">
                     <thead class="sticky top-0 bg-gray-100 z-10">
                         <tr class="border-b">
@@ -390,10 +391,10 @@
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-            <div class="mt-4 flex justify-end">
-                <div class="bg-transparent dark:bg-gray-800 rounded-lg px-3 py-0">
-                    {{ $invoices->links() }}
+                <div class="mt-0 flex justify-end">
+                    <div class="bg-transparent dark:bg-gray-800  rounded-lg px-3 py-0">
+                        {{ $invoices->appends(request()->except(['_token']))->links() }}
+                    </div>
                 </div>
             </div>
 
@@ -462,8 +463,8 @@
                     },
                     success: function(response) {
                         var tempDiv = $('<div>').html(response.html);
-                        var newTbody = tempDiv.find('#invoice-table-body').html();
-                        $('#invoice-table-body').html(newTbody);
+                        var newTbody = tempDiv.find('#invoice-table-wrapper').html();
+                        $('#invoice-table-wrapper').html(newTbody);
                     }
                 });
             }

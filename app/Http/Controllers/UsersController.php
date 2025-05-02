@@ -39,7 +39,8 @@ class UsersController extends Controller
             $users->whereIn('role', $request->roles);
         }
     
-        $users = $users->orderBy('id', 'desc')->get(); // Execute query
+        $users = $users->orderBy('id', 'desc')->paginate(10); // 10 users per page
+
     
         // Check if it's an AJAX request (comes from filter)
         if ($request->ajax()) {
@@ -112,6 +113,7 @@ class UsersController extends Controller
                 ]);
                 // Create Notification
                 Notifications::create([
+                    'title' => 'User Created',
                     'parent_id' => $user->id,
                     'created_for' => 'user',
                     'user_id' => $admin->id,
@@ -196,6 +198,7 @@ class UsersController extends Controller
             ]);
             // Create Notification
             Notifications::create([
+                'title' => 'User Updated',
                 'parent_id' => $user->id,
                 'created_for' => 'user',
                 'user_id' => $admin->id,

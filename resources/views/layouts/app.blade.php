@@ -372,7 +372,6 @@
 
 
 
-            // notification dropdown
             function updateNotificationCount() {
                 let unreadCount = $(".notification-item[data-new='true']").length;
                 if (unreadCount > 0) {
@@ -382,36 +381,55 @@
                 }
             }
 
-            // Update count on page load
             updateNotificationCount();
 
-            // Toggle dropdown on bell click
             $("#notificationBell").click(function(event) {
                 event.stopPropagation();
                 $("#notificationDropdown").toggle();
             });
 
-            // Hide dropdown when clicking outside
             $(document).click(function(event) {
                 if (!$(event.target).closest("#notificationDropdown, #notificationBell").length) {
                     $("#notificationDropdown").hide();
                 }
             });
 
-            // Mark notifications as read when clicked
+            // Mark individual notification
             $(".notification-item").click(function() {
-                $(this).removeClass("new-notification").attr("data-new", "false");
-                updateNotificationCount();
+                const item = $(this);
+                const notificationId = item.data("id");
+
+                $.ajax({
+                    url: `/notifications/mark-read/${notificationId}`,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(res) {
+                        if (res.status === 'success') {
+                            item.removeClass("new-notification").attr("data-new", "false");
+                            updateNotificationCount();
+                        }
+                    }
+                });
             });
 
+            // Mark all as read
             $("#markAllRead").click(function() {
-                $(".notification-item").removeClass("new-notification").attr("data-new", "false");
-                updateNotificationCount();
-            });
-
-            // Close notification when sidebar opens
-            $("#menu-toggle").click(function() {
-                $("#notificationDropdown").hide();
+                $.ajax({
+                    url: `/notifications/mark-all-read`,
+                    method: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    },
+                    success: function(res) {
+                        if (res.status === 'success') {
+                            $(".notification-item").removeClass("new-notification").attr(
+                                "data-new", "false");
+                            updateNotificationCount();
+                        }
+                    }
+                });
             });
 
 
@@ -636,12 +654,12 @@
             //     $('.relative > div').hide();
             // });
 
-            $('#toggleFilters').click(function () {
-            $('#filterSection').toggleClass('hidden');
-            $(this).text(function (i, text) {
-                return text === "Filters" ? " Filters" : "Filters";
+            $('#toggleFilters').click(function() {
+                $('#filterSection').toggleClass('hidden');
+                $(this).text(function(i, text) {
+                    return text === "Filters" ? " Filters" : "Filters";
+                });
             });
-        });
         });
     </script>
 </body>

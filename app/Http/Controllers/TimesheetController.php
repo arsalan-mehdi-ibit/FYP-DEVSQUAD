@@ -239,6 +239,7 @@ class TimesheetController extends Controller
 
             if ($withNotification) {
                 notifications::create([
+                    'title' => $title,
                     'parent_id' => $timesheet->id,
                     'created_for' => 'timesheet',
                     'user_id' => $user->id,
@@ -331,10 +332,12 @@ class TimesheetController extends Controller
 
         foreach ($usersToNotify as $user) {
             // Dynamic description based on role
-            $description = $user->id === $contractor->id
+            $isContractor = $user->id === $contractor->id;
+            $description = $isContractor
                 ? 'Your timesheet for the project "' . $project->name . '" has been approved.'
                 : 'A contractor\'s timesheet for the project "' . $project->name . '" has been approved.';
 
+            // Recent activity entry
             RecentActivity::create([
                 'title' => 'Timesheet Approved',
                 'description' => $description,
@@ -343,7 +346,20 @@ class TimesheetController extends Controller
                 'user_id' => $user->id,
                 'created_by' => $approver->id,
             ]);
+
+            // Notification only for contractor
+            if ($isContractor) {
+                notifications::create([
+                    'title' => 'Timesheet Approved',
+                    'parent_id' => $timesheet->id,
+                    'created_for' => 'timesheet',
+                    'user_id' => $contractor->id,
+                    'message' => $description,
+                    'is_read' => 0,
+                ]);
+            }
         }
+
         return back()->with('success', 'Timesheet approved successfully.');
     }
 
@@ -392,8 +408,8 @@ class TimesheetController extends Controller
         foreach ($usersToNotify as $user) {
             $isContractor = $user->id === $contractor->id;
             $description = $isContractor
-                ? 'Your timesheet for the project "' . $project->name . '" has been rejected. Reason: ' . $request->rejection_reason
-                : 'A contractor\'s timesheet for the project "' . $project->name . '" has been rejected. Reason: ' . $request->rejection_reason;
+                ? 'Your timesheet for the project "' . $project->name . '" has been rejected because ' . $request->rejection_reason
+                : 'A contractor\'s timesheet for the project "' . $project->name . '" has been rejected because ' . $request->rejection_reason;
 
             RecentActivity::create([
                 'title' => 'Timesheet Rejected',
@@ -407,6 +423,7 @@ class TimesheetController extends Controller
             // Notification only for contractor
             if ($isContractor) {
                 notifications::create([
+                    'title' => 'Timesheet Rejected',
                     'parent_id' => $timesheet->id,
                     'created_for' => 'timesheet',
                     'user_id' => $contractor->id,
@@ -434,46 +451,43 @@ class TimesheetController extends Controller
                     WHEN status = 'approved' THEN 4
                     ELSE 5
                 END
-            ")->orderByDesc('submitted_at')
-                ->orderByDesc('updated_at');
+            ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
 
         } elseif (Auth::user()->role == 'client') {
             $projectIds = Project::where('client_id', Auth::id())->pluck('id');
-            $query->whereIn('project_id', $projectIds)
-                ->orderByRaw("
-                      CASE 
-                          WHEN status = 'submitted' THEN 1
-                          WHEN status = 'pending' THEN 2
-                          WHEN status = 'rejected' THEN 3
-                          WHEN status = 'approved' THEN 4
-                          ELSE 5
-                      END
-                  ")->orderByDesc('submitted_at')
-                ->orderByDesc('updated_at');
+            $query->whereIn('project_id', $projectIds)->orderByRaw("
+                CASE 
+                    WHEN status = 'submitted' THEN 1
+                    WHEN status = 'pending' THEN 2
+                    WHEN status = 'rejected' THEN 3
+                    WHEN status = 'approved' THEN 4
+                    ELSE 5
+                END
+            ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
 
         } elseif (Auth::user()->role == 'contractor') {
-            $query->where('contractor_id', Auth::id())
-                ->orderByRaw("
-                      CASE 
-                          WHEN status = 'rejected' THEN 1
-                          WHEN status = 'pending' THEN 2
-                          WHEN status = 'submitted' THEN 3
-                          WHEN status = 'approved' THEN 4
-                          ELSE 5
-                      END
-                  ")->orderByDesc('submitted_at')
-                ->orderByDesc('updated_at');
+            $query->where('contractor_id', Auth::id())->orderByRaw("
+                CASE 
+                    WHEN status = 'rejected' THEN 1
+                    WHEN status = 'pending' THEN 2
+                    WHEN status = 'submitted' THEN 3
+                    WHEN status = 'approved' THEN 4
+                    ELSE 5
+                END
+            ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
 
         } else {
             $query->orderBy('week_start_date', 'asc');
         }
 
         $timesheets = $query->get();
+        $role = Auth::user()->role;
 
-        $pdf = Pdf::loadView('pdf.timesheet', compact('timesheets'));
+        $pdf = Pdf::loadView('pdf.timesheet', compact('timesheets', 'role'));
 
         return $pdf->download('Timesheets.pdf');
     }
+
 
     // public function getTotalActualHours($timesheetDetailId)
     // {
