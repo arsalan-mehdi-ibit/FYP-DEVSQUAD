@@ -117,11 +117,11 @@
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Client Rate</label>
                                         <div class="flex relative">
-                                            <select name="currency"
+                                            {{-- <select name="currency"
                                                 class="bg-gray-300 text-sm px-1 py-1 border border-gray-400 rounded-l-md focus:outline-none">
                                                 <option>USD</option>
                                                 <option>CAD</option>
-                                            </select>
+                                            </select> --}}
                                             <input type="number" name="client_rate"
                                                 value="{{ old('client_rate', $project->client_rate ?? '') }}"
                                                 style="background-color: #F3F4F6;"
@@ -270,11 +270,11 @@
                                                             </select>
                                                         </td>
                                                         <td class="p-2 flex">
-                                                            <select
+                                                            {{-- <select
                                                                 class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
                                                                 <option>USD</option>
                                                                 <option>CAD</option>
-                                                            </select>
+                                                            </select> --}}
                                                             <input type="number"
                                                                 name="contractors[{{ $index }}][rate]"
                                                                 value="{{ $contractor['contractor_rate'] }}"
