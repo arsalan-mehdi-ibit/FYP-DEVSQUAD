@@ -183,12 +183,12 @@
 
                                     <!-- End Date -->
                                     <div>
-                                        <label class="block text-black text-sm text-center font-medium">End Date</label>
-                                        <input type="date" name="end_date"
-                                            value="{{ old('end_date', \Carbon\Carbon::parse($project->end_date)->format('Y-m-d')) }}"
-                                            @if (!$project->exists) min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}" @endif
-                                            class="w-full px-2 py-1 text-sm border rounded-md bg-white">
-                                    </div>
+                                            <label class="block text-black text-sm text-center font-medium">End Date</label>
+                                            <input type="date" name="end_date"
+                                                value="{{ old('end_date', $project->end_date ?? '') }}"
+                                                min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
+                                                class="w-full px-2 py-1 text-sm border rounded-md bg-white">
+                                        </div>
 
 
 
