@@ -33,7 +33,7 @@
                     @method('PUT')
 
                     <div class="card-body p-3">
-                        <div class="d-flex justify-content-center mb-4 mt-3">
+                        <div class="d-flex justify-content-center mb-4 mt-2">
                             <div class="profile-picture text-center">
                                 <div class="rounded-circle overflow-hidden border border-secondary mx-auto"
                                     style="width: 120px; height: 120px;">
@@ -43,7 +43,7 @@
                                             : asset('assets/profile.jpeg') }}"
                                         alt="Profile Picture" style="width: 100%; height: 100%; object-fit: cover;">
                                 </div>
-                                <div class="upload-container mt-1">
+                                <div class=" mt-1">
                                     <label for="profile-pic-upload" class="upload-text cursor-pointer">
                                         Upload Photo
                                     </label>
