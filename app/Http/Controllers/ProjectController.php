@@ -16,6 +16,7 @@ use App\Models\Notifications;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\EmailSender;
 use App\Jobs\FillTimesheet;
+use Carbon\Carbon;
 
 
 
@@ -396,7 +397,16 @@ class ProjectController extends Controller
             'referral_source' => 'nullable|string|max:255',
             'status' => 'required|string|in:pending,in_progress,completed,cancelled',
             'start_date' => $startDateRule,
-            'end_date' => ['nullable', 'date', 'after:start_date', 'after_or_equal:today'],
+            'end_date' => [
+                'nullable',
+                function ($attribute, $value, $fail) use ($project) {
+                    // Only enforce future end date if the project is new (i.e., being created)
+                    // But skip this check if we're updating and end_date is before today
+                    if (!$project->exists && Carbon::parse($value)->lt(today())) {
+                        $fail('The end date cannot be before today.');
+                    }
+                }
+            ],
             'notes' => 'nullable|string|max:255',
             'attachments.*' => 'nullable|file|max:2048',
             'contractors' => 'array',
