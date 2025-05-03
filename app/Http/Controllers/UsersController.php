@@ -25,34 +25,34 @@ class UsersController extends Controller
         if (Auth::user()->role != 'admin') {
             return redirect('/dashboard');
         }
-    
+
         $pageTitle = "Users List";
-         // Get counts for each user role
+        // Get counts for each user role
         $adminCount = User::where('role', 'admin')->count();
         $clientCount = User::where('role', 'client')->count();
         $contractorCount = User::where('role', 'contractor')->count();
         $consultantCount = User::where('role', 'consultant')->count();
         $users = User::query(); // Start building the query
-    
+
         // Apply Role Filter if roles[] are selected
         if ($request->roles) {
             $users->whereIn('role', $request->roles);
         }
-    
+
         $users = $users->orderBy('id', 'desc')->paginate(10); // 10 users per page
 
-    
+
         // Check if it's an AJAX request (comes from filter)
         if ($request->ajax()) {
             return response()->json([
                 'html' => view('users', compact('pageTitle', 'users', 'adminCount', 'clientCount', 'contractorCount', 'consultantCount'))->render(),
             ]);
         }
-    
+
         // Normal full page load
         return view('users', compact('pageTitle', 'users', 'adminCount', 'clientCount', 'contractorCount', 'consultantCount'));
     }
-    
+
 
     public function add()
     {
@@ -66,9 +66,9 @@ class UsersController extends Controller
         // dd($request);
         try {
             $validated = $request->validate([
-                'firstname' => 'required|string|max:255',
-                'middlename' => 'nullable|string|max:255',
-                'lastname' => 'required|string|max:255',
+                'firstname' => 'required|regex:/^[A-Za-z]+$/|max:255',
+                'middlename' => 'nullable|regex:/^[A-Za-z]+$/|max:255',
+                'lastname' => 'required|regex:/^[A-Za-z]+$/|max:255',
                 'role' => 'required|string',
                 'address' => 'nullable|string|max:255',
                 'email' => 'required|email|unique:users,email,NULL,id,deleted_at,NULL',
@@ -164,9 +164,9 @@ class UsersController extends Controller
     public function update(Request $request, $id)
     {
         $validated = $request->validate([
-            'firstname' => 'required|string|max:255',
-            'middlename' => 'nullable|string|max:255',
-            'lastname' => 'required|string|max:255',
+            'firstname' => 'required|regex:/^[A-Za-z]+$/|max:255',
+            'middlename' => 'nullable|regex:/^[A-Za-z]+$/|max:255',
+            'lastname' => 'required|regex:/^[A-Za-z]+$/|max:255',
             'role' => 'required|string',
             'address' => 'nullable|string|max:255',
             'email' => 'required|email|unique:users,email,' . $id,
@@ -181,6 +181,10 @@ class UsersController extends Controller
 
 
         $user = User::findOrFail($id);
+        // Check if user is linked to a project and trying to change role
+        if ($request->role !== $user->role && $user->projects()->exists()) {
+            return redirect()->back()->withErrors(['role' => 'Role cannot be changed because this user is linked to a project.']);
+        }
         $user->update($validated);
         $adminUsers = User::where('role', 'admin')->get(); // Modify this if you're using a roles table or package
 

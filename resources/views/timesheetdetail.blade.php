@@ -5,6 +5,8 @@
     <div class="main-layout max-w-full mx-auto bg-white p-3 p-sm-2 shadow-lg rounded-lg">
         <h3 class="text-xl font-bold mb-4">Timesheets</h3>
 
+
+
         {{-- Debugging step --}}
         {{-- {{ dd($timesheetDetails) }} --}}
         <!-- Parent Table -->
@@ -76,8 +78,13 @@
                                             </tbody>
                                         </table>
                                         <div class="flex justify-end">
-                                            <button class="add-task bg-blue-900 text-white px-3 py-1 rounded">Create
-                                                Task</button>
+                                            <button
+                                                class="add-task px-3 py-1 rounded 
+                                            {{ $timesheet->status === 'approved' ? 'bg-gray-400 cursor-not-allowed text-white' : 'bg-blue-900 text-white hover:bg-blue-800' }}"
+                                                {{ $timesheet->status === 'approved' ? 'disabled' : '' }}>
+                                                Create Task
+                                            </button>
+
                                         </div>
                                     </div>
                                 </td>
@@ -105,20 +112,29 @@
                             taskBody.empty();
                             response.data.forEach((task, index) => {
                                 const row = `
-                                <tr data-task-id="${task.id}">
-                                    <td>${index + 1}</td>
-                                    <td>${task.title}</td>
-                                    <td>${task.description ?? ''}</td>
-                                    <td>${task.actual_hours}</td>
-                                    <td class="text-center">
-                                        <button class="edit-task px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
-                                            <span class="bi bi-pencil text-black"></span>
-                                        </button>
-                                        <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
-                                            <span class="bi bi-trash text-red-500"></span>
-                                        </button>
-                                    </td>
-                                </tr>`;
+                                    <tr data-task-id="${task.id}">
+                                        <td>${index + 1}</td>
+                                        <td>${task.title}</td>
+                                        <td>${task.description ?? ''}</td>
+                                        <td>${task.actual_hours}</td>
+                                        <td class="text-center">
+                                            @if ($timesheet->status === 'approved')
+                                                <button class="px-2 py-1 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed text-xs" disabled>
+                                                    <span class="bi bi-pencil"></span>
+                                                </button>
+                                                <button class="px-2 py-1 rounded-lg bg-gray-300 text-gray-500 cursor-not-allowed text-xs" disabled>
+                                                    <span class="bi bi-trash"></span>
+                                                </button>
+                                            @else
+                                                <button class="edit-task px-2 py-1 rounded-lg bg-yellow-100 hover:bg-orange-200 transition-all text-xs">
+                                                    <span class="bi bi-pencil text-black"></span>
+                                                </button>
+                                                <button class="remove-task px-2 py-1 rounded-lg bg-red-100 hover:bg-red-200 transition-all text-xs">
+                                                    <span class="bi bi-trash text-red-500"></span>
+                                                </button>
+                                            @endif
+                                        </td>
+                                    </tr>`;
                                 taskBody.append(row);
                             });
                             updateTotalActualHours(
@@ -237,7 +253,7 @@
                                 </button>
                             </td>`
                             ).attr('data-task-id', response.data
-                            .id); // Reattach updated task ID
+                                .id); // Reattach updated task ID
 
                             // Set the task ID if it was just created
                             // if (!taskId && response.task_id) {

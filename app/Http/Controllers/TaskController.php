@@ -11,6 +11,16 @@ class TaskController extends Controller
     // Store a new task
     public function store(Request $request, $timesheetDetailId)
     {
+        $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
+        $timesheet = Timesheet::findOrFail($timesheetDetail->timesheet_id);
+
+        if ($timesheet->status === 'approved') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cannot add tasks to an approved timesheet.',
+            ], 403);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -48,6 +58,16 @@ class TaskController extends Controller
     // Update an existing task
     public function update(Request $request, $timesheetDetailId, $taskId)
     {
+        $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
+        $timesheet = Timesheet::findOrFail($timesheetDetail->timesheet_id);
+
+        if ($timesheet->status === 'approved') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cannot update tasks of an approved timesheet.',
+            ], 403);
+        }
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -71,10 +91,10 @@ class TaskController extends Controller
         TimesheetDetail::where('id', $timesheetDetailId)
             ->update(['actual_hours' => $totalHours]);
 
-            $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
-            $timesheet = Timesheet::find($timesheetDetail->timesheet_id);
-            $timesheet->total_hours = $timesheet->total_actual_hours;
-            $timesheet->save();
+        $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
+        $timesheet = Timesheet::find($timesheetDetail->timesheet_id);
+        $timesheet->total_hours = $timesheet->total_actual_hours;
+        $timesheet->save();
 
         return response()->json([
             'status' => 'success',
@@ -87,6 +107,16 @@ class TaskController extends Controller
 
     public function destroy($timesheetDetailId, $taskId)
     {
+        $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
+        $timesheet = Timesheet::findOrFail($timesheetDetail->timesheet_id);
+
+        if ($timesheet->status === 'approved') {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Cannot delete tasks from an approved timesheet.',
+            ], 403);
+        }
+
         $task = DailyTask::where('id', $taskId)
             ->where('timesheet_detail_id', $timesheetDetailId)
             ->first();
@@ -102,10 +132,10 @@ class TaskController extends Controller
             TimesheetDetail::where('id', $timesheetDetailId)
                 ->update(['actual_hours' => $totalHours]);
 
-                $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
-                $timesheet = Timesheet::find($timesheetDetail->timesheet_id);
-                $timesheet->total_hours = $timesheet->total_actual_hours;
-                $timesheet->save();
+            $timesheetDetail = TimesheetDetail::findOrFail($timesheetDetailId);
+            $timesheet = Timesheet::find($timesheetDetail->timesheet_id);
+            $timesheet->total_hours = $timesheet->total_actual_hours;
+            $timesheet->save();
 
             return response()->json([
                 'status' => 'success',
