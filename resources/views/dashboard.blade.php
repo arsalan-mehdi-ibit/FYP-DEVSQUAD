@@ -188,27 +188,25 @@
                 const selectedProject = $(this).val();
                 loadChart(selectedProject);
             });
-            $("#dropdownButton").on("click", function(event) {
-                $("#dropdownMenu").toggleClass("hidden");
-                event.stopPropagation();
+
+            // Dropdown toggle logic
+            $('#dropdownButton').on('click', function(e) {
+                e.stopPropagation();
+                $('#dropdownMenu').toggleClass('hidden');
             });
 
-            $(".dropdown-item").on("click", function() {
-                let selectedValue = $(this).text();
-                $("#selectedOption").text(selectedValue);
-                $("#dropdownMenu").addClass("hidden");
-            });
-
-            $(document).on("click", function(event) {
-                if (!$(event.target).closest("#dropdownButton, #dropdownMenu").length) {
-                    $("#dropdownMenu").addClass("hidden");
-                }
-            });
-            // Handle filter click
-            $('.dropdown-item').on('click', function() {
-                var filter = $(this).text().trim().toLowerCase();
-                $('#selectedOption').text($(this).text());
+            $(document).on('click', function() {
                 $('#dropdownMenu').addClass('hidden');
+            });
+
+            $('#dropdownMenu').on('click', function(e) {
+                e.stopPropagation();
+            });
+
+            // Function to load activities with a given filter
+            function loadActivities(filter) {
+                // Show loading message while data is fetched
+                $('.space-y-4').html('<div class="p-2 text-gray-500 text-sm text-center">Loading...</div>');
 
                 $.ajax({
                     url: '/dashboard/activities/filter',
@@ -220,10 +218,24 @@
                         $('.space-y-4').html(response.html);
                     },
                     error: function() {
-                        alert('Failed to load filtered activities.');
+                        $('.space-y-4').html(
+                            '<div class="p-2 text-red-500 text-sm text-center">Failed to load activities.</div>'
+                            );
                     }
                 });
+            }
+
+            // Click on filter option
+            $('.dropdown-item').on('click', function() {
+                let filter = $(this).text().trim().toLowerCase();
+                $('#selectedOption').text($(this).text());
+                $('#dropdownMenu').addClass('hidden');
+                loadActivities(filter);
             });
+
+            // Load "All" filter by default on page load
+            loadActivities('all');
         });
     </script>
+
 @endsection
