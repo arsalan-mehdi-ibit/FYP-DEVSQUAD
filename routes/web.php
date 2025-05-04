@@ -58,6 +58,8 @@ Route::middleware('auth')->group(function () {
     Route::group(['as' => 'dashboard.', 'prefix' => '/dashboard'], function () {
         Route::get('/', [DashboardController::class, 'index'])->name('index');
         Route::get('/monthly-hours', [DashboardController::class, 'getMonthlyHours']);
+        Route::get('/activities/filter', [DashboardController::class, 'filterActivities']);
+
 
     });
 

@@ -47,21 +47,31 @@
             </div>
 
             <!-- Chart Section -->
-            <div class="mt-4 bg-white p-2 rounded-lg shadow-md">
-                <div class="flex justify-between items-center mb-3">
-                    <h3 class="text-lg font-semibold text-gray-700">Hours Worked For All Projects</h3>
-                    <select id="projectSelect" class="px-3 py-1 border border-gray-100 rounded-md text-gray-700 text-sm">
-                        <option value="all">All Projects</option>
-                        @foreach ($projects as $project)
-                            <option value="{{ $project->id }}">{{ $project->name }}</option>
-                        @endforeach
-                    </select>
+            @if ($projects->count() > 0)
+                <div class="mt-4 bg-white p-2 rounded-lg shadow-md">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-semibold text-gray-700">Hours Worked For All Projects</h3>
+                        <select id="projectSelect"
+                            class="px-3 py-1 border border-gray-100 rounded-md text-gray-700 text-sm">
+                            <option value="all">All Projects</option>
+                            @foreach ($projects as $project)
+                                <option value="{{ $project->id }}">{{ $project->name }}</option>
+                            @endforeach
+                        </select>
+
+                    </div>
+                    <canvas id="hoursChart" class="h-40"></canvas>
                 </div>
-                <canvas id="hoursChart" class=" h-40"></canvas>
-            </div>
+            @else
+                <div class="mt-4 bg-white p-4 rounded-lg shadow-md text-gray-500">
+                    You don’t have access to any projects yet.
+                </div>
+            @endif
+
         </div>
 
         <div class="bg-white shadow-md rounded-lg p-0 overflow-hidden lg:col-span-1 flex flex-col" style="height: 31rem">
+
             <div class="flex justify-between items-center bg-gray-300 px-3 py-2 rounded-t-md">
                 <h3 class="text-sm font-medium text-gray-900">Recent Activity</h3>
                 <div class="relative inline-block text-left">
@@ -70,6 +80,7 @@
                         <span class="text-xs" id="selectedOption">All</span>
                         <i class="fas fa-chevron-down"></i>
                     </div>
+
                     <div id="dropdownMenu"
                         class="hidden absolute right-0 mt-2 w-24 bg-white border border-gray-300 rounded-md shadow-lg">
                         <ul class="py-1 p-0 text-sm text-gray-700 m-0">
@@ -102,6 +113,8 @@
                                 {{ trim("{$activity->creator->firstname} {$activity->creator->lastname}") ?: 'N/A' }}
                             </span>
                         </p>
+
+
                     </div>
                 @empty
                     <div class="p-2 text-gray-500 text-sm text-center">No recent activity found.</div>
@@ -111,68 +124,106 @@
 
     </div>
 
+    <script>
+        $(document).ready(function() {
+            const chartCanvas = document.getElementById('hoursChart');
+            if (!chartCanvas) return; // Exit if no canvas present (e.g. no projects)
 
-            <script>
-                $(document).ready(function() {
-                    const ctx = document.getElementById('hoursChart').getContext('2d');
-                    const projectDropdown = $("#projectSelect"); // create this dropdown with project IDs
-                    let hoursChart;
+            const ctx = chartCanvas.getContext('2d');
+            const projectDropdown = $("#projectSelect");
+            let hoursChart;
 
-                    function loadChart(projectId = 'all') {
-                        $.ajax({
-                            url: '/dashboard/monthly-hours',
-                            method: 'GET',
+            function loadChart(projectId = 'all') {
+                $.ajax({
+                    url: '/dashboard/monthly-hours',
+                    method: 'GET',
+                    data: {
+                        project_id: projectId
+                    },
+                    success: function(res) {
+                        const data = res.data;
+
+                        if (hoursChart) hoursChart.destroy();
+
+                        hoursChart = new Chart(ctx, {
+                            type: 'bar',
                             data: {
-                                project_id: projectId
+                                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+                                    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
+                                ],
+                                datasets: [{
+                                    label: "Hours Worked",
+                                    data: data,
+                                    backgroundColor: "rgba(33, 60, 95, 0.9)",
+                                    borderWidth: 0
+                                }]
                             },
-                            success: function(res) {
-                                const data = res.data;
-
-                                if (hoursChart) hoursChart.destroy();
-
-                                hoursChart = new Chart(ctx, {
-                                    type: 'bar',
-                                    data: {
-                                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-                                            'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'
-                                        ],
-                                        datasets: [{
-                                            label: "Hours Worked",
-                                            data: data,
-                                            backgroundColor: "rgba(33, 60, 95, 0.9)",
-                                            borderWidth: 0
-                                        }]
+                            options: {
+                                scales: {
+                                    y: {
+                                        beginAtZero: true
                                     },
-                                    options: {
-                                        scales: {
-                                            y: {
-                                                beginAtZero: true
-                                            },
-                                            x: {
-                                                grid: {
-                                                    display: false
-                                                }
-                                            }
-                                        },
-                                        plugins: {
-                                            legend: {
-                                                display: false
-                                            }
+                                    x: {
+                                        grid: {
+                                            display: false
                                         }
                                     }
-                                });
+                                },
+                                plugins: {
+                                    legend: {
+                                        display: false
+                                    }
+                                }
                             }
                         });
                     }
-
-                    // Initial load
-                    loadChart();
-
-                    // Reload when project changes
-                    $("#projectSelect").on('change', function() {
-                        const selectedProject = $(this).val();
-                        loadChart(selectedProject);
-                    });
                 });
-            </script>
-        @endsection
+            }
+
+            // Initial load
+            loadChart();
+
+            // Reload when project changes
+            projectDropdown.on('change', function() {
+                const selectedProject = $(this).val();
+                loadChart(selectedProject);
+            });
+            $("#dropdownButton").on("click", function(event) {
+                $("#dropdownMenu").toggleClass("hidden");
+                event.stopPropagation();
+            });
+
+            $(".dropdown-item").on("click", function() {
+                let selectedValue = $(this).text();
+                $("#selectedOption").text(selectedValue);
+                $("#dropdownMenu").addClass("hidden");
+            });
+
+            $(document).on("click", function(event) {
+                if (!$(event.target).closest("#dropdownButton, #dropdownMenu").length) {
+                    $("#dropdownMenu").addClass("hidden");
+                }
+            });
+            // Handle filter click
+            $('.dropdown-item').on('click', function() {
+                var filter = $(this).text().trim().toLowerCase();
+                $('#selectedOption').text($(this).text());
+                $('#dropdownMenu').addClass('hidden');
+
+                $.ajax({
+                    url: '/dashboard/activities/filter',
+                    type: 'GET',
+                    data: {
+                        filter: filter
+                    },
+                    success: function(response) {
+                        $('.space-y-4').html(response.html);
+                    },
+                    error: function() {
+                        alert('Failed to load filtered activities.');
+                    }
+                });
+            });
+        });
+    </script>
+@endsection

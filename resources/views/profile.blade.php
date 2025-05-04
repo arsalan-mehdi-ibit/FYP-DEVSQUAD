@@ -1,4 +1,4 @@
-@extends('layouts.app') 
+@extends('layouts.app')
 
 @section('content')
     <style>
@@ -28,7 +28,8 @@
             </div>
 
             <div class="card mb-4 mt-4 profile-card ml-0 sm:ml-5 p-3">
-                <form id="updateProfileForm" method="POST" action="{{ route('profile.update') }}" enctype="multipart/form-data">
+                <form id="updateProfileForm" method="POST" action="{{ route('profile.update') }}"
+                    enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -47,7 +48,8 @@
                                     <label for="profile-pic-upload" class="upload-text cursor-pointer">
                                         Upload Photo
                                     </label>
-                                    <input type="file" name="attachments" id="profile-pic-upload" class="d-none" accept="image/*" />
+                                    <input type="file" name="attachments" id="profile-pic-upload" class="d-none"
+                                        accept="image/*" />
                                 </div>
                             </div>
                         </div>
@@ -56,26 +58,31 @@
                         <div class="row">
                             <div class="col-md-4 mb-1">
                                 <label for="first_name">First Name</label>
-                                <input required value="{{ $user->firstname }}" type="text" class="form-control" id="first_name" name="first_name" placeholder="Enter your first name">
+                                <input required value="{{ $user->firstname }}" type="text" class="form-control"
+                                    id="first_name" name="first_name" placeholder="Enter your first name">
                             </div>
                             <div class="col-md-4 mb-1">
                                 <label for="middle_name">Middle Name</label>
-                                <input value="{{ $user->middlename }}" type="text" class="form-control" id="middle_name" name="middle_name" placeholder="Enter your middle name">
+                                <input value="{{ $user->middlename }}" type="text" class="form-control" id="middle_name"
+                                    name="middle_name" placeholder="Enter your middle name">
                             </div>
                             <div class="col-md-4 mb-1">
                                 <label for="last_name">Last Name</label>
-                                <input required value="{{ $user->lastname }}" type="text" class="form-control" id="last_name" name="last_name" placeholder="Enter your last name">
+                                <input required value="{{ $user->lastname }}" type="text" class="form-control"
+                                    id="last_name" name="last_name" placeholder="Enter your last name">
                             </div>
                         </div>
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label for="email">Email</label>
-                                <input value="{{ $user->email }}" disabled type="email" class="form-control" id="email">
+                                <input value="{{ $user->email }}" disabled type="email" class="form-control"
+                                    id="email">
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label for="phone">Phone Number</label>
-                                <input required value="{{ $user->phone }}" type="text" class="form-control" id="phone" name="phone" maxlength="14" placeholder="Enter your phone number">
+                                <input required value="{{ $user->phone }}" type="text" class="form-control"
+                                    id="phone" name="phone" maxlength="14" placeholder="Enter your phone number">
                             </div>
                         </div>
 
@@ -83,8 +90,11 @@
                             <div class="col-md-6 mb-3 position-relative">
                                 <label for="password">Password (Optional)</label>
                                 <div class="position-relative">
-                                    <input type="password" class="password-field pr-5" id="password" name="password" placeholder="Enter new password" style="color: black; border-radius: 8px; padding: 7px; width: 100%; border: 1px solid gray;">
-                                    <span class="toggle-password" style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%);">
+                                    <input type="password" class="password-field pr-5" id="password" name="password"
+                                        placeholder="Enter new password"
+                                        style="color: black; border-radius: 8px; padding: 7px; width: 100%; border: 1px solid gray;">
+                                    <span class="toggle-password"
+                                        style="position: absolute; top: 50%; right: 15px; transform: translateY(-50%);">
                                         <i class="bi bi-eye-slash text-gray-500" data-target="password_field"></i>
                                     </span>
                                     <small id="password-error" class="text-danger"></small>
@@ -93,8 +103,11 @@
                             <div class="col-md-6 mb-3 position-relative">
                                 <label for="password_confirmation">Confirm Password</label>
                                 <div class="position-relative">
-                                    <input type="password" class="password-field pr-5" id="password_confirmation" name="password_confirmation" placeholder="Confirm new password" style="color: black; border-radius: 8px; padding: 7px; width: 100%; border: 1px solid gray;">
-                                    <span class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer">
+                                    <input type="password" class="password-field pr-5" id="password_confirmation"
+                                        name="password_confirmation" placeholder="Confirm new password"
+                                        style="color: black; border-radius: 8px; padding: 7px; width: 100%; border: 1px solid gray;">
+                                    <span
+                                        class="toggle-password absolute inset-y-0 right-4 flex items-center cursor-pointer">
                                         <i class="bi bi-eye-slash text-gray-500" data-target="password_field"></i>
                                     </span>
                                     <small id="password_confirmation-error" class="text-danger"></small>
@@ -131,19 +144,19 @@
     @endif
 
     <script>
-        $(document).ready(function () {
-            $('#profile-pic-upload').on('change', function (event) {
+        $(document).ready(function() {
+            $('#profile-pic-upload').on('change', function(event) {
                 const file = event.target.files[0];
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = function (e) {
+                    reader.onload = function(e) {
                         $('#profile-pic-preview').attr('src', e.target.result);
                     };
                     reader.readAsDataURL(file);
                 }
             });
 
-            $('#updateProfileForm').submit(function (e) {
+            $('#updateProfileForm').submit(function(e) {
                 e.preventDefault();
                 $('.text-danger').empty();
 

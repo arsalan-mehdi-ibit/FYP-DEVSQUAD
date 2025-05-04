@@ -257,7 +257,7 @@
 
                             @if (auth()->user()->role == 'admin')
                                 <th
-                                    class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
+                                    class="p-2 sm:p-3 font-semibold text-center text-gray-700 text-xs sm:text-sm md:text-base">
                                     Client Name</th>
                                 <th <th
                                     class="p-2 sm:p-3 font-semibold text-left text-gray-700 text-xs sm:text-sm md:text-base">
@@ -303,13 +303,17 @@
                                 @if (auth()->user()->role == 'admin')
                                     <td class="p-2 sm:p-3 text-left">
                                         <div class="flex items-center">
-                                            @if ($invoice->client && $invoice->client->profilePicture && $invoice->client->profilePicture->file_path)
-                                                <img src="{{ asset($invoice->client->profilePicture->file_path) }}"
-                                                    alt="Client Image" class="h-8 sm:h-10 rounded-full mr-2 object-cover">
-                                            @else
-                                                <img src="{{ asset('assets/profile.jpeg') }}" alt="Default Image"
-                                                    class="h-8 sm:h-10 rounded-full mr-2 object-cover">
-                                            @endif
+                                            <div class="rounded-circle overflow-hidden border border-secondary mx-auto"
+                                                style="width: 40px; height: 40px;">
+                                                @if ($invoice->client && $invoice->client->profilePicture && $invoice->client->profilePicture->file_path)
+                                                    <img src="{{ asset($invoice->client->profilePicture->file_path) }}"
+                                                        alt="Client Image"
+                                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                                @else
+                                                    <img src="{{ asset('assets/profile.jpeg') }}" alt="Default Image"
+                                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                                @endif
+                                            </div>
                                             <span class="hidden sm:block text-xs sm:text-sm md:text-base">
                                                 {{ $invoice->client->firstname ?? 'N/A' }}
                                             </span>
@@ -317,14 +321,17 @@
                                     </td>
                                     <td class="p-2 sm:p-3 text-left">
                                         <div class="flex items-center">
-                                            @if ($invoice->contractor && $invoice->contractor->profilePicture && $invoice->contractor->profilePicture->file_path)
-                                                <img src="{{ asset($invoice->contractor->profilePicture->file_path) }}"
-                                                    alt="contractor Image"
-                                                    class="h-8 sm:h-10 rounded-full mr-2 object-cover">
-                                            @else
-                                                <img src="{{ asset('assets/profile.jpeg') }}" alt="Default Image"
-                                                    class="h-8 sm:h-10 rounded-full mr-2 object-cover">
-                                            @endif
+                                            <div class="rounded-circle overflow-hidden border border-secondary mx-auto"
+                                                style="width: 40px; height: 40px;">
+                                                @if ($invoice->contractor && $invoice->contractor->profilePicture && $invoice->contractor->profilePicture->file_path)
+                                                    <img src="{{ asset($invoice->contractor->profilePicture->file_path) }}"
+                                                        alt="contractor Image"
+                                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                                @else
+                                                    <img src="{{ asset('assets/profile.jpeg') }}" alt="Default Image"
+                                                        style="width: 100%; height: 100%; object-fit: cover;">
+                                                @endif
+                                            </div>
                                             <span class="hidden sm:block text-xs sm:text-sm md:text-base">
                                                 {{ $invoice->contractor->firstname ?? 'N/A' }}
                                             </span>
