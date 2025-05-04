@@ -19,65 +19,125 @@
     <div id="project" class="main-layout max-w-full mx-auto p-2 sm:p-4 md:p-6 lg:p-8">
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2">
-            <div
-                class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
-                <div class="flex items-center gap-2 sm:gap-2">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-people text-orange-500 text-xl sm:text-2xl"></i>
-                    </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Active Projects</h3>
-                </div>
-                <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $activeProjectsCount }} Projects</p>
-                    <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
-                        34.4%</span>
-                </div>
-            </div>
 
-            <div
-                class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-box-seam text-red-500 text-xl sm:text-2xl"></i>
+            {{-- Admin-only Cards --}}
+            @if (auth()->user()->role === 'admin')
+                {{-- ACTIVE PROJECTS --}}
+                <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
+                    <div class="flex items-center gap-2 sm:gap-2">
+                        <div class="p-3 rounded-xl bg-red-100 flex items-center justify-center">
+                            <i class="bi bi-people text-orange-500 text-xl sm:text-2xl"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-600">Total Projects</h3>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Admins</h3>
+                    <div class="flex justify-between text-center items-center">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $activeProjects }} Projects</p>
+                       
+                    </div>
                 </div>
-                <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $adminsCount }} Admins</p>
-                    <span class="text-xs sm:text-sm text-red-600 bg-red-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↓
-                        8.1%</span>
-                </div>
-            </div>
 
-            <div
-                class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-headset text-orange-500 text-xl sm:text-2xl"></i>
+                {{-- ADMINS --}}
+                <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="p-3 rounded-xl bg-red-100 flex items-center justify-center">
+                            <i class="bi bi-box-seam text-red-500 text-xl sm:text-2xl"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-600">Admins</h3>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Clients</h3>
+                    <div class="flex justify-between text-center items-center">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $adminCount }} Admins</p>
+                       
+                    </div>
                 </div>
-                <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $clientsCount }} Clients</p>
-                    <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
-                        12.6%</span>
-                </div>
-            </div>
 
-            <div
-                class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
-                <div class="flex items-center gap-2 sm:gap-3">
-                    <div class="p-3 sm:p-3 rounded-xl bg-red-100 flex items-center justify-center">
-                        <i class="bi bi-receipt text-orange-500 text-xl sm:text-2xl"></i>
+                {{-- CLIENTS --}}
+                <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="p-3 rounded-xl bg-red-100 flex items-center justify-center">
+                            <i class="bi bi-headset text-orange-500 text-xl sm:text-2xl"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-600">Clients</h3>
                     </div>
-                    <h3 class="text-base sm:text-lg font-semibold text-gray-600">Contractors</h3>
+                    <div class="flex justify-between text-center items-center">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $clientCount }} Clients</p>
+                       
+                    </div>
                 </div>
-                <div class="flex justify-between text-center items-center">
-                    <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $contractorsCount }} Contractors</p>
-                    <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">↑
-                        45.9%</span>
+
+                {{-- CONTRACTORS --}}
+                <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
+                    <div class="flex items-center gap-2 sm:gap-3">
+                        <div class="p-3 rounded-xl bg-red-100 flex items-center justify-center">
+                            <i class="bi bi-receipt text-orange-500 text-xl sm:text-2xl"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-600">Contractors</h3>
+                    </div>
+                    <div class="flex justify-between text-center items-center">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $contractorCount }} Contractors</p>
+                        
+                    </div>
                 </div>
-            </div>
+            @endif
+
+            {{-- Additional Cards for Client, Contractor, Consultant --}}
+            @if (auth()->user()->role === 'client' || auth()->user()->role === 'contractor' || auth()->user()->role === 'consultant')
+                {{-- TOTAL PROJECTS --}}
+                <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
+                    <div class="flex items-center gap-2 sm:gap-2">
+                        <div class="p-3 rounded-xl bg-blue-100 flex items-center justify-center">
+                            <i class="bi bi-kanban text-blue-500 text-xl sm:text-2xl"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-600">Total Projects</h3>
+                    </div>
+                    <div class="flex justify-between text-center items-center">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $totalProjects }} Projects</p>
+                        <span class="text-xs sm:text-sm text-gray-600 bg-gray-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">Total</span>
+                    </div>
+                </div>
+
+                {{-- ACTIVE PROJECTS --}}
+                <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
+                    <div class="flex items-center gap-2 sm:gap-2">
+                        <div class="p-3 rounded-xl bg-green-100 flex items-center justify-center">
+                            <i class="bi bi-lightning-charge text-green-500 text-xl sm:text-2xl"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-600">Active Projects</h3>
+                    </div>
+                    <div class="flex justify-between text-center items-center">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $activeProjects }} Projects</p>
+                        <span class="text-xs sm:text-sm text-green-600 bg-green-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">active</span>
+                    </div>
+                </div>
+
+                {{-- PENDING PROJECTS --}}
+                <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
+                    <div class="flex items-center gap-2 sm:gap-2">
+                        <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
+                            <i class="bi bi-hourglass-split text-yellow-500 text-xl sm:text-2xl"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-600">Pending Projects</h3>
+                    </div>
+                    <div class="flex justify-between text-center items-center">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $pendingProjects }} Projects</p>
+                        <span class="text-xs sm:text-sm text-yellow-600 bg-yellow-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">• pending</span>
+                    </div>
+                </div>
+
+                {{-- COMPLETED PROJECTS --}}
+                <div class="bg-white shadow-md rounded-2xl p-2 sm:p-4 md:p-5 flex flex-col gap-2 sm:gap-3 transition-all hover:shadow-lg">
+                    <div class="flex items-center gap-2 sm:gap-2">
+                        <div class="p-3 rounded-xl bg-purple-100 flex items-center justify-center">
+                            <i class="bi bi-check2-circle text-purple-500 text-xl sm:text-2xl"></i>
+                        </div>
+                        <h3 class="text-base sm:text-lg font-semibold text-gray-600">Completed Projects</h3>
+                    </div>
+                    <div class="flex justify-between text-center items-center">
+                        <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $completedProjects }} Projects</p>
+                        <span class="text-xs sm:text-sm text-purple-600 bg-purple-100 px-1 sm:px-2 py-0.5 sm:py-1 rounded-md">✓ done</span>
+                    </div>
+                </div>
+            @endif
+
         </div>
 
         <!-- Filters Wrapper -->

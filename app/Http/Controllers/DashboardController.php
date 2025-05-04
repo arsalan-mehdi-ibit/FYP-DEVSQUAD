@@ -8,6 +8,7 @@ use App\Models\RecentActivity;
 use Illuminate\Support\Facades\Auth;
 use App\Models\TimesheetDetail;
 use App\Models\Project;
+use App\Models\ProjectContractor;
 
 class DashboardController extends Controller
 {
@@ -16,24 +17,64 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        // Fetch the counts for each category
+        $user = Auth::user();
+    $role = $user->role;
+    $pageTitle = "Dashboard";
+
+    // Initialize variables
+    $adminCount = $consultantCount = $clientCount = $contractorCount = null;
+    $totalProjects = $activeProjects = $pendingProjects = $completedProjects = null;
+    $projects = collect(); // default empty
+
+    // Admin Overview
+    if ($role === 'admin' ) {
         $adminCount = User::where('role', 'admin')->count();
         $consultantCount = User::where('role', 'consultant')->count();
         $clientCount = User::where('role', 'client')->count();
         $contractorCount = User::where('role', 'contractor')->count();
-        $projects = Project::all();
-        $pageTitle = "Dashboard";
-  
-        // Fetch recent activities using RecentActivity model
-        $activities = RecentActivity::with('creator') 
-        ->where('user_id', Auth::id())  // Filtering by user_id
+        $projects = Project::all(); // Optional: show all projects
+    }
+
+    // Client Projects
+    elseif ($role === 'client') {
+        $projects = Project::where('client_id', $user->id)->get();
+    }
+
+    // Contractor Projects via pivot table
+    elseif ($role === 'contractor') {
+        $projectIds = ProjectContractor::where('contractor_id', $user->id)->pluck('project_id');
+        $projects = Project::whereIn('id', $projectIds)->get();
+    }
+
+    // Shared status counts for client & contractor
+    if ($role === 'client' || $role === 'contractor') {
+        $totalProjects = $projects->count();
+        $activeProjects = $projects->where('status', 'in_progress')->count();
+        $pendingProjects = $projects->where('status', 'pending')->count();
+        $completedProjects = $projects->where('status', 'completed')->count();
+    }
+
+    // Recent activities
+    $activities = RecentActivity::with('creator')
+        ->where('user_id', $user->id)
         ->latest()
         ->take(10)
         ->get();
-        // Pass the counts to the view
-        return view('dashboard', compact('pageTitle', 'adminCount', 'consultantCount', 'clientCount', 'contractorCount', 'activities','projects'));
-    }
 
+    return view('dashboard', compact(
+        'pageTitle',
+        'adminCount',
+        'consultantCount',
+        'clientCount',
+        'contractorCount',
+        'activities',
+        'projects',
+        'totalProjects',
+        'activeProjects',
+        'pendingProjects',
+        'completedProjects'
+    ));
+}
     public function getMonthlyHours(Request $request)
     {
         $projectId = $request->input('project_id');

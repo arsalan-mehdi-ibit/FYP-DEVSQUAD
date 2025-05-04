@@ -30,20 +30,54 @@ class TimesheetController extends Controller
 
         $currentMonth = now()->month;
         $currentYear = now()->year;
-
-        // Counts
-        $thisMonthCount = Timesheet::whereYear('submitted_at', $currentYear)
-            ->whereMonth('submitted_at', $currentMonth)
-            ->count();
-
-        $approvedCount = Timesheet::where('status', 'approved')->count();
-        $rejectedCount = Timesheet::where('status', 'rejected')->count();
-        $pendingApprovalCount = Timesheet::where('status', 'submitted')
-            ->whereNotNull('submitted_at')
-            ->count();
-
-        $allTimesheets = Timesheet::with(['project.client', 'contractor'])->get();
-
+        
+        $user = auth()->user();
+        
+        if ($user->role === 'admin') {
+            // Admin sees all counts
+            $thisMonthCount = Timesheet::whereYear('submitted_at', $currentYear)
+                ->whereMonth('submitted_at', $currentMonth)
+                ->count();
+        
+            $approvedCount = Timesheet::where('status', 'approved')->count();
+            $rejectedCount = Timesheet::where('status', 'rejected')->count();
+            $pendingApprovalCount = Timesheet::where('status', 'submitted')
+                ->whereNotNull('submitted_at')
+                ->count();
+        
+            $allTimesheets = Timesheet::with(['project.client', 'contractor'])->get();
+        } else {
+            // Other roles see only their relevant timesheets
+            $query = Timesheet::query();
+        
+            if ($user->role === 'contractor') {
+                $query->where('contractor_id', $user->id);
+            }
+        
+            if ($user->role === 'client') {
+                $query->whereHas('project', function ($q) use ($user) {
+                    $q->where('client_id', $user->id);
+                });
+            }
+        
+            if ($user->role === 'consultant') {
+                // Adjust this based on how consultants are related to timesheets/projects
+                $query->where('consultant_id', $user->id);
+            }
+        
+            $thisMonthCount = (clone $query)->whereYear('submitted_at', $currentYear)
+                ->whereMonth('submitted_at', $currentMonth)
+                ->count();
+        
+            $approvedCount = (clone $query)->where('status', 'approved')->count();
+            $rejectedCount = (clone $query)->where('status', 'rejected')->count();
+            $pendingApprovalCount = (clone $query)->where('status', 'submitted')
+                ->whereNotNull('submitted_at')
+                ->count();
+        
+            $allTimesheets = $query->with(['project.client', 'contractor'])->get();
+        }
+        
         $dates = $allTimesheets->unique(function ($item) {
             return $item->week_start_date . $item->week_end_date;
         })->sortByDesc('week_start_date')->values();

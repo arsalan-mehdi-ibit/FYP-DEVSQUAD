@@ -49,7 +49,7 @@ class InvoiceController extends Controller
             });
         }
 
-        if ($request->contraactor) {
+        if ($request->contractor) {
             $invoices->whereIn('contractor_id', $request->contraactor);
         }
 

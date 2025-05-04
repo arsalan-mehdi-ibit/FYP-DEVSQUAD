@@ -18,6 +18,7 @@ use App\Mail\EmailSender;
 use App\Jobs\FillTimesheet;
 use App\Events\NewNotification;
 use Carbon\Carbon;
+use App\Models\ProjectContractor;
 
 
 
@@ -27,56 +28,95 @@ class ProjectController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-    {
-        $pageTitle = "Projects";
+{
+    $user = Auth::user();
+    $role = $user->role;
+    $pageTitle = "Projects";
 
-        // Initialize counts
-        $activeProjectsCount = Project::whereIn('status', ['pending', 'in-progress'])->count();
-        $adminsCount = User::where('role', 'admin')->count();
-        $clientsCount = User::where('role', 'client')->count();
-        $contractorsCount = User::where('role', 'contractor')->count();
+    // Initialize variables
+    $adminCount = $consultantCount = $clientCount = $contractorCount = null;
+    $totalProjects = $activeProjects = $pendingProjects = $completedProjects = null;
+    $projects = collect(); // default empty
 
-        // Start query
-        $projectsQuery = Project::with('client');
-
-        // Role-based filtering
-        if (Auth::user()->role == 'admin') {
-            // Admin sees all projects
-            // No changes needed
-        } elseif (Auth::user()->role == 'client') {
-            // Client sees only their projects
-            $projectsQuery->where('client_id', Auth::id());
-        } elseif (Auth::user()->role == 'consultant') {
-            // Consultant sees only their projects
-            $projectsQuery->where('consultant_id', Auth::id());
-        } elseif (Auth::user()->role == 'contractor') {
-            // Contractor sees only assigned projects
-            $contractorId = Auth::id();
-            $projectsQuery->whereHas('contractors', function ($query) use ($contractorId) {
-                $query->where('users.id', $contractorId);
-            });
-        }
-
-        // Apply client filter if selected
-        if ($request->clients) {
-            $projectsQuery->whereIn('client_id', $request->clients);
-        }
-        if ($request->statuses) {
-            $projectsQuery->whereIn('status', $request->statuses);
-        }
-        // Apply ordering and execute query
-        $projects = $projectsQuery->orderBy('id', 'desc')->paginate(10); // 10 projects per page
-
-
-        // Handle AJAX
-        if ($request->ajax()) {
-            return response()->json([
-                'html' => view('project', compact('pageTitle', 'projects', 'activeProjectsCount', 'adminsCount', 'clientsCount', 'contractorsCount'))->render(),
-            ]);
-        }
-
-        return view('project', compact('pageTitle', 'projects', 'activeProjectsCount', 'adminsCount', 'clientsCount', 'contractorsCount'));
+    // Admin Overview
+    if ($role === 'admin') {
+        $activeProjects = Project::where('status', 'in_progress')->count();
+        $adminCount = User::where('role', 'admin')->count();
+        $clientCount = User::where('role', 'client')->count();
+        $contractorCount = User::where('role', 'contractor')->count();
+        $projects = Project::all();
     }
+
+    // Client Projects
+    elseif ($role === 'client') {
+        $projects = Project::where('client_id', $user->id)->get();
+    }
+
+    // Contractor Projects via pivot table
+    elseif ($role === 'contractor') {
+        $projectIds = ProjectContractor::where('contractor_id', $user->id)->pluck('project_id');
+        $projects = Project::whereIn('id', $projectIds)->get();
+    }
+
+    // Consultant Projects
+    elseif ($role === 'consultant') {
+        $projects = Project::where('consultant_id', $user->id)->get();
+    }
+
+    // Status counts
+    if (in_array($role, ['client', 'contractor', 'consultant'])) {
+        $totalProjects = $projects->count();
+        $activeProjects = $projects->where('status', 'in_progress')->count();
+        $pendingProjects = $projects->where('status', 'pending')->count();
+        $completedProjects = $projects->where('status', 'completed')->count();
+    }
+
+    // Filtered paginated projects for table
+    $projectsQuery = Project::with('client');
+
+    if ($role === 'client') {
+        $projectsQuery->where('client_id', $user->id);
+    } elseif ($role === 'consultant') {
+        $projectsQuery->where('consultant_id', $user->id);
+    } elseif ($role === 'contractor') {
+        $contractorId = $user->id;
+        $projectsQuery->whereHas('contractors', function ($query) use ($contractorId) {
+            $query->where('users.id', $contractorId);
+        });
+    }
+
+    if ($request->clients) {
+        $projectsQuery->whereIn('client_id', $request->clients);
+    }
+
+    if ($request->statuses) {
+        $projectsQuery->whereIn('status', $request->statuses);
+    }
+
+    $projects = $projectsQuery->orderBy('id', 'desc')->paginate(10);
+
+    // View or AJAX
+    $viewData = compact(
+        'pageTitle',
+        'projects',
+        'adminCount',
+        'clientCount',
+        'contractorCount',
+        'pendingProjects',
+        'completedProjects',
+        'totalProjects',
+        'activeProjects'
+    );
+
+    if ($request->ajax()) {
+        return response()->json([
+            'html' => view('project', $viewData)->render(),
+        ]);
+    }
+
+    return view('project', $viewData);
+}
+
 
 
 
