@@ -117,11 +117,11 @@
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Client Rate</label>
                                         <div class="flex relative">
-                                            {{-- <select name="currency"
-                                                class="bg-gray-300 text-sm px-1 py-1 border border-gray-400 rounded-l-md focus:outline-none">
-                                                <option>USD</option>
-                                                <option>CAD</option>
-                                            </select> --}}
+                                            <div
+                                                class="bg-gray-300 text-sm px-1 py-0  border border-gray-400 rounded-l-md focus:outline-none">
+                                                <p class="m-0 ">USD</p>
+
+                                            </div>
                                             <input type="number" name="client_rate"
                                                 value="{{ old('client_rate', $project->client_rate ?? '') }}"
                                                 style="background-color: #F3F4F6;"
@@ -183,12 +183,12 @@
 
                                     <!-- End Date -->
                                     <div>
-                                            <label class="block text-black text-sm text-center font-medium">End Date</label>
-                                            <input type="date" name="end_date"
-                                                value="{{ old('end_date', $project->end_date ?? '') }}"
-                                                min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
-                                                class="w-full px-2 py-1 text-sm border rounded-md bg-white">
-                                        </div>
+                                        <label class="block text-black text-sm text-center font-medium">End Date</label>
+                                        <input type="date" name="end_date"
+                                            value="{{ old('end_date', $project->end_date ?? '') }}"
+                                            min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
+                                            class="w-full px-2 py-1 text-sm border rounded-md bg-white">
+                                    </div>
 
 
 
@@ -270,11 +270,11 @@
                                                             </select>
                                                         </td>
                                                         <td class="p-2 flex">
-                                                            {{-- <select
-                                                                class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
-                                                                <option>USD</option>
-                                                                <option>CAD</option>
-                                                            </select> --}}
+                                                            <div
+                                                                class="bg-gray-300 text-sm px-1 py-0  border border-gray-400 rounded-l-md focus:outline-none">
+                                                                <p class="m-0 ">USD</p>
+
+                                                            </div>
                                                             <input type="number"
                                                                 name="contractors[{{ $index }}][rate]"
                                                                 value="{{ $contractor['contractor_rate'] }}"
@@ -496,10 +496,11 @@
        </select>
     </td>
     <td class="p-2 flex">
-        <select class="bg-gray-300 text-sm px-2 py-1 border border-gray-400 rounded-l-md">
-            <option>USD</option>
-            <option>CAD</option>
-        </select>
+        <div
+                                                class="bg-gray-300 text-sm px-1 py-0  border border-gray-400 rounded-l-md focus:outline-none">
+                                                <p class="m-0 ">USD</p>
+
+                                            </div>
         <input type="number" name="contractors[${contractorCount}][rate]" class="contractor-rate w-40 px-2 py-1 text-sm border rounded-r-md bg-gray-100" placeholder="Contractor Rate">
     </td>
     <td class="p-2 text-right">

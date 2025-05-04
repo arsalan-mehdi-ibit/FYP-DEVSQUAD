@@ -216,22 +216,7 @@
             //     adjustHeader();
             // });
             // Dropdown functionality
-            $("#dropdownButton").on("click", function(event) {
-                $("#dropdownMenu").toggleClass("hidden");
-                event.stopPropagation();
-            });
-
-            $(".dropdown-item").on("click", function() {
-                let selectedValue = $(this).text();
-                $("#selectedOption").text(selectedValue);
-                $("#dropdownMenu").addClass("hidden");
-            });
-
-            $(document).on("click", function(event) {
-                if (!$(event.target).closest("#dropdownButton, #dropdownMenu").length) {
-                    $("#dropdownMenu").addClass("hidden");
-                }
-            });
+            
 
             // //accordian icon change
             // $('.accordion-button').click(function() {
