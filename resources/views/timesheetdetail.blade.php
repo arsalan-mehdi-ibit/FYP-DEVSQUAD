@@ -5,10 +5,6 @@
     <div class="main-layout max-w-full mx-auto bg-white p-3 p-sm-2 shadow-lg rounded-lg">
         <h3 class="text-xl font-bold mb-4">Timesheets</h3>
 
-
-
-        {{-- Debugging step --}}
-        {{-- {{ dd($timesheetDetails) }} --}}
         <!-- Parent Table -->
         @if ($timesheet->status == 'rejected' && $timesheet->rejection_reason)
             <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -24,7 +20,6 @@
                         <th>SR</th>
                         <th>Date</th>
                         <th>Actual Hours</th>
-                        {{-- <th>OT Hours</th> --}}
                         <th>Memo</th>
                     </tr>
                 </thead>
@@ -157,18 +152,6 @@
                 });
             }
 
-            // function updateGrandTotal(timesheetId) {
-            //     $.ajax({
-            //         url: `/timesheet/${timesheetId}/total-hours`,
-            //         method: 'GET',
-            //         success: function(response) {
-            //             if (response.status === 'success') {
-            //                 $(`#grand-total-hours-${timesheetId}`).text(response.total_hours);
-            //             }
-            //         }
-            //     });
-            // }
-
             // Load all existing tasks on page load
             $(".task-body").each(function() {
                 const taskBody = $(this);
@@ -255,11 +238,6 @@
                             ).attr('data-task-id', response.data
                                 .id); // Reattach updated task ID
 
-                            // Set the task ID if it was just created
-                            // if (!taskId && response.task_id) {
-                            //     row.attr('data-task-id', response.task_id);
-                            // }
-
                             let totalActualHours = 0;
                             row.closest(".task-body").find("tr").each(function() {
                                 totalActualHours += parseFloat($(this).find(
@@ -303,8 +281,7 @@
                 </td>
             `).attr("data-task-id", taskId); // Retain task ID
 
-                // Reattach task ID to the modified row
-                // row.attr("data-task-id", taskId);
+
 
             });
 

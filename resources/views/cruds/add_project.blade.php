@@ -113,7 +113,7 @@
                                         </select>
                                     </div>
 
-
+                                    {{-- Client Rate --}}
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Client Rate</label>
                                         <div class="flex relative">
@@ -156,8 +156,6 @@
                                         </select>
                                     </div>
 
-
-
                                     <!-- Start Date -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Start Date</label>
@@ -179,8 +177,6 @@
                                         @endif
                                     </div>
 
-
-
                                     <!-- End Date -->
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">End Date</label>
@@ -189,8 +185,6 @@
                                             min="{{ \Carbon\Carbon::now()->format('Y-m-d') }}"
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-white">
                                     </div>
-
-
 
                                     <!-- Referral Source -->
                                     <div>
@@ -299,13 +293,7 @@
                                             @endif
                                         </tbody>
                                     </table>
-                                    {{-- <!-- Add Button -->
-                                    <div class="absolute top-0 right-0 mt-[-20px] mr-[-20px]">
-                                        <button id="addContractorBtn" type="button"
-                                            class="bg-indigo-800 text-white px-4 py-2 rounded-full shadow-md hover:bg-indigo-700">
-                                            +
-                                        </button>
-                                    </div> --}}
+
                                 </div>
                             </div>
                         </div>

@@ -86,9 +86,6 @@ class InvoiceController extends Controller
         return view('invoice', compact('pageTitle', 'invoices', 'allInvoices'));
     }
 
-
-
-
     public function markAsPaid($id)
     {
         $payment = Payments::findOrFail($id);

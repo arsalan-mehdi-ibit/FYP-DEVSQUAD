@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Project extends Model
 {
-    use HasFactory,SoftDeletes;
+    use HasFactory, SoftDeletes;
     protected $dates = ['deleted_at'];
 
     /**
@@ -25,10 +25,10 @@ class Project extends Model
         'status',
         'start_date',
         'end_date',
-        'referral_source',    // New field added
-        'notes',              // New field added
-        'created_at',         // These may be auto-handled by Laravel, but included for completeness
-        'updated_at',         // These may be auto-handled by Laravel, but included for completeness
+        'referral_source',
+        'notes',
+        'created_at',
+        'updated_at',
     ];
 
     public function fileAttachments()
@@ -57,7 +57,7 @@ class Project extends Model
     public function contractors()
     {
         return $this->belongsToMany(User::class, 'project_contractor', 'project_id', 'contractor_id')
-                    ->withPivot('contractor_rate');
+            ->withPivot('contractor_rate');
     }
-    
+
 }

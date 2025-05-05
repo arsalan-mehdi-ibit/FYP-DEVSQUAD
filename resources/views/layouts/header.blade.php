@@ -16,21 +16,14 @@
 
             <!-- Icons Section -->
             <div class="flex items-center gap-2 sm:gap-3 md:gap-4">
-                {{-- <i class="bi bi-moon cursor-pointer hover:text-gray-700 text-lg sm:text-base md:text-lg"></i> --}}
-                {{-- @php
-                    $notifications = \App\Models\Notifications::where('user_id', Auth::id())
-                        ->latest()
-                        ->limit(10)
-                        ->get();
-                    $unreadCount = $notifications->where('is_read', 0)->count();
-                @endphp --}}
+
                 {{-- notification dropdown --}}
                 <div class="relative z-50">
                     <!-- Bell Icon with Notification Badge -->
                     <div class="relative cursor-pointer" id="notificationBell">
                         <i class="bi bi-bell  text-gray-700 hover:text-gray-900"></i>
                         <span id="notificationCount"
-                            class="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1.5 rounded-full {{$unreadNotificationCount == 0 ? 'hidden' : '' }}">
+                            class="absolute -top-1 -right-2 bg-red-500 text-white text-xs px-1.5 rounded-full {{ $unreadNotificationCount == 0 ? 'hidden' : '' }}">
                             {{ $unreadNotificationCount }}</span>
 
                     </div>
@@ -38,8 +31,7 @@
                     <!-- Notification Dropdown -->
                     <div id="notificationDropdown"
                         class="absolute mt-2 w-96 bg-white text-sm rounded-2xl shadow-2xl hidden">
-                        <!-- Top Tab -->
-                        {{-- <div class="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-5 bg-white rounded-b-lg"></div> --}}
+
 
                         <!-- Header -->
                         <div class="flex justify-between items-center px-3 py-2 border-b">
@@ -53,7 +45,8 @@
                                     data-id="{{ $notification->id }}"
                                     data-new="{{ $notification->is_read ? 'false' : 'true' }}">
                                     <div class="flex-1">
-                                        <p class="m-1"><span class="font-bold text-gray-800"> {{ $notification->title ?? 'Notification' }}</span></p>
+                                        <p class="m-1"><span class="font-bold text-gray-800">
+                                                {{ $notification->title ?? 'Notification' }}</span></p>
                                         <p class="text-sm text-gray-500 m-1">{{ $notification->message }}</p>
                                         <p class="text-xs text-gray-400 m-1">
                                             {{ $notification->created_at->diffForHumans() }}</p>

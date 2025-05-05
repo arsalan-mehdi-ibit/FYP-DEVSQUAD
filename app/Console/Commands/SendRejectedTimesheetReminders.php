@@ -14,21 +14,21 @@ class SendRejectedTimesheetReminders extends Command
 
     public function handle()
     {
-    
+
         $today = now()->startOfDay();
-    
+
         $rejectedTimesheets = Timesheet::with('contractor')
             ->where('status', 'rejected')
             ->whereDate('week_end_date', '<', $today)
             ->get();
-    
+
         $this->info('📝 Found ' . $rejectedTimesheets->count() . ' rejected timesheets.');
-    
+
         foreach ($rejectedTimesheets as $timesheet) {
             dispatch(new ResendTimesheetReminderJob($timesheet));
         }
-    
+
         $this->info('✅ Dispatched reminder jobs for rejected timesheets.');
     }
-    
+
 }

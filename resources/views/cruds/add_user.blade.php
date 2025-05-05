@@ -71,33 +71,31 @@
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Role*</label>
-                                    
+
                                         @php
                                             $hasProject = isset($user) && $user->projects()->exists();
                                             $selectedRole = old('role', $user->role ?? '');
                                         @endphp
-                                    
+
                                         <select name="role"
                                             class="w-full px-2 py-1 text-sm border rounded-md bg-gray-200 focus:bg-white
                                                 {{ $hasProject ? 'opacity-60 cursor-not-allowed' : '' }}"
                                             {{ $hasProject ? 'disabled' : '' }} required>
                                             <option value="">Select Role</option>
                                             @foreach (['admin', 'client', 'contractor', 'consultant'] as $role)
-                                                <option value="{{ $role }}" {{ strtolower($selectedRole) === $role ? 'selected' : '' }}>
+                                                <option value="{{ $role }}"
+                                                    {{ strtolower($selectedRole) === $role ? 'selected' : '' }}>
                                                     {{ ucfirst($role) }}
                                                 </option>
                                             @endforeach
                                         </select>
-                                    
+
                                         @if ($hasProject)
                                             <!-- Hidden input to ensure the disabled role still gets submitted -->
                                             <input type="hidden" name="role" value="{{ $user->role }}">
                                             {{-- <p class="text-xs text-gray-500 mt-1 text-center">Role cannot be changed because this user is linked to a project.</p> --}}
                                         @endif
                                     </div>
-                                    
-
-
 
                                     <div>
                                         <label class="block text-black text-sm text-center font-medium">Address</label>
@@ -145,8 +143,6 @@
                                         <input type="checkbox" name="send_emails" class="custom-checkbox" value="1"
                                             {{ old('send_emails', $user->send_emails ?? false) ? 'checked' : '' }}>
                                     </div>
-
-
 
                                 </div>
                             </div>
@@ -275,8 +271,6 @@
                     });
                 }
             });
-
-
 
         });
     </script>

@@ -23,14 +23,12 @@ class NewNotification implements ShouldBroadcastNow
         \Log::info("Broadcasting NewNotification to user: $userId");
 
     }
-
     public function broadcastOn(): array
     {
         return [
             new PrivateChannel('notifications.' . $this->userId),
         ];
     }
-
     public function broadcastWith()
     {
         return [
@@ -38,8 +36,8 @@ class NewNotification implements ShouldBroadcastNow
         ];
     }
     public function broadcastAs()
-{
-    return 'NewNotification';
-}
+    {
+        return 'NewNotification';
+    }
 
 }

@@ -21,63 +21,63 @@ class DashboardController extends Controller
     public function index()
     {
         $user = Auth::user();
-    $role = $user->role;
-    $pageTitle = "Dashboard";
+        $role = $user->role;
+        $pageTitle = "Dashboard";
 
-    // Initialize variables
-    $adminCount = $consultantCount = $clientCount = $contractorCount = null;
-    $totalProjects = $activeProjects = $pendingProjects = $completedProjects = null;
-    $projects = collect(); // default empty
+        // Initialize variables
+        $adminCount = $consultantCount = $clientCount = $contractorCount = null;
+        $totalProjects = $activeProjects = $pendingProjects = $completedProjects = null;
+        $projects = collect(); 
 
-    // Admin Overview
-    if ($role === 'admin' ) {
-        $adminCount = User::where('role', 'admin')->count();
-        $consultantCount = User::where('role', 'consultant')->count();
-        $clientCount = User::where('role', 'client')->count();
-        $contractorCount = User::where('role', 'contractor')->count();
-        $projects = Project::all(); // Optional: show all projects
+        // Admin Overview
+        if ($role === 'admin') {
+            $adminCount = User::where('role', 'admin')->count();
+            $consultantCount = User::where('role', 'consultant')->count();
+            $clientCount = User::where('role', 'client')->count();
+            $contractorCount = User::where('role', 'contractor')->count();
+            $projects = Project::all(); 
+        }
+
+        // Client Projects
+        elseif ($role === 'client') {
+            $projects = Project::where('client_id', $user->id)->get();
+        }
+
+        // Contractor Projects via pivot table
+        elseif ($role === 'contractor') {
+            $projectIds = ProjectContractor::where('contractor_id', $user->id)->pluck('project_id');
+            $projects = Project::whereIn('id', $projectIds)->get();
+        }
+
+        // Shared status counts for client & contractor
+        if ($role === 'client' || $role === 'contractor') {
+            $totalProjects = $projects->count();
+            $activeProjects = $projects->where('status', 'in_progress')->count();
+            $pendingProjects = $projects->where('status', 'pending')->count();
+            $completedProjects = $projects->where('status', 'completed')->count();
+        }
+
+        // Recent activities
+        $activities = RecentActivity::with('creator')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->take(10)
+            ->get();
+
+        return view('dashboard', compact(
+            'pageTitle',
+            'adminCount',
+            'consultantCount',
+            'clientCount',
+            'contractorCount',
+            'activities',
+            'projects',
+            'totalProjects',
+            'activeProjects',
+            'pendingProjects',
+            'completedProjects'
+        ));
     }
-
-    // Client Projects
-    elseif ($role === 'client') {
-        $projects = Project::where('client_id', $user->id)->get();
-    }
-
-    // Contractor Projects via pivot table
-    elseif ($role === 'contractor') {
-        $projectIds = ProjectContractor::where('contractor_id', $user->id)->pluck('project_id');
-        $projects = Project::whereIn('id', $projectIds)->get();
-    }
-
-    // Shared status counts for client & contractor
-    if ($role === 'client' || $role === 'contractor') {
-        $totalProjects = $projects->count();
-        $activeProjects = $projects->where('status', 'in_progress')->count();
-        $pendingProjects = $projects->where('status', 'pending')->count();
-        $completedProjects = $projects->where('status', 'completed')->count();
-    }
-
-    // Recent activities
-    $activities = RecentActivity::with('creator')
-        ->where('user_id', $user->id)
-        ->latest()
-        ->take(10)
-        ->get();
-
-    return view('dashboard', compact(
-        'pageTitle',
-        'adminCount',
-        'consultantCount',
-        'clientCount',
-        'contractorCount',
-        'activities',
-        'projects',
-        'totalProjects',
-        'activeProjects',
-        'pendingProjects',
-        'completedProjects'
-    ));
-}
 
 
     public function getMonthlyHours(Request $request)
@@ -124,9 +124,9 @@ class DashboardController extends Controller
         $filter = $request->get('filter');
         $userId = Auth::id();
         $query = RecentActivity::with('creator')->where('user_id', $userId);
-    
+
         $now = now()->setTimezone(config('app.timezone', 'UTC'));
-    
+
         if ($filter === 'daily') {
             $query->whereBetween('created_at', [
                 $now->copy()->startOfDay()->timezone('UTC'),
@@ -143,9 +143,9 @@ class DashboardController extends Controller
                 $now->copy()->endOfMonth()->endOfDay()->timezone('UTC'),
             ]);
         }
-    
+
         $activities = $query->latest()->take(10)->get();
-    
+
         $html = '';
         if ($activities->isEmpty()) {
             $html .= '<div class="p-2 text-gray-500 text-sm text-center">No recent activity found.</div>';
@@ -171,19 +171,10 @@ class DashboardController extends Controller
                 </div>';
             }
         }
-    
+
         return response()->json(['html' => $html]);
     }
-    
 
-
-
-
-
-
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //

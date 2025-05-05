@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class TimesheetDetail extends Model
 {
     use HasFactory;
-    // protected $table = 'timesheet_entries';
+   
     protected $fillable = [
         'timesheet_id',
         'actual_hours',

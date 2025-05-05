@@ -74,14 +74,6 @@
 
         $("body").append(popup);
 
-        // Hide pop-up and redirect after 3 seconds
-        // setTimeout(function() {
-        //     popup.fadeOut(500, function() {
-        //         $(this).remove();
-        //         window.location.href =
-        //         "{{ route('login') }}"; // Redirect to login page after success message disappears
-        //     });
-        // }, 3000);
     });
 </script>
 @endif

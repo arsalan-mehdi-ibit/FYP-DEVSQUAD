@@ -31,7 +31,7 @@
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">
                         {{ $adminCount + $clientCount + $contractorCount + $consultantCount }} Users</p>
-                    
+
                 </div>
             </div>
 
@@ -45,7 +45,7 @@
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $adminCount }} Admins</p>
-                    
+
                 </div>
             </div>
 
@@ -59,7 +59,7 @@
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $clientCount }} Clients</p>
-                    
+
                 </div>
             </div>
 
@@ -73,7 +73,7 @@
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $contractorCount }} Contractors</p>
-                    
+
                 </div>
             </div>
         </div>
@@ -145,7 +145,8 @@
                     </a>
                 @endif
             </div>
-            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px"  id="user-table-wrapper">
+            <div class="max-h-[220px] overflow-y-auto overflow-x-auto relative border rounded-md" style="height: 320px"
+                id="user-table-wrapper">
                 <table class="w-full min-w-full text-center">
                     <thead class="sticky top-0 bg-gray-100 z-10 text-center">
                         <tr class="border-b">

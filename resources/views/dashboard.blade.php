@@ -7,19 +7,23 @@
             <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 {{-- Admin Cards --}}
                 @if (auth()->user()->role === 'admin' || auth()->user()->role === 'consultant')
-                    <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
+                    <div
+                        class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                         <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Admins</h3>
                         <p class="text-2xl font-bold text-gray-900 m-0">{{ $adminCount }}</p>
                     </div>
-                    <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
+                    <div
+                        class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                         <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Consultants</h3>
                         <p class="text-2xl font-bold text-gray-900 m-0">{{ $consultantCount }}</p>
                     </div>
-                    <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
+                    <div
+                        class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                         <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Clients</h3>
                         <p class="text-2xl font-bold text-gray-900 m-0">{{ $clientCount }}</p>
                     </div>
-                    <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
+                    <div
+                        class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                         <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Contractors</h3>
                         <p class="text-2xl font-bold text-gray-900 m-0">{{ $contractorCount }}</p>
                     </div>
@@ -27,19 +31,23 @@
 
                 {{-- Client & Contractor Cards (Project Stats) --}}
                 @if (auth()->user()->role === 'client' || auth()->user()->role === 'contractor')
-                    <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
+                    <div
+                        class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                         <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Total Projects</h3>
                         <p class="text-2xl font-bold text-gray-900 m-0">{{ $totalProjects }}</p>
                     </div>
-                    <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
+                    <div
+                        class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                         <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Active Projects</h3>
                         <p class="text-2xl font-bold text-gray-900 m-0">{{ $activeProjects }}</p>
                     </div>
-                    <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
+                    <div
+                        class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                         <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Pending Projects</h3>
                         <p class="text-2xl font-bold text-gray-900 m-0">{{ $pendingProjects }}</p>
                     </div>
-                    <div class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
+                    <div
+                        class="bg-white shadow-md rounded-2xl p-1 flex flex-col items-center justify-center w-full text-center">
                         <h3 class="text-sm font-medium text-gray-600 uppercase m-0">Completed Projects</h3>
                         <p class="text-2xl font-bold text-gray-900 m-0">{{ $completedProjects }}</p>
                     </div>
@@ -220,7 +228,7 @@
                     error: function() {
                         $('.space-y-4').html(
                             '<div class="p-2 text-red-500 text-sm text-center">Failed to load activities.</div>'
-                            );
+                        );
                     }
                 });
             }

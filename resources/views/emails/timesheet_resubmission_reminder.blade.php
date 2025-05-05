@@ -57,9 +57,6 @@
 </head>
 
 <body>
-    {{-- @php
-        $fullContractor = \App\Models\ProjectContractor::find($contractor['contractor_id']);
-    @endphp --}}
 
     <div class="container">
         <div class="header">Timesheet Re-Submission Reminder</div>
@@ -77,8 +74,6 @@
                     {{ \Carbon\Carbon::parse($timesheet->week_start_date)->format('M d, Y') }} -
                     {{ \Carbon\Carbon::parse($timesheet->week_end_date)->format('M d, Y') }}</p>
 
-                {{-- <p><strong>Week Ending:</strong>
-                    {{ \Carbon\Carbon::parse($timesheet->week_end)->toFormattedDateString() }}</p> --}}
                 <p><strong>Status:</strong> Rejected </p>
             </div>
 

@@ -100,7 +100,7 @@ class TaskController extends Controller
             'status' => 'success',
             'message' => 'Task updated successfully',
             'data' => $task,
-            'total_hours' => $totalHours, // Optional: return this to update frontend
+            'total_hours' => $totalHours, 
         ]);
     }
 
@@ -161,20 +161,5 @@ class TaskController extends Controller
             'data' => $tasks,
         ]);
     }
-
-    // public function getTotalHours($timesheetId)
-    // {
-    //     $totalHours = TimesheetDetail::where('timesheet_id', $timesheetId)
-    //         ->with('tasks')
-    //         ->get()
-    //         ->flatMap->tasks
-    //         ->sum('actual_hours');
-
-    //     return response()->json([
-    //         'status' => 'success',
-    //         'total_hours' => $totalHours
-    //     ]);
-    // }
-
 
 }

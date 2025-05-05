@@ -17,8 +17,6 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Events\NewNotification;
 
 
-
-
 class TimesheetController extends Controller
 {
     /**
@@ -172,22 +170,6 @@ class TimesheetController extends Controller
         if ($request->statuses) {
             $query->whereIn('status', $request->statuses);
         }
-
-        // Sorting
-        // if (in_array(Auth::user()->role, ['admin', 'contractor'])) {
-        //     $query->orderByRaw("
-        //         CASE 
-        //             WHEN status = 'submitted' THEN 1
-        //             WHEN status = 'pending' THEN 2
-        //             WHEN status = 'approved' THEN 3
-        //             WHEN status = 'rejected' THEN 4
-        //             ELSE 5
-        //         END
-        //     ")->orderBy('submitted_at', 'asc')
-        //         ->orderBy('week_start_date', 'asc');
-        // } else {
-        //     $query->orderBy('week_start_date', 'asc');
-        // }
 
         // Final pagination
         $timesheets = $query->paginate(10);
@@ -477,7 +459,7 @@ class TimesheetController extends Controller
     public function exportAllToPdf(Request $request)
     {
         $query = Timesheet::with(['project.client', 'contractor']);
-    
+
         if (Auth::user()->role == 'admin') {
             $query->orderByRaw("
                 CASE 
@@ -488,7 +470,7 @@ class TimesheetController extends Controller
                     ELSE 5
                 END
             ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
-    
+
         } elseif (Auth::user()->role == 'client') {
             $projectIds = Project::where('client_id', Auth::id())->pluck('id');
             $query->whereIn('project_id', $projectIds)->orderByRaw("
@@ -500,7 +482,7 @@ class TimesheetController extends Controller
                     ELSE 5
                 END
             ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
-    
+
         } elseif (Auth::user()->role == 'contractor') {
             $query->where('contractor_id', Auth::id())->orderByRaw("
                 CASE 
@@ -511,30 +493,30 @@ class TimesheetController extends Controller
                     ELSE 5
                 END
             ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
-    
+
         } else {
             $query->orderBy('week_start_date', 'asc');
         }
-    
+
         // ✅ Apply Filters (Only if present in request)
         if ($request->filled('projects')) {
             $query->whereIn('project_id', $request->input('projects'));
         }
-    
+
         if ($request->filled('statuses')) {
             $query->whereIn('status', $request->input('statuses'));
         }
-    
+
         if ($request->filled('clients')) {
             $query->whereHas('project.client', function ($q) use ($request) {
                 $q->whereIn('id', $request->input('clients'));
             });
         }
-    
+
         if ($request->filled('contractors')) {
             $query->whereIn('contractor_id', $request->input('contractors'));
         }
-    
+
         if ($request->filled('dates')) {
             $query->where(function ($q) use ($request) {
                 foreach ($request->input('dates') as $dateRange) {
@@ -545,84 +527,13 @@ class TimesheetController extends Controller
                 }
             });
         }
-    
+
         $timesheets = $query->get();
         $role = Auth::user()->role;
-    
+
         $pdf = Pdf::loadView('pdf.timesheet', compact('timesheets', 'role'));
         return $pdf->download('Timesheets.pdf');
     }
-    
-
-
-
-    // public function getTotalActualHours($timesheetDetailId)
-    // {
-    //     $timesheetDetail = TimesheetDetail::find($timesheetDetailId);
-
-    //     if ($timesheetDetail) {
-    //         // Sum up the actual hours of tasks related to this timesheet detail
-    //         $totalHours = $timesheetDetail->tasks()->sum('actual_hours');
-    //         return response()->json([
-    //             'status' => 'success',
-    //             'total_hours' => $totalHours,
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'status' => 'error',
-    //         'message' => 'Timesheet detail not found',
-    //     ]);
-    // }
-    // public function filter(Request $request)
-    // {
-    //     $timesheets = Timesheet::query();
-
-    //     if ($request->dates) {
-    //         $timesheets->where(function ($query) use ($request) {
-    //             foreach ($request->dates as $date) {
-    //                 $range = explode(' - ', $date);
-    //                 $start = Carbon::parse($range[0])->format('Y-m-d');
-    //                 $end = Carbon::parse($range[1])->format('Y-m-d');
-
-    //                 $query->orWhere(function ($q) use ($start, $end) {
-    //                     $q->whereDate('week_start_date', $start)
-    //                         ->whereDate('week_end_date', $end);
-    //                 });
-    //             }
-    //         });
-    //     }
-    //     // dd($timesheets->get());
-
-    //     if ($request->projects) {
-    //         $timesheets->whereHas('project', function ($query) use ($request) {
-    //             $query->whereIn('name', $request->projects);
-    //         });
-    //     }
-
-    //     if ($request->clients) {
-    //         $timesheets->whereHas('project.client', function ($query) use ($request) {
-    //             $query->whereIn('firstname', $request->clients);
-    //         });
-    //     }
-
-    //     if ($request->contractors) {
-    //         $timesheets->whereHas('contractor', function ($query) use ($request) {
-    //             $query->whereIn('firstname', $request->contractors);
-    //         });
-    //     }
-
-    //     if ($request->statuses) {
-    //         $timesheets->whereIn('status', $request->statuses);
-    //     }
-
-    //     // $timesheets = Timesheet::paginate(10);
-    //     $pageTitle = 'hi';
-    //     // Now return only the table HTML for AJAX
-    //     return response()->json([
-    //         'html' => view('timesheet', compact('timesheets', 'pageTitle'))->render(),
-    //     ]);
-    // }
 
     /**
      * Show the form for creating a new resource.

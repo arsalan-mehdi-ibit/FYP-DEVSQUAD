@@ -24,7 +24,7 @@ class ProfileController extends Controller
             ->first();
 
         $pageTitle = 'Hi, ' . $user->firstname . " " . $user->lastname;
-        return view('profile', compact('pageTitle', 'user', 'profilePicture')); // ✅ Passing 'user' to Blade
+        return view('profile', compact('pageTitle', 'user', 'profilePicture')); 
     }
 
     public function edit()
@@ -35,7 +35,7 @@ class ProfileController extends Controller
 
     public function update(Request $request)
     {
-        // Get the authenticated user
+        
         $user = Auth::user();
 
         // Validate the incoming request
@@ -60,12 +60,10 @@ class ProfileController extends Controller
             $user->password = Hash::make($request->input('password'));
         }
 
-        // Update profile picture if provided
-
         // Save the updated user details in the database
         $user->save();
         MediaController::uploadFile($request, $user->id);
-        // Redirect back with a success message
+        
         return redirect()->back()->with('success', 'Profile updated successfully.');
     }
 }

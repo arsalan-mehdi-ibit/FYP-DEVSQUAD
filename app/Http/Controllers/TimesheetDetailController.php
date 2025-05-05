@@ -13,21 +13,12 @@ class TimesheetDetailController extends Controller
     // Show all timesheets
     public function index(Request $request)
     {
-        // if ($request->has('id')) {
-        //     return redirect()->route('timesheet.details.detail', ['id' => $request->id]);
-        // }
-
-
         $pageTitle = 'Timesheet Details';
         $timesheetDetailss = TimesheetDetail::all();
         return view('timesheetdetail', compact('pageTitle', $timesheetDetailss));
     }
 
-
-
     // Show details of a specific timesheet
-
-
     public function show($id)
     {
         \Log::info('TimesheetDetailController show() hit with ID: ' . $id);
@@ -54,57 +45,13 @@ class TimesheetDetailController extends Controller
         $request->validate([
             'memo' => 'nullable|string',
         ]);
-    
+
         $detail = TimesheetDetail::findOrFail($id);
         $detail->memo = $request->input('memo');
         $detail->save();
-    
+
         return response()->json(['success' => true]);
     }
-    
-
-
-    // public function getTotalActualHours($timesheetDetailId)
-    // {
-    //     $timesheetDetail = TimesheetDetail::find($timesheetDetailId);
-
-    //     if ($timesheetDetail) {
-    //         // Fetch the total actual hours by summing up related tasks
-    //         $totalHours = $timesheetDetail->tasks()->sum('actual_hours');
-    //         return response()->json(['status' => 'success', 'total_hours' => $totalHours]);
-    //     }
-    //     return response()->json(['status' => 'error', 'message' => 'Timesheetdetail not found']);
-    // }
-
-
-    //     public function storeDailyTask(Request $request)
-// {
-//     $validated = $request->validate([
-//         'timesheet_detail_id' => 'required|exists:timesheet_details,id',
-//         'title' => 'required|string',
-//         'description' => 'nullable|string',
-//         'actual_hours' => 'required|numeric',
-//     ]);
-
-    //     $task = DailyTask::create($validated);
-
-    //     return response()->json(['status' => 'success', 'data' => $task]);
-// }
-
-    // public function updateDailyTask(Request $request, $id)
-// {
-//     $task = DailyTask::findOrFail($id);
-
-    //     $validated = $request->validate([
-//         'title' => 'required|string',
-//         'description' => 'nullable|string',
-//         'actual_hours' => 'required|numeric',
-//     ]);
-
-    //     $task->update($validated);
-
-    //     return response()->json(['status' => 'success', 'data' => $task]);
-// }
 
 
 }

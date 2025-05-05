@@ -63,7 +63,7 @@ class UsersController extends Controller
 
     public function store(Request $request)
     {
-        // dd($request);
+
         try {
             $validated = $request->validate([
                 'firstname' => 'required|regex:/^[A-Za-z]+$/|max:255',
@@ -220,29 +220,6 @@ class UsersController extends Controller
         return redirect()->route('users.index')->with('user_updated', true);
     }
 
-
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-
-
-    /**
-     * Update the specified resource in storage.
-     */
-
-
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         try {
@@ -257,6 +234,21 @@ class UsersController extends Controller
             return redirect()->back()->with('error', 'Something went wrong while deleting the user.');
         }
     }
+
+
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+
 
 
 }

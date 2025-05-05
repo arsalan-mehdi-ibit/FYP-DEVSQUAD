@@ -38,14 +38,14 @@ class Timesheet extends Model
     }
 
     public function details()
-{
-    return $this->hasMany(TimesheetDetail::class);
-}
+    {
+        return $this->hasMany(TimesheetDetail::class);
+    }
 
-public function getTotalActualHoursAttribute()
-{
-    return $this->details()->sum('actual_hours');
-}
+    public function getTotalActualHoursAttribute()
+    {
+        return $this->details()->sum('actual_hours');
+    }
 
 }
 

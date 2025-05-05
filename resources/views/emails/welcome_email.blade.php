@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +11,7 @@
             background-color: #f9f9f9;
             padding: 20px;
         }
+
         .email-container {
             max-width: 600px;
             background: #ffffff;
@@ -17,16 +19,19 @@
             border-radius: 8px;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
         .email-header {
             font-size: 22px;
             font-weight: bold;
             color: #333;
         }
+
         .email-content {
             font-size: 16px;
             color: #555;
             margin-top: 10px;
         }
+
         .btn {
             display: inline-block;
             background-color: rgb(10, 2, 75);
@@ -38,9 +43,11 @@
             margin-top: 15px;
             font-weight: bold;
         }
+
         .btn:hover {
             background-color: rgb(23, 3, 90);
         }
+
         .email-footer {
             margin-top: 20px;
             font-size: 14px;
@@ -48,6 +55,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="email-container">
         <p class="email-header">👋 Welcome to TrackPoint, {{ $user_name }}!</p>
@@ -67,4 +75,5 @@
         </p>
     </div>
 </body>
+
 </html>

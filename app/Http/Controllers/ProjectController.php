@@ -20,105 +20,100 @@ use App\Events\NewNotification;
 use Carbon\Carbon;
 use App\Models\ProjectContractor;
 
-
-
 class ProjectController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $user = Auth::user();
-    $role = $user->role;
-    $pageTitle = "Projects";
+    {
+        $user = Auth::user();
+        $role = $user->role;
+        $pageTitle = "Projects";
 
-    // Initialize variables
-    $adminCount = $consultantCount = $clientCount = $contractorCount = null;
-    $totalProjects = $activeProjects = $pendingProjects = $completedProjects = null;
-    $projects = collect(); // default empty
+        // Initialize variables
+        $adminCount = $consultantCount = $clientCount = $contractorCount = null;
+        $totalProjects = $activeProjects = $pendingProjects = $completedProjects = null;
+        $projects = collect(); 
 
-    // Admin Overview
-    if ($role === 'admin') {
-        $activeProjects = Project::where('status', 'in_progress')->count();
-        $adminCount = User::where('role', 'admin')->count();
-        $clientCount = User::where('role', 'client')->count();
-        $contractorCount = User::where('role', 'contractor')->count();
-        $projects = Project::all();
+        // Admin Overview
+        if ($role === 'admin') {
+            $activeProjects = Project::where('status', 'in_progress')->count();
+            $adminCount = User::where('role', 'admin')->count();
+            $clientCount = User::where('role', 'client')->count();
+            $contractorCount = User::where('role', 'contractor')->count();
+            $projects = Project::all();
+        }
+
+        // Client Projects
+        elseif ($role === 'client') {
+            $projects = Project::where('client_id', $user->id)->get();
+        }
+
+        // Contractor Projects via pivot table
+        elseif ($role === 'contractor') {
+            $projectIds = ProjectContractor::where('contractor_id', $user->id)->pluck('project_id');
+            $projects = Project::whereIn('id', $projectIds)->get();
+        }
+
+        // Consultant Projects
+        elseif ($role === 'consultant') {
+            $projects = Project::where('consultant_id', $user->id)->get();
+        }
+
+        // Status counts
+        if (in_array($role, ['client', 'contractor', 'consultant'])) {
+            $totalProjects = $projects->count();
+            $activeProjects = $projects->where('status', 'in_progress')->count();
+            $pendingProjects = $projects->where('status', 'pending')->count();
+            $completedProjects = $projects->where('status', 'completed')->count();
+        }
+
+        // Filtered paginated projects for table
+        $projectsQuery = Project::with('client');
+
+        if ($role === 'client') {
+            $projectsQuery->where('client_id', $user->id);
+        } elseif ($role === 'consultant') {
+            $projectsQuery->where('consultant_id', $user->id);
+        } elseif ($role === 'contractor') {
+            $contractorId = $user->id;
+            $projectsQuery->whereHas('contractors', function ($query) use ($contractorId) {
+                $query->where('users.id', $contractorId);
+            });
+        }
+
+        if ($request->clients) {
+            $projectsQuery->whereIn('client_id', $request->clients);
+        }
+
+        if ($request->statuses) {
+            $projectsQuery->whereIn('status', $request->statuses);
+        }
+
+        $projects = $projectsQuery->orderBy('id', 'desc')->paginate(10);
+
+        // View or AJAX
+        $viewData = compact(
+            'pageTitle',
+            'projects',
+            'adminCount',
+            'clientCount',
+            'contractorCount',
+            'pendingProjects',
+            'completedProjects',
+            'totalProjects',
+            'activeProjects'
+        );
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('project', $viewData)->render(),
+            ]);
+        }
+
+        return view('project', $viewData);
     }
-
-    // Client Projects
-    elseif ($role === 'client') {
-        $projects = Project::where('client_id', $user->id)->get();
-    }
-
-    // Contractor Projects via pivot table
-    elseif ($role === 'contractor') {
-        $projectIds = ProjectContractor::where('contractor_id', $user->id)->pluck('project_id');
-        $projects = Project::whereIn('id', $projectIds)->get();
-    }
-
-    // Consultant Projects
-    elseif ($role === 'consultant') {
-        $projects = Project::where('consultant_id', $user->id)->get();
-    }
-
-    // Status counts
-    if (in_array($role, ['client', 'contractor', 'consultant'])) {
-        $totalProjects = $projects->count();
-        $activeProjects = $projects->where('status', 'in_progress')->count();
-        $pendingProjects = $projects->where('status', 'pending')->count();
-        $completedProjects = $projects->where('status', 'completed')->count();
-    }
-
-    // Filtered paginated projects for table
-    $projectsQuery = Project::with('client');
-
-    if ($role === 'client') {
-        $projectsQuery->where('client_id', $user->id);
-    } elseif ($role === 'consultant') {
-        $projectsQuery->where('consultant_id', $user->id);
-    } elseif ($role === 'contractor') {
-        $contractorId = $user->id;
-        $projectsQuery->whereHas('contractors', function ($query) use ($contractorId) {
-            $query->where('users.id', $contractorId);
-        });
-    }
-
-    if ($request->clients) {
-        $projectsQuery->whereIn('client_id', $request->clients);
-    }
-
-    if ($request->statuses) {
-        $projectsQuery->whereIn('status', $request->statuses);
-    }
-
-    $projects = $projectsQuery->orderBy('id', 'desc')->paginate(10);
-
-    // View or AJAX
-    $viewData = compact(
-        'pageTitle',
-        'projects',
-        'adminCount',
-        'clientCount',
-        'contractorCount',
-        'pendingProjects',
-        'completedProjects',
-        'totalProjects',
-        'activeProjects'
-    );
-
-    if ($request->ajax()) {
-        return response()->json([
-            'html' => view('project', $viewData)->render(),
-        ]);
-    }
-
-    return view('project', $viewData);
-}
-
-
-
 
     /**
      * Show the form for creating a new project.
@@ -130,6 +125,7 @@ class ProjectController extends Controller
         $contractors = $users->where('role', 'contractor');
         return view('cruds.add_project', compact('pageTitle', 'users', 'contractors'));
     }
+
     public function triggerTimesheetJob($project)
     {
         // Ensure we have a single Project instance
@@ -151,7 +147,7 @@ class ProjectController extends Controller
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('projects')->whereNull('deleted_at')  // <-- main part
+                Rule::unique('projects')->whereNull('deleted_at')  
             ],
             'type' => 'required|string',
             'client_id' => 'required|exists:users,id',
@@ -161,8 +157,8 @@ class ProjectController extends Controller
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => ['nullable', 'date', 'after:start_date', 'after_or_equal:today'],
             'notes' => 'nullable|string|max:255',
-            'attachments.*' => 'nullable|file|max:2048', // For multiple file uploads
-            'contractors' => 'array', // Validate the contractors field
+            'attachments.*' => 'nullable|file|max:2048', 
+            'contractors' => 'array', 
             'contractors.*.contractor_id' => 'required|exists:users,id',
             'contractors.*.rate' => 'required|numeric|min:0',
         ]);
@@ -176,7 +172,6 @@ class ProjectController extends Controller
         }
         try {
 
-
             // Check for a soft-deleted project with the same name
             $trashed = Project::onlyTrashed()->where('name', $validated['name'])->first();
             if ($trashed && in_array($trashed->status, ['pending', 'cancelled'])) {
@@ -187,7 +182,7 @@ class ProjectController extends Controller
             // Set client_rate, default to 0.00 if not provided
             $validated['client_rate'] = $request->client_rate ?? 0.00;
 
-            // Create the project
+            
             $project = Project::create($validated);
             // Prepare shared email info
             $adminName = Auth::user()->firstname . ' ' . Auth::user()->lastname; // Or any appropriate admin name
@@ -205,7 +200,7 @@ class ProjectController extends Controller
                     'reset_link' => null,
                 ];
                 Mail::to($client->email)->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
-                // Mail::to("haishamfaizan@gmail.com")->send(new EmailSender("New Project Created", $emailData, 'emails.project_created_email'));
+        
             }
 
             // Send email to consultant if exists
@@ -320,7 +315,7 @@ class ProjectController extends Controller
                         'message' => 'You have been assigned as a consultant for project "' . $project->name . '".',
                         'is_read' => 0, // Unread by default
                     ]);
-                        event(new NewNotification('You have been assigned as a consultant for project "' . $project->name . '" by ' . Auth::user()->firstname,  $consultant->id));
+                    event(new NewNotification('You have been assigned as a consultant for project "' . $project->name . '" by ' . Auth::user()->firstname, $consultant->id));
 
                 }
             }
@@ -354,7 +349,7 @@ class ProjectController extends Controller
                             'message' => 'You have been assigned as a contractor for the project "' . $project->name . '".',
                             'is_read' => 0,  // By default, unread
                         ]);
-                    event(new NewNotification('You have been assigned as a contractor for project "' . $project->name . '" by ' . Auth::user()->firstname, $contractorUser->id));
+                        event(new NewNotification('You have been assigned as a contractor for project "' . $project->name . '" by ' . Auth::user()->firstname, $contractorUser->id));
 
                     } else {
                         // Log or handle case where contractor does not exist
@@ -395,6 +390,8 @@ class ProjectController extends Controller
 
         return view('cruds.add_project', compact('pageTitle', 'project', 'users', 'contractors', 'projectContractors'));
     }
+
+
     public function view($id)
     {
         $pageTitle = "View Project";
@@ -424,7 +421,7 @@ class ProjectController extends Controller
 
         $project = Project::findOrFail($id);
 
-        $startDateRule = 'required|date'; // Default rule
+        $startDateRule = 'required|date'; 
 
         // Only apply "after_or_equal:today" if this is a new project OR if updating to a future date
         if (!$project->exists || ($project->start_date == $request->start_date && $request->start_date >= now()->toDateString())) {
@@ -517,9 +514,6 @@ class ProjectController extends Controller
                 MediaController::uploadFile($request, $project->id);
             }
 
-
-
-
             // Update the project with the new validated data
             $project->update($validated);
             // ✅ Dispatch the FillTimesheet job
@@ -531,18 +525,6 @@ class ProjectController extends Controller
             // Handle any errors during the update process
             return back()->with('error', 'Whoops! Something went wrong, please try again.');
         }
-
-        // Update the project
-        // $project->update($validated);
-
-        // Sync the contractors (remove previous and add new ones)
-        // if (isset($request->contractors)) {
-        //     $project->contractors()->detach(); // Remove existing contractors
-
-        //     foreach ($request->contractors as $contractor) {
-        //         $project->contractors()->attach($contractor['contractor_id'], ['contractor_rate' => $contractor['rate']]);
-        //     }
-        // }
 
         // Handle file uploads (attachments)
         if ($request->hasFile('attachments')) {
@@ -559,8 +541,8 @@ class ProjectController extends Controller
                 'description' => 'Project "' . $project->name . '" has been updated.',
                 'parent_id' => $project->id,
                 'created_for' => 'project',
-                'user_id' => $admin->id, // Notify each admin
-                'created_by' => Auth::id(), // Logged-in user
+                'user_id' => $admin->id,
+                'created_by' => Auth::id(), 
             ]);
 
             Notifications::create([
@@ -569,7 +551,7 @@ class ProjectController extends Controller
                 'created_for' => 'project',
                 'user_id' => $admin->id,
                 'message' => 'Project "' . $project->name . '" has been updated.',
-                'is_read' => 0, // unread by default
+                'is_read' => 0, 
             ]);
             event(new NewNotification('Project "' . $project->name . '" has been updated by ' . Auth::user()->firstname, $admin->id));
 
@@ -589,7 +571,7 @@ class ProjectController extends Controller
                 'title' => 'Project Assigned',
                 'parent_id' => $project->id,
                 'created_for' => 'project',
-                'user_id' =>  $project->client_id,
+                'user_id' => $project->client_id,
                 'message' => 'The project "' . $project->name . '" has been updated.',
                 'is_read' => 0, // Unread by default
             ]);
@@ -624,7 +606,6 @@ class ProjectController extends Controller
         }
 
         // Recent Activity for the Contractors
-
         if (isset($validated['contractors']) && count($validated['contractors']) > 0) {
             // Loop through the contractors (even though only one contractor is expected)
             foreach ($validated['contractors'] as $contractor) {
@@ -709,24 +690,4 @@ class ProjectController extends Controller
         }
     }
 
-    // public function createTimesheet(Request $request, $contractorId, $projectId)
-    // {
-    //     // Validate the request data
-    //     $validated = $request->validate([
-    //         'week_start_date' => 'required|date',
-    //         'week_end_date' => 'required|date|after_or_equal:week_start_date',
-    //         'hours_worked' => 'required|numeric|min:0',
-    //     ]);
-
-    //     // Dispatch the job to handle the timesheet creation
-    //     FillTimesheet::dispatch(
-    //         $contractorId,
-    //         $projectId,
-    //         $validated['week_start_date'],
-    //         $validated['week_end_date'],
-    //         $validated['hours_worked']
-    //     );
-
-    //     return response()->json(['message' => 'Timesheet creation job dispatched.']);
-    // }
 }

@@ -60,7 +60,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/monthly-hours', [DashboardController::class, 'getMonthlyHours']);
         Route::get('/activities/filter', [DashboardController::class, 'filterActivities']);
 
-
     });
 
     Route::group(['as' => 'notifications.', 'prefix' => '/notifications'], function () {
@@ -70,7 +69,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/profile', [ProfileController::class, 'index'])->name('profile'); // Use the correct controller and method
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
 
 
     Route::group(['as' => 'invoice.', 'prefix' => '/invoice'], function () {
@@ -89,7 +87,6 @@ Route::middleware('auth')->group(function () {
         Route::get('/download-file/{id}', [MediaController::class, 'downloadFile'])->name('downloadFile');
         Route::delete('/destroy/{id}', [UsersController::class, 'destroy'])->name('destroy');
 
-
     });
 
 
@@ -100,15 +97,9 @@ Route::middleware('auth')->group(function () {
         Route::post('/{id}/submit', [TimesheetController::class, 'submit'])->name('submit');
         Route::post('/{id}/approve', [TimesheetController::class, 'approve'])->name('approve');
         Route::post('/{id}/reject', [TimesheetController::class, 'reject'])->name('reject');
-        // Route::get('/filter', [TimesheetController::class, 'filter'])->name('filter');
-        // Route::get('/{timesheetDetailId}/total-actual-hours', [TimesheetController::class, 'getTotalActualHours']);
         Route::get('/{id}/total-hours', [TimesheetController::class, 'getTotalHours']);
         Route::post('/details/{id}/memo', [TimesheetDetailController::class, 'updateMemo'])->name('details.memo.update');
         Route::get('/export-all', [TimesheetController::class, 'exportAllToPdf'])->name('export.all');
-
-
-
-
 
     });
 
@@ -135,19 +126,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('/remove-contractor/{contractorId}', [ProjectController::class, 'removeContractor'])->name('removeContractor');
         Route::delete('/destroy/{id}', [ProjectController::class, 'destroy'])->name('destroy');
         Route::get('/view/{id}', [ProjectController::class, 'view'])->name('view');
-
-
     });
 
-
-
-
-    // Route::middleware(['web'])->group(function () {
-    //     // Route::post('/upload-file', [MediaController::class, 'uploadFile'])->name('upload.file');
-    //     // Route::delete('/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
-    //     // Route::delete('/users/delete-file/{id}', [MediaController::class, 'deleteFile'])->name('delete.file');
-
-    // });
 
 });
 

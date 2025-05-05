@@ -9,7 +9,7 @@ class Notifications extends Model
 {
     use HasFactory;
 
-    
+
     protected $table = 'notifications';
 
     // Mass assignable fields
@@ -21,12 +21,12 @@ class Notifications extends Model
         'message',
         'is_read',
     ];
-    
 
-public function user()
-{
-    return $this->belongsTo(User::class, 'user_id');
-}
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 
 
 }

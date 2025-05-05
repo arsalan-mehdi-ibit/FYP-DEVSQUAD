@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable,SoftDeletes;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -46,26 +46,19 @@ class User extends Authenticatable
     }
 
     public function profilePicture()
-{
-    return $this->hasOne(\App\Models\FileAttachment::class, 'parent_id')->where('file_for', 'profile')->latest();
-}
+    {
+        return $this->hasOne(\App\Models\FileAttachment::class, 'parent_id')->where('file_for', 'profile')->latest();
+    }
 
 
-// public function clientProjects()
-// {
-//     return $this->hasMany(Project::class, 'client_id');
-// }
-public function isLinkedToAnyProject(): bool
-{
-    $isContractor = $this->projects()->exists();
-    $isClient = \App\Models\Project::where('client_id', $this->id)->exists();
-    $isConsultant = \App\Models\Project::where('consultant_id', $this->id)->exists();
+    public function isLinkedToAnyProject(): bool
+    {
+        $isContractor = $this->projects()->exists();
+        $isClient = \App\Models\Project::where('client_id', $this->id)->exists();
+        $isConsultant = \App\Models\Project::where('consultant_id', $this->id)->exists();
 
-    return $isContractor || $isClient || $isConsultant;
-}
-
-
-
+        return $isContractor || $isClient || $isConsultant;
+    }
 
 
     /**

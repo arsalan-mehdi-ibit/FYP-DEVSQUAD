@@ -14,21 +14,21 @@ class SendPendingTimesheetReminders extends Command
 
     public function handle()
     {
-    
+
         $today = now()->startOfDay();
-    
+
         $pendingTimesheets = Timesheet::with('contractor')
             ->where('status', 'pending')
             ->whereDate('week_end_date', '<', $today)
             ->get();
-    
+
         $this->info('📝 Found ' . $pendingTimesheets->count() . ' pending timesheets.');
-    
+
         foreach ($pendingTimesheets as $timesheet) {
             dispatch(new SendTimesheetReminderJob($timesheet));
         }
-    
+
         $this->info('✅ Dispatched reminder jobs for pending timesheets.');
     }
-    
+
 }

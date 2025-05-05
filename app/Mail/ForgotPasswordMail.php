@@ -26,7 +26,7 @@ class ForgotPasswordMail extends Mailable
         $resetLink = route('password.reset', $this->token);
 
         return $this->subject('Reset Your Password')
-                    ->view('emails.forgot-password')
-                    ->with(['resetLink' => $resetLink]);
+            ->view('emails.forgot-password')
+            ->with(['resetLink' => $resetLink]);
     }
 }

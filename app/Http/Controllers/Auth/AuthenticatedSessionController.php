@@ -12,28 +12,21 @@ use App\Models\User;
 
 class AuthenticatedSessionController extends Controller
 {
-    /**
-     * Display the login view.
-     */
+
+    //   Display the login view.
     public function create()
-    {   
-        if(!Auth::check())
-        {
+    {
+        if (!Auth::check()) {
             return view('auth.login');
-        }
-        else
-        {
+        } else {
             return redirect()->route('dashboard.index');
         }
     }
 
-    /**
-     * Handle an incoming authentication request.
-     */
     public function store(LoginRequest $request)
     {
         $credentials = $request->only('email', 'password');
-        
+
         // Check if the user exists and is active
         $user = User::where('email', $request->email)->first();
 
@@ -49,13 +42,11 @@ class AuthenticatedSessionController extends Controller
             $request->session()->regenerate(); // Regenerate session to prevent session fixation attacks
             return redirect()->route('dashboard.index'); // Redirect to intended route
         }
-    
+
         return back()->withErrors([
             'email' => 'The provided credentials do not match our records.',
         ])->onlyInput('email');
     }
-
-    
 
     /**
      * Destroy an authenticated session.
@@ -66,7 +57,7 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->invalidate(); // Invalidate the session
         $request->session()->regenerateToken(); // Regenerate the CSRF token
-    
+
         return redirect('/')->with('success', 'You have been logged out.');
     }
 }

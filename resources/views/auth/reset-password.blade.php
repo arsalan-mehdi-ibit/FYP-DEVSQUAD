@@ -5,7 +5,7 @@
         let isLoggedIn = {!! auth()->check() ? 'true' : 'false' !!};  // This will be either true or false
         let dashboardUrl = "{{ route('dashboard.index') }}";  
 
-        // Optional: Redirect based on the login status
+       
         if (isLoggedIn) {
             window.location.href = dashboardUrl;
         } else {
