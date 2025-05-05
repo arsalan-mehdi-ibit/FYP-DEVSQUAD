@@ -11,11 +11,6 @@ class Kernel extends ConsoleKernel
     {
         
         $schedule->command('app:emailremindersforsubmittedtimesheets')->everyFiveMinutes();
-
-        // $schedule->call(function () {
-        //     \Log::info('📆 Laravel scheduler is running correctly.');
-        // })->everyMinute();
-       
         $schedule->command('app:emailremindersforpendingtimesheets')->everyFiveMinutes();
         $schedule->command('app:emailremindersforrejectedtimesheets')->everyFiveMinutes();
 

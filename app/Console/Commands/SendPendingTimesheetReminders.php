@@ -14,7 +14,6 @@ class SendPendingTimesheetReminders extends Command
 
     public function handle()
     {
-        // \Log::info('🔁 Command is running: checking for pending timesheets.');
     
         $today = now()->startOfDay();
     
@@ -29,7 +28,6 @@ class SendPendingTimesheetReminders extends Command
             dispatch(new SendTimesheetReminderJob($timesheet));
         }
     
-        // \Log::info('✅ Dispatched reminder jobs for pending timesheets.');
         $this->info('✅ Dispatched reminder jobs for pending timesheets.');
     }
     

@@ -3,7 +3,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Timesheet;
-use App\Jobs\SendSubmittedTimesheetReminder; // Import your Job
+use App\Jobs\SendSubmittedTimesheetReminder;
 
 class emailremindersforsubmittedtimesheets extends Command
 {

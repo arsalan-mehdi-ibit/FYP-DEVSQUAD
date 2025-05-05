@@ -13,7 +13,7 @@
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $thisMonthCount }}</p>
-                    
+
                 </div>
             </div>
 
@@ -27,7 +27,7 @@
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $approvedCount }}</p>
-                    
+
                 </div>
             </div>
 
@@ -41,7 +41,7 @@
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $rejectedCount }}</p>
-                    
+
                 </div>
             </div>
 
@@ -55,7 +55,7 @@
                 </div>
                 <div class="flex justify-between text-center items-center">
                     <p class="text-lg sm:text-xl font-bold text-gray-800 m-0">{{ $pendingApprovalCount }}</p>
-                   
+
                 </div>
             </div>
         </div>
@@ -80,7 +80,9 @@
             </div>
 
             <!-- Filters Section -->
-            <div id="filterSection" class="hidden md:flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm">
+            <div id="filterSection"
+                class="hidden md:flex !block md:!flex flex-wrap gap-2 bg-white px-3 py-2 rounded-md shadow-sm">
+
                 <div class="flex items-center text-gray-700 text-sm font-semibold mr-2 mb-1">
                     <i class="bi bi-funnel-fill mr-1 text-gray-600"></i>
                     Filter By
@@ -221,11 +223,13 @@
             <div class="flex justify-between items-center mb-2 sm:mb-4">
                 <h2 class="text-lg sm:text-xl font-bold">Timesheets</h2>
 
-                <a href="{{ route('timesheet.export.all') }}"
+                <button id="exportTimesheetsBtn"
                     class="px-2 py-1 text-xs sm:text-sm font-medium text-white bg-gradient-to-r from-purple-500 to-indigo-500 
-          hover:from-indigo-500 hover:to-purple-500 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
+    hover:from-indigo-500 hover:to-purple-500 rounded-lg shadow-sm transform hover:scale-105 transition-all duration-300 flex items-center gap-1">
                     <i class="bi bi-download text-sm"></i> Export
-                </a>
+                </button>
+
+
 
             </div>
 
@@ -464,6 +468,46 @@
                     }
                 });
             }
+            
+            $('#exportTimesheetsBtn').on('click', function(e) {
+                e.preventDefault();
+
+                let dates = $('input[name="dates[]"]:checked').map(function() {
+                    return this.value;
+                }).get();
+
+                let projects = $('input[name="projects[]"]:checked').map(function() {
+                    return this.value;
+                }).get();
+
+                let clients = $('input[name="clients[]"]:checked').map(function() {
+                    return this.value;
+                }).get();
+
+                let contractors = $('input[name="contractors[]"]:checked').map(function() {
+                    return this.value;
+                }).get();
+
+                let statuses = $('input[name="statuses[]"]:checked').map(function() {
+                    return this.value;
+                }).get();
+
+                const hasFilters = dates.length || projects.length || clients.length || contractors
+                    .length || statuses.length;
+
+                const queryParams = $.param({
+                    dates: dates,
+                    projects: projects,
+                    clients: clients,
+                    contractors: contractors,
+                    statuses: statuses,
+                });
+
+                // Redirect to export route with or without filters
+                const exportUrl = "{{ route('timesheet.export.all') }}";
+                window.location.href = hasFilters ? `${exportUrl}?${queryParams}` : exportUrl;
+            });
+
         });
     </script>
 @endsection

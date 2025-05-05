@@ -30,54 +30,54 @@ class TimesheetController extends Controller
 
         $currentMonth = now()->month;
         $currentYear = now()->year;
-        
+
         $user = auth()->user();
-        
+
         if ($user->role === 'admin') {
             // Admin sees all counts
             $thisMonthCount = Timesheet::whereYear('submitted_at', $currentYear)
                 ->whereMonth('submitted_at', $currentMonth)
                 ->count();
-        
+
             $approvedCount = Timesheet::where('status', 'approved')->count();
             $rejectedCount = Timesheet::where('status', 'rejected')->count();
             $pendingApprovalCount = Timesheet::where('status', 'submitted')
                 ->whereNotNull('submitted_at')
                 ->count();
-        
+
             $allTimesheets = Timesheet::with(['project.client', 'contractor'])->get();
         } else {
             // Other roles see only their relevant timesheets
             $query = Timesheet::query();
-        
+
             if ($user->role === 'contractor') {
                 $query->where('contractor_id', $user->id);
             }
-        
+
             if ($user->role === 'client') {
                 $query->whereHas('project', function ($q) use ($user) {
                     $q->where('client_id', $user->id);
                 });
             }
-        
+
             if ($user->role === 'consultant') {
                 // Adjust this based on how consultants are related to timesheets/projects
                 $query->where('consultant_id', $user->id);
             }
-        
+
             $thisMonthCount = (clone $query)->whereYear('submitted_at', $currentYear)
                 ->whereMonth('submitted_at', $currentMonth)
                 ->count();
-        
+
             $approvedCount = (clone $query)->where('status', 'approved')->count();
             $rejectedCount = (clone $query)->where('status', 'rejected')->count();
             $pendingApprovalCount = (clone $query)->where('status', 'submitted')
                 ->whereNotNull('submitted_at')
                 ->count();
-        
+
             $allTimesheets = $query->with(['project.client', 'contractor'])->get();
         }
-        
+
         $dates = $allTimesheets->unique(function ($item) {
             return $item->week_start_date . $item->week_end_date;
         })->sortByDesc('week_start_date')->values();
@@ -468,16 +468,16 @@ class TimesheetController extends Controller
                 ]);
                 event(new NewNotification($description, $contractor->id));
 
-                
+
             }
         }
         return back()->with('success', 'Timesheet rejected successfully.');
     }
 
-    public function exportAllToPdf()
+    public function exportAllToPdf(Request $request)
     {
         $query = Timesheet::with(['project.client', 'contractor']);
-
+    
         if (Auth::user()->role == 'admin') {
             $query->orderByRaw("
                 CASE 
@@ -488,7 +488,7 @@ class TimesheetController extends Controller
                     ELSE 5
                 END
             ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
-
+    
         } elseif (Auth::user()->role == 'client') {
             $projectIds = Project::where('client_id', Auth::id())->pluck('id');
             $query->whereIn('project_id', $projectIds)->orderByRaw("
@@ -500,7 +500,7 @@ class TimesheetController extends Controller
                     ELSE 5
                 END
             ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
-
+    
         } elseif (Auth::user()->role == 'contractor') {
             $query->where('contractor_id', Auth::id())->orderByRaw("
                 CASE 
@@ -511,18 +511,49 @@ class TimesheetController extends Controller
                     ELSE 5
                 END
             ")->orderByDesc('submitted_at')->orderByDesc('updated_at');
-
+    
         } else {
             $query->orderBy('week_start_date', 'asc');
         }
-
+    
+        // ✅ Apply Filters (Only if present in request)
+        if ($request->filled('projects')) {
+            $query->whereIn('project_id', $request->input('projects'));
+        }
+    
+        if ($request->filled('statuses')) {
+            $query->whereIn('status', $request->input('statuses'));
+        }
+    
+        if ($request->filled('clients')) {
+            $query->whereHas('project.client', function ($q) use ($request) {
+                $q->whereIn('id', $request->input('clients'));
+            });
+        }
+    
+        if ($request->filled('contractors')) {
+            $query->whereIn('contractor_id', $request->input('contractors'));
+        }
+    
+        if ($request->filled('dates')) {
+            $query->where(function ($q) use ($request) {
+                foreach ($request->input('dates') as $dateRange) {
+                    [$start, $end] = explode(' - ', $dateRange);
+                    $q->orWhere(function ($subQuery) use ($start, $end) {
+                        $subQuery->where('week_start_date', $start)->where('week_end_date', $end);
+                    });
+                }
+            });
+        }
+    
         $timesheets = $query->get();
         $role = Auth::user()->role;
-
+    
         $pdf = Pdf::loadView('pdf.timesheet', compact('timesheets', 'role'));
-
         return $pdf->download('Timesheets.pdf');
     }
+    
+
 
 
     // public function getTotalActualHours($timesheetDetailId)
