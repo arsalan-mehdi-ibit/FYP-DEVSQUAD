@@ -23,51 +23,55 @@
 
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <!-- Cards for stats -->
+            <!-- Revenue This Month -->
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
                     <h3 class="text-sm font-semibold text-gray-600">Revenue This Month</h3>
-                    <p class="text-xl font-bold text-gray-800">2310</p>
+                    <p class="text-xl font-bold text-gray-800">${{ number_format($stats['revenue_this_month'], 2) }}</p>
                 </div>
                 <div class="p-3 rounded-xl bg-blue-100 flex items-center justify-center">
                     <i class="bi bi-filter text-blue-500 text-2xl"></i>
                 </div>
             </div>
 
+            <!-- Total Invoices -->
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
                     <h3 class="text-sm font-semibold text-gray-600">Total Invoices</h3>
-                    <p class="text-xl font-bold text-gray-800">1000</p>
+                    <p class="text-xl font-bold text-gray-800">{{ $stats['total_invoices'] }}</p>
                 </div>
                 <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
                     <i class="bi bi-receipt text-yellow-500 text-2xl"></i>
                 </div>
             </div>
 
+            <!-- Pending Invoices -->
             <div
                 class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
                 <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Active Invoices</h3>
-                    <p class="text-xl font-bold text-gray-800">1310</p>
+                    <h3 class="text-sm font-semibold text-gray-600">Pending Invoices</h3>
+                    <p class="text-xl font-bold text-gray-800">{{ $stats['pending_invoices'] }}</p>
+                </div>
+                <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
+                    <i class="bi bi-clock text-yellow-500 text-2xl"></i>
+                </div>
+            </div>
+
+            <!-- Paid Invoices -->
+            <div
+                class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
+                <div>
+                    <h3 class="text-sm font-semibold text-gray-600">Paid Invoices</h3>
+                    <p class="text-xl font-bold text-gray-800">{{ $stats['paid_invoices'] }}</p>
                 </div>
                 <div class="p-3 rounded-xl bg-green-100 flex items-center justify-center">
                     <i class="bi bi-check-circle text-green-500 text-2xl"></i>
                 </div>
             </div>
-
-            <div
-                class="bg-white shadow-md rounded-2xl p-3 flex items-center justify-between transition-all hover:shadow-lg w-full">
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-600">Pending Invoices</h3>
-                    <p class="text-xl font-bold text-gray-800">1243</p>
-                </div>
-                <div class="p-3 rounded-xl bg-yellow-100 flex items-center justify-center">
-                    <i class="bi bi-receipt text-yellow-500 text-2xl"></i>
-                </div>
-            </div>
         </div>
+
 
         <!-- Filters Wrapper -->
         <div class="flex flex-col gap-2 md:flex-row md:items-start md:justify-between mb-4 mt-4">

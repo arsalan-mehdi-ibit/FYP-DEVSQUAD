@@ -26,6 +26,30 @@ class InvoiceController extends Controller
         // Load all data for filters
         $allInvoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet.project', 'timesheet'])->get();
 
+        $user = auth()->user();
+        $role = $user->role;
+
+        $invoiceQuery = Payments::query();
+        if ($role === 'contractor') {
+            $invoiceQuery->where('contractor_id', $user->id);
+        } elseif ($role === 'client') {
+            $invoiceQuery->where('client_id', $user->id);
+        }
+
+        $startOfMonth = \Carbon\Carbon::now()->startOfMonth();
+        $endOfMonth = \Carbon\Carbon::now()->endOfMonth();
+
+        $stats = [
+            'revenue_this_month' => $invoiceQuery->clone()
+                ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
+                ->sum($role === 'contractor' ? 'contractor_paid' : 'admin_received'),
+
+            'total_invoices' => $invoiceQuery->clone()->count(),
+            'paid_invoices' => $invoiceQuery->clone()->whereNotNull('payment_date')->count(),
+            'pending_invoices' => $invoiceQuery->clone()->whereNull('payment_date')->count(),
+        ];
+
+
         // Main paginated query
         $invoices = Payments::with(['client.profilePicture', 'contractor', 'timesheet.project', 'timesheet']);
 
@@ -83,7 +107,8 @@ class InvoiceController extends Controller
             ]);
         }
 
-        return view('invoice', compact('pageTitle', 'invoices', 'allInvoices'));
+        return view('invoice', compact('pageTitle', 'invoices', 'allInvoices', 'stats'));
+
     }
 
     public function markAsPaid($id)
